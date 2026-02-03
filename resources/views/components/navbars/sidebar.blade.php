@@ -100,6 +100,16 @@
             </li>
             @endif
 
+            {{-- Menu Virtual Lab untuk Semua Role --}}
+            <li class="nav-item">
+                <a class="nav-link text-white {{ $activePage == 'virtual-lab' ? 'active bg-gradient-primary' : '' }}" href="{{ route('virtual-lab.index') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">code</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Virtual Lab</span>
+                </a>
+            </li>
+
             {{-- Menu Progress Mahasiswa --}}
             <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Data Mahasiswa</h6>

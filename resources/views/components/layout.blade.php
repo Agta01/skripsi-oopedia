@@ -32,7 +32,9 @@
     <link href="{{ asset('assets') }}/css/nucleo-icons.css" rel="stylesheet" />
     <link href="{{ asset('assets') }}/css/nucleo-svg.css" rel="stylesheet" />
     <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Font Awesome Icons -->
+    {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <!-- CSS Files -->
@@ -343,10 +345,17 @@
 
 {{ $slot }}
 
-<script src="{{ asset('assets') }}/js/core/popper.min.js"></script>
+<!-- <script src="{{ asset('assets') }}/js/core/popper.min.js"></script>
 <script src="{{ asset('assets') }}/js/core/bootstrap.min.js"></script>
 <script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-<script src="{{ asset('assets') }}/js/plugins/smooth-scrollbar.min.js"></script>
+<script src="{{ asset('assets') }}/js/plugins/smooth-scrollbar.min.js"></script> -->
+
+<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
+<!-- <script src="{{ asset('assets/js/material-dashboard.min.js') }}"></script> -->
+
 @stack('js')
 <script>
     var win = navigator.platform.indexOf('Win') > -1;
@@ -357,7 +366,72 @@
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
 
+    // Global Loading Helpers - Defined immediately
+    const loadingOverlay = document.getElementById('loading-overlay');
+    let loadingTimeout;
+
+    window.showLoading = function() {
+        if(loadingOverlay) {
+            loadingOverlay.classList.add('show');
+            // Set safety timeout
+            clearTimeout(loadingTimeout);
+            loadingTimeout = setTimeout(() => {
+                hideLoading();
+            }, 10000); // 10 seconds max
+        }
+    };
+    
+    window.hideLoading = function() {
+        if(loadingOverlay) {
+            clearTimeout(loadingTimeout);
+            loadingOverlay.classList.remove('show');
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Show loading on page load
+        showLoading();
+        
+        // Hide when page is fully loaded
+        window.addEventListener('load', function() {
+            hideLoading();
+        });
+        
+        // Show loading on navigation
+        document.addEventListener('click', function(event) {
+            const link = event.target.closest('a');
+            if (link && 
+                link.href && 
+                !link.target && 
+                link.hostname === window.location.hostname && 
+                !link.hasAttribute('data-bs-toggle') && 
+                !link.classList.contains('no-loading')) {
+                showLoading();
+            }
+        });
+        
+        // Show loading on form submissions
+        document.addEventListener('submit', function(event) {
+            if (!event.target.classList.contains('ajax-form')) {
+                showLoading();
+            }
+        });
+        
+        // Intercept fetch requests
+        const originalFetch = window.fetch;
+        window.fetch = function() {
+            showLoading();
+            return originalFetch.apply(this, arguments)
+                .then(response => {
+                    hideLoading();
+                    return response;
+                })
+                .catch(error => {
+                    hideLoading();
+                    throw error;
+                });
+        };
+
         // Perfect Scrollbar initialization
         if (document.querySelector('.sidenav')) {
             var fixedPlugin = document.querySelector('.fixed-plugin');
@@ -416,7 +490,18 @@
 <!-- Github buttons -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-<script src="{{ asset('assets') }}/js/material-dashboard.min.js?v=3.0.0"></script>
+@if(!request()->is('virtual-lab*'))
+    <script src="{{ asset('assets') }}/js/material-dashboard.min.js?v=3.0.0"></script>
+    <script>
+        // Fix for FontAwesome loading error in Firefox/some browsers
+        window.addEventListener('load', function() {
+            // Check if material dashboard script loaded correctly
+            if(typeof materialDashboard === 'undefined') {
+                console.log('Material Dashboard script suppressed or failed.');
+            }
+        });
+    </script>
+@endif
 
 {{-- Tambahkan CSS untuk tooltip tutorial --}}
 @push('head')
@@ -519,72 +604,5 @@
 <!-- Add this before the closing </body> tag -->
 <x-loading-overlay />
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    
-    // Show loading on page load
-    showLoading();
-    
-    // Hide when page is fully loaded
-    window.addEventListener('load', function() {
-        hideLoading();
-    });
-    
-    // Show loading on navigation
-    document.addEventListener('click', function(event) {
-        const link = event.target.closest('a');
-        if (link && 
-            link.href && 
-            !link.target && 
-            link.hostname === window.location.hostname && 
-            !link.hasAttribute('data-bs-toggle') && 
-            !link.classList.contains('no-loading')) {
-            showLoading();
-        }
-    });
-    
-    // Show loading on form submissions
-    document.addEventListener('submit', function(event) {
-        if (!event.target.classList.contains('ajax-form')) {
-            showLoading();
-        }
-    });
-    
-    // Intercept fetch requests
-    const originalFetch = window.fetch;
-    window.fetch = function() {
-        showLoading();
-        return originalFetch.apply(this, arguments)
-            .then(response => {
-                hideLoading();
-                return response;
-            })
-            .catch(error => {
-                hideLoading();
-                throw error;
-            });
-    };
-    
-    // Safety timeout to prevent infinite loading
-    let loadingTimeout;
-    
-    // Helper functions
-    window.showLoading = function() {
-        loadingOverlay.classList.add('show');
-        
-        // Set safety timeout
-        clearTimeout(loadingTimeout);
-        loadingTimeout = setTimeout(() => {
-            hideLoading();
-        }, 10000); // 10 seconds max
-    };
-    
-    window.hideLoading = function() {
-        clearTimeout(loadingTimeout);
-        loadingOverlay.classList.remove('show');
-    };
-});
-</script>
 </body>
 </html>

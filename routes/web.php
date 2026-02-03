@@ -289,3 +289,8 @@ Route::middleware(['auth', 'role:1|2'])->group(function () {
     Route::get('/admin/ueq/{user}/detail', [UeqSurveyController::class, 'detail'])->name('admin.ueq.detail');
 });
 
+// Virtual Lab Route
+Route::middleware(['auth'])->group(function () {
+    Route::get('/virtual-lab', [App\Http\Controllers\VirtualLabController::class, 'index'])->name('virtual-lab.index');
+    Route::post('/virtual-lab/execute', [App\Http\Controllers\VirtualLabController::class, 'execute'])->name('virtual-lab.execute');
+});

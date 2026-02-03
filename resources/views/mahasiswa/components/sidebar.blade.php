@@ -86,6 +86,18 @@
                     <span>Selesai</span>
                 </a>
             </li>
+            @auth
+            <li>
+                <a href="{{ route('virtual-lab.index') }}" 
+                   class="menu-item {{ request()->routeIs('virtual-lab.index') ? 'active' : '' }}"
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="right" 
+                   title="Praktik coding Java langsung di browser">
+                    <i class="fas fa-code"></i>
+                    <span>Virtual Lab</span>
+                </a>
+            </li>
+            @endauth
         </ul>
     @elseif(request()->routeIs('mahasiswa.ueq.create') || request()->routeIs('mahasiswa.ueq.thankyou'))
         {{-- UEQ Survey Sidebar Menu - Perbaikan menu UEQ --}}
@@ -124,6 +136,18 @@
                     <span>Semua Materi</span>
                 </a>
             </li>
+            @auth
+            <li>
+                <a href="{{ route('virtual-lab.index') }}" 
+                   class="menu-item {{ request()->routeIs('virtual-lab.index') ? 'active' : '' }}"
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="right" 
+                   title="Praktik coding Java langsung di browser">
+                    <i class="fas fa-code"></i>
+                    <span>Virtual Lab</span>
+                </a>
+            </li>
+            @endauth
         </ul>
         
         {{-- Materi PBO Section Divider --}}
@@ -160,6 +184,18 @@
                     <span>Daftar Latihan Soal</span>
                 </a>
             </li>
+            @auth
+            <li>
+                <a href="{{ route('virtual-lab.index') }}" 
+                   class="menu-item {{ request()->routeIs('virtual-lab.index') ? 'active' : '' }}"
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="right" 
+                   title="Praktik coding Java langsung di browser">
+                    <i class="fas fa-code"></i>
+                    <span>Virtual Lab</span>
+                </a>
+            </li>
+            @endauth
         </ul>
 
         {{-- Daftar Materi --}}
@@ -263,6 +299,18 @@
                     <span>Latihan Soal</span>
                 </a>
             </li>
+            @auth
+            <li>
+                <a href="{{ route('virtual-lab.index') }}" 
+                   class="menu-item {{ request()->routeIs('virtual-lab.index') ? 'active' : '' }}"
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="right" 
+                   title="Praktik coding Java langsung di browser">
+                    <i class="fas fa-code"></i>
+                    <span>Virtual Lab</span>
+                </a>
+            </li>
+            @endauth
             @auth
                 <li>
                     <a href="{{ route('mahasiswa.profile') }}" 
