@@ -12,6 +12,12 @@ class VirtualLabController extends Controller
      */
     public function index()
     {
+        // Jika user adalah Mahasiswa (3) atau Guest (4), gunakan layout mahasiswa
+        if (auth()->check() && auth()->user()->role_id >= 3) {
+            return view('virtual-lab.mahasiswa');
+        }
+
+        // Default untuk Admin/Dosen
         return view('virtual-lab.index');
     }
 
@@ -103,7 +109,10 @@ class VirtualLabController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            return view('virtual-lab.index', [
+            // Check role for error view
+            $viewName = (auth()->check() && auth()->user()->role_id >= 3) ? 'virtual-lab.mahasiswa' : 'virtual-lab.index';
+
+            return view($viewName, [
                 'files' => $filesData,
                 'output' => 'Error: ' . $e->getMessage(),
                 'error' => true
