@@ -143,6 +143,9 @@ Route::middleware('auth')->group(function () {
         // Media routes
         Route::get('/media/delete/{id}', [AdminMaterialController::class, 'deleteMedia'])
             ->name('media.delete');
+
+        // Virtual Lab Tasks Management
+        Route::resource('virtual-lab-tasks', \App\Http\Controllers\Admin\VirtualLabTaskController::class);
     });
 
     // Mahasiswa & Guest Routes (role 3 = mahasiswa, role 4 = guest)

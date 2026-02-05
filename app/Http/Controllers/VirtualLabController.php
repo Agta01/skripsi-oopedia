@@ -10,15 +10,103 @@ class VirtualLabController extends Controller
     /**
      * Display the virtual lab page
      */
-    public function index()
+    /**
+     * Display the virtual lab page
+     */
+    public function index(Request $request)
     {
-        // Jika user adalah Mahasiswa (3) atau Guest (4), gunakan layout mahasiswa
-        if (auth()->check() && auth()->user()->role_id >= 3) {
-            return view('virtual-lab.mahasiswa');
+        // 1. Fetch data needed for Task List (and Sidebar)
+        // Order tasks by title for consistent display
+        $materials = \App\Models\Material::with(['virtualLabTasks' => function($query) {
+            $query->orderBy('title');
+        }])->get();
+
+        // 2. Determine Mode: Sandbox vs Task vs List
+        // If 'task' param exists -> Show specific task in Editor
+        // If 'mode' param is 'sandbox' -> Show Sandbox in Editor
+        // Else -> Show Task List View
+        
+        $showEditor = false;
+        $activeTask = null;
+        
+        if ($request->has('task') && $request->task != '') {
+            $activeTask = \App\Models\VirtualLabTask::find($request->task);
+            if ($activeTask) {
+                $showEditor = true;
+            }
+        } elseif ($request->input('mode') === 'sandbox') {
+            $showEditor = true;
         }
 
-        // Default untuk Admin/Dosen
-        return view('virtual-lab.index');
+        // 3. Render View based on logic
+        
+        // 3. Render View based on logic
+        
+        // If User is Admin/Dosen (Role 1 & 2)
+        if (auth()->check() && auth()->user()->role_id <= 2) {
+            if ($showEditor) {
+                // Return Admin Editor View
+                // Prepared default files for Sandbox
+                $filesData = [
+                    [
+                        'filename' => 'Main.java',
+                        'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"
+                    ]
+                ];
+
+                if ($activeTask) {
+                    $filesData = [
+                        [
+                            'filename' => 'Main.java',
+                            'content' => $activeTask->template_code
+                        ]
+                    ];
+                }
+
+                return view('virtual-lab.index', [
+                    'materials' => $materials,
+                    'activeTask' => $activeTask,
+                    'files' => $filesData
+                ]);
+            } else {
+                // Return Admin Task List View
+                return view('virtual-lab.admin-task-list', [
+                    'materials' => $materials
+                ]);
+            }
+        }
+
+        // If User is Mahasiswa (Role 3), switch between List and Editor
+        if ($showEditor) {
+            // Prepared default files for Sandbox
+            $filesData = [
+                [
+                    'filename' => 'Main.java',
+                    'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"
+                ]
+            ];
+
+            // If Task is active, override with template code
+            if ($activeTask) {
+                $filesData = [
+                    [
+                        'filename' => 'Main.java',
+                        'content' => $activeTask->template_code
+                    ]
+                ];
+            }
+
+            return view('virtual-lab.mahasiswa', [
+                'materials' => $materials,
+                'activeTask' => $activeTask,
+                'files' => $filesData
+            ]);
+        } else {
+            // Show the Task Selection List
+            return view('virtual-lab.task-list', [
+                'materials' => $materials
+            ]);
+        }
     }
 
     /**

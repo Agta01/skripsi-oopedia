@@ -52,4 +52,9 @@ class Material extends Model
     {
         return $this->hasMany(QuestionBank::class);
     }
+
+    public function virtualLabTasks()
+    {
+        return $this->hasMany(VirtualLabTask::class);
+    }
 }

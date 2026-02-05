@@ -33,34 +33,54 @@
         <x-navbars.navs.auth titlePage="Virtual Lab Koding" />
         
         <div class="container-fluid py-4 tw-min-h-screen tw-bg-gray-100">
-            <!-- Header -->
-            <div class="tw-mb-6">
-                <h1 class="tw-text-3xl md:tw-text-4xl tw-font-bold tw-text-gray-900">Virtual Lab Koding</h1>
-                <p class="tw-text-gray-600 tw-text-lg tw-mt-2">
-                    Praktikkan konsep Pemrograman Berbasis Objek secara langsung di sini.
-                </p>
-            </div>
-
             <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-8 tw-h-auto lg:tw-h-[calc(100vh-220px)] tw-min-h-[600px]">
                 <!-- Instruction Panel -->
                 <div class="tw-bg-white tw-rounded-xl tw-shadow-lg tw-p-6 tw-flex tw-flex-col tw-h-full tw-overflow-hidden tw-mb-4 lg:tw-mb-0">
-                    <div class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4 tw-border-b tw-pb-2">Instruksi Praktikum</div>
-                    <div class="prose max-w-none tw-text-gray-700 tw-flex-1 tw-overflow-y-auto tw-pr-2 terminal-scroll">
-                        <h3 class="tw-text-lg tw-font-bold tw-text-blue-600 tw-mb-2">Modul 1: Class dan Object</h3>
-                        <p class="tw-mb-4 tw-text-sm tw-leading-relaxed">
-                            Pada praktikum ini, Anda akan belajar cara membuat <code>class</code> dan <code>object</code> di Java. 
-                            <code>Class</code> adalah cetakan, dan <code>object</code> adalah hasil dari cetakan tersebut.
-                        </p>
-                        
-                        <div class="tw-bg-blue-50 tw-border-l-4 tw-border-blue-500 tw-p-4 tw-mb-4">
-                            <h4 class="tw-font-bold tw-text-blue-700 tw-text-sm tw-mb-2">Tugas Anda:</h4>
-                            <ul class="tw-list-disc tw-list-inside tw-text-sm tw-space-y-1 tw-text-gray-700">
-                                <li>Tambahkan atribut <code>nama</code> (String) dan <code>nim</code> (String) pada <code>class Mahasiswa</code>.</li>
-                                <li>Buat method <code>tampilkanInfo()</code> di dalam <code>class Mahasiswa</code>.</li>
-                                <li>Di metod <code>main</code>, buat object <code>Mahasiswa</code>, isi atribut, dan panggil methodnya.</li>
-                            </ul>
+                    <div class="tw-flex tw-justify-between tw-items-center tw-mb-4 tw-border-b tw-pb-2">
+                        <div class="tw-text-xl tw-font-semibold tw-text-gray-800">
+                            {{ $activeTask ? $activeTask->title : 'Sandbox Mode' }}
                         </div>
+                        <a href="{{ route('virtual-lab.index') }}" class="tw-text-sm tw-text-blue-600 hover:tw-underline">
+                            &larr; Daftar Tugas
+                        </a>
                     </div>
+
+                    @if($activeTask)
+                        <!-- Active Task View -->
+                        <div class="tw-flex tw-gap-2 tw-mb-4">
+                            <span class="tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded 
+                                {{ $activeTask->difficulty == 'beginner' ? 'tw-bg-green-100 tw-text-green-800' : 
+                                   ($activeTask->difficulty == 'intermediate' ? 'tw-bg-yellow-100 tw-text-yellow-800' : 
+                                   'tw-bg-red-100 tw-text-red-800') }}">
+                                {{ ucfirst($activeTask->difficulty) }}
+                            </span>
+                            <span class="tw-px-2 tw-py-1 tw-text-xs tw-bg-gray-100 tw-text-gray-600 tw-rounded">
+                                {{ $activeTask->material->title }}
+                            </span>
+                            <span class="tw-px-2 tw-py-1 tw-text-xs tw-bg-blue-100 tw-text-blue-800 tw-rounded">Preview Mode</span>
+                        </div>
+
+                        <div class="prose max-w-none tw-text-gray-700 tw-flex-1 tw-overflow-y-auto tw-pr-2 terminal-scroll">
+                            {!! $activeTask->description !!}
+                        </div>
+                    @else
+                        <!-- Sandbox Mode View -->
+                        <div class="prose max-w-none tw-text-gray-700 tw-flex-1 tw-overflow-y-auto tw-pr-2 terminal-scroll">
+                            <h3 class="tw-text-lg tw-font-bold tw-text-blue-600 tw-mb-2">Selamat Datang di Sandbox (Dosen)!</h3>
+                            <p class="tw-mb-4 tw-text-sm tw-leading-relaxed">
+                                Ini adalah area bebas eksperimen. Anda dapat menulis dan menjalankan kode Java apa pun di sini.
+                            </p>
+                            
+                            <div class="tw-bg-blue-50 tw-border-l-4 tw-border-blue-500 tw-p-4 tw-mb-4">
+                                <h4 class="tw-font-bold tw-text-blue-700 tw-text-sm tw-mb-2">Tips:</h4>
+                                <ul class="tw-list-disc tw-list-inside tw-text-sm tw-space-y-1 tw-text-gray-700">
+                                    <li>Pastikan class utama bernama <code>Main</code>.</li>
+                                    <li>Method <code>public static void main(String[] args)</code> wajib ada.</li>
+                                    <li>Gunakan tombol <strong>+</strong> untuk menambah file class baru.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Code Editor & Output Panel -->

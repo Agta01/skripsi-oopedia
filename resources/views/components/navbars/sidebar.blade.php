@@ -1,7 +1,7 @@
 @props(['activePage', 'userName', 'userRole'])
 
 <aside
-    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark"
+    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 fixed-start bg-gradient-dark"
     id="sidenav-main">
     <br>
     <div class="sidenav-header d-flex flex-column align-items-center justify-content-center py-3">
@@ -109,6 +109,18 @@
                     <span class="nav-link-text ms-1">Virtual Lab</span>
                 </a>
             </li>
+
+            {{-- Menu Kelola Tugas Virtual Lab (Admin/Dosen Only) --}}
+            @if(auth()->user()->role_id <= 2)
+            <li class="nav-item">
+                <a class="nav-link text-white {{ request()->routeIs('admin.virtual-lab-tasks.*') ? 'active bg-gradient-primary' : '' }}" href="{{ route('admin.virtual-lab-tasks.index') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">assignment</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Kelola Tugas Lab</span>
+                </a>
+            </li>
+            @endif
 
             {{-- Menu Progress Mahasiswa --}}
             <li class="nav-item mt-3">

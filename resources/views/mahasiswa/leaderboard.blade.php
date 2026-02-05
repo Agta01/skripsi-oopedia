@@ -151,6 +151,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="d-flex justify-content-center mt-3 mb-3 px-3">
+                            {{ $leaderboardData->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
                 </div>
             </div>
