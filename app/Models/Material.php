@@ -9,7 +9,7 @@ class Material extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'content', 'created_by'];
+    protected $fillable = ['title', 'content', 'created_by', 'video_url', 'video_description'];
 
     public function questions()
     {

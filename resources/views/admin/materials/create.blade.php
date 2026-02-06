@@ -72,6 +72,33 @@
                                             @enderror
                                         </div>
                                     </div>
+                                    
+                                    <!-- Video Section -->
+                                    <div class="col-md-12">
+                                        <div class="card border mb-3">
+                                            <div class="card-header bg-gray-100 p-3">
+                                                <h6 class="mb-0"> Tambah Video Pembelajaran (Opsional)</h6>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label">URL Video (Youtube/MP4)</label>
+                                                    <div class="input-group input-group-outline">
+                                                        <input type="url" name="video_url" class="form-control @error('video_url') is-invalid @enderror" value="{{ old('video_url') }}" placeholder="https://youtube.com/watch?v=...">
+                                                    </div>
+                                                    @error('video_url')
+                                                        <div class="text-danger text-xs">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label">Deskripsi Video</label>
+                                                    <div class="input-group input-group-outline">
+                                                        <input type="text" name="video_description" class="form-control" value="{{ old('video_description') }}" placeholder="Deskripsi singkat tentang video...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn bg-gradient-primary">Simpan</button>
                                 <a href="{{ route('admin.materials.index') }}" class="btn btn-outline-secondary">Batal</a>

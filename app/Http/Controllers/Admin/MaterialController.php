@@ -48,12 +48,16 @@ class MaterialController extends Controller
                 'content' => 'required|string',
                 'created_by' => 'required|exists:users,id',
                 'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'video_url' => 'nullable|url',
+                'video_description' => 'nullable|string',
             ]);
 
             $material = Material::create([
                 'title' => $validated['title'],
                 'content' => $validated['content'],
                 'created_by' => $validated['created_by'],
+                'video_url' => $validated['video_url'] ?? null,
+                'video_description' => $validated['video_description'] ?? null,
             ]);
 
             // Handle cover image upload
@@ -91,11 +95,15 @@ class MaterialController extends Controller
                 'title' => 'required|string|max:255',
                 'content' => 'required|string',
                 'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'video_url' => 'nullable|url',
+                'video_description' => 'nullable|string',
             ]);
 
             $material->update([
                 'title' => $request->title,
                 'content' => $request->content,
+                'video_url' => $request->video_url,
+                'video_description' => $request->video_description,
             ]);
 
             // Handle cover image replacement

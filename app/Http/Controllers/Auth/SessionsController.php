@@ -35,20 +35,20 @@ class SessionsController extends Controller
             // Cek role dan status approval
             if ($user->role_id == 1) {
                 // Superadmin
-                return redirect()->intended('admin/dashboard');
+                return redirect()->route('admin.dashboard');
             } else if ($user->role_id == 2) {
-                // Admin
+                // Admin / Dosen
                 if ($user->is_approved) {
-                    return redirect()->intended('admin/dashboard');
+                    return redirect()->route('admin.dashboard');
                 } else {
                     return redirect()->route('admin.pending-approval');
                 }
             } else if ($user->role_id == 3) {
                 // Mahasiswa
-                return redirect()->intended('mahasiswa/dashboard');
+                return redirect()->route('mahasiswa.dashboard');
             } else {
                 // Tamu (role_id = 4)
-                return redirect()->intended('mahasiswa/materials');
+                return redirect()->route('mahasiswa.materials.index');
             }
         }
 

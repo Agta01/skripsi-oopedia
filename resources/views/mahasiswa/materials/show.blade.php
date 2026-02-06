@@ -91,6 +91,37 @@
         </form>
     @endguest
 
+    <!-- Video Section -->
+    @if($material->video_url)
+        <div class="card mb-4 overflow-hidden shadow-sm">
+            <div class="card-body p-0">
+                <div class="ratio ratio-16x9">
+                    @php
+                        $videoID = null;
+                        if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $material->video_url, $match)) {
+                            $videoID = $match[1];
+                        }
+                    @endphp
+
+                    @if($videoID)
+                        <iframe src="https://www.youtube.com/embed/{{ $videoID }}?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    @else
+                        <video controls class="w-100 h-100">
+                            <source src="{{ $material->video_url }}" type="video/mp4">
+                            Browser Anda tidak mendukung tag video.
+                        </video>
+                    @endif
+                </div>
+                @if($material->video_description)
+                    <div class="p-3 bg-light border-top">
+                        <h6 class="mb-1"><i class="fas fa-video me-2 text-primary"></i>Video Pembelajaran</h6>
+                        <p class="text-sm text-secondary mb-0">{{ $material->video_description }}</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
+
     <!-- Content Section -->
     <div class="materi-card mb-4">
         <div class="materi-card-body">
