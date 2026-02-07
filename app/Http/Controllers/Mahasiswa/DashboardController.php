@@ -13,6 +13,16 @@ use App\Models\Progress;
 
 class DashboardController extends Controller
 {
+    public function completeTour()
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->update(['has_seen_tour' => true]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 401);
+    }
+
     public function index()
     {
         $userId = auth()->id();

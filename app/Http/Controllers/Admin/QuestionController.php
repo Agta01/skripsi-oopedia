@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
+    public function dashboard()
+    {
+        $materials = Material::withCount('questions')->get();
+        return view('admin.questions.dashboard', compact('materials'));
+    }
+
     public function index(Request $request, Material $material = null)
     {
         $user = auth()->user();

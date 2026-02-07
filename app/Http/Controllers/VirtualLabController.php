@@ -131,6 +131,17 @@ class VirtualLabController extends Controller
                 ->with('success', 'Kode Anda telah disubmit untuk dinilai!');
         }
 
+        // Fetch Active Task if ID is present
+        $activeTask = null;
+        if ($request->has('task_id')) {
+            $activeTask = \App\Models\VirtualLabTask::find($request->input('task_id'));
+        }
+
+        // Fetch Materials for sidebar (needed for view)
+        $materials = \App\Models\Material::with(['virtualLabTasks' => function($query) {
+            $query->orderBy('title');
+        }])->get();
+
         // Handle run action
         try {
             // Prepare files for Piston API
@@ -139,13 +150,27 @@ class VirtualLabController extends Controller
 
             foreach ($filesData as $index => $fileData) {
                 $content = $fileData['content'];
+                $originalFilename = trim($fileData['filename']);
+
+                // Default: Use original filename, ensuring exactly one .java extension
+                $baseName = preg_replace('/(\.java)+$/i', '', $originalFilename);
+                $finalFilename = $baseName . '.java';
+
+                // PRIORITY: Auto-detect Public Class Name
+                // If the file defines a class (public class X or class X), we MUST name the file X.java
+                // regardless of what the tab says. This fixes "File3.java" -> "User.java" issues.
+                if (preg_match('/(?:public\s+)?class\s+([a-zA-Z0-9_]+)/', $content, $matches)) {
+                    $detectedClassName = $matches[1];
+                    $finalFilename = $detectedClassName . '.java';
+                }
+
                 $apiFiles[] = [
-                    'name' => $fileData['filename'],
+                    'name' => $finalFilename,
                     'content' => $content
                 ];
 
                 // Detect Main class (public static void main)
-                if (preg_match('/public\s+static\s+void\s+main/i', $content)) {
+                if (preg_match('/public\s+static\s+void\s+main\s*\(/i', $content)) {
                     $mainFileIndex = $index;
                 }
             }
@@ -184,13 +209,29 @@ class VirtualLabController extends Controller
                     $output = 'Program executed successfully (no output)';
                 }
 
-                return view('virtual-lab.index', [
+                // Determine View based on Role
+                $viewName = 'virtual-lab.index';
+                if (auth()->check() && auth()->user()->role_id == 3) {
+                     $viewName = 'virtual-lab.mahasiswa';
+                }
+
+                return view($viewName, [
+                    'materials' => $materials,
+                    'activeTask' => $activeTask,
                     'files' => $filesData, // Return original order to UI
                     'output' => $output,
                     'error' => $error
                 ]);
             } else {
-                return view('virtual-lab.index', [
+                 // Determine View based on Role
+                $viewName = 'virtual-lab.index';
+                if (auth()->check() && auth()->user()->role_id == 3) {
+                     $viewName = 'virtual-lab.mahasiswa';
+                }
+
+                return view($viewName, [
+                    'materials' => $materials,
+                    'activeTask' => $activeTask,
                     'files' => $filesData,
                     'output' => 'Failed to execute code. API Status: ' . $response->status(),
                     'error' => true
@@ -198,9 +239,11 @@ class VirtualLabController extends Controller
             }
         } catch (\Exception $e) {
             // Check role for error view
-            $viewName = (auth()->check() && auth()->user()->role_id >= 3) ? 'virtual-lab.mahasiswa' : 'virtual-lab.index';
+            $viewName = (auth()->check() && auth()->user()->role_id == 3) ? 'virtual-lab.mahasiswa' : 'virtual-lab.index';
 
             return view($viewName, [
+                'materials' => $materials,
+                'activeTask' => $activeTask,
                 'files' => $filesData,
                 'output' => 'Error: ' . $e->getMessage(),
                 'error' => true

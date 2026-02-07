@@ -1,6 +1,8 @@
 :root {
-    --color-1: #004E98; /* Biru tua utama */
-    --color-2: #0074D9; /* Biru terang sebagai gradasi */
+    --color-1: #004E98;
+    /* Biru tua utama */
+    --color-2: #0074D9;
+    /* Biru terang sebagai gradasi */
     --color-3: #803d3b;
     --color-4: #322c2b;
     --text-dark: #344767;
@@ -144,7 +146,7 @@ body {
     background-color: rgba(255, 213, 111, 0.2);
 }
 
-.profile-section > a {
+.profile-section>a {
     text-decoration: none;
     padding: 5px 10px;
     border-radius: 6px;
@@ -188,6 +190,7 @@ body {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -213,7 +216,8 @@ body {
 
 /* Update these icon selectors */
 .dropdown-item::before,
-button.dropdown-item::before {  /* Added button selector */
+button.dropdown-item::before {
+    /* Added button selector */
     content: '';
     display: inline-block;
     width: 18px;
@@ -266,8 +270,13 @@ button.dropdown-item[type="submit"]::before {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
     z-index: 100;
     overflow-y: auto;
+    overflow-x: hidden;
+    /* Fix horizontal scrollbar jitter */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
+    /* Only transition transform for mobile toggle */
+    scrollbar-gutter: stable;
+    /* Prevent layout shift when scrollbar appears */
 }
 
 .sidebar-header {
@@ -314,6 +323,10 @@ button.dropdown-item[type="submit"]::before {
     margin-bottom: 0.25rem;
     border-radius: 0 30px 30px 0;
     font-weight: 500;
+    margin-right: 10px;
+    /* Ensure space for hover transform */
+    width: calc(100% - 15px);
+    /* Prevent overflow */
 }
 
 .menu-item:hover {
@@ -459,7 +472,7 @@ button.dropdown-item[type="submit"]::before {
     .navbar {
         height: 60px;
     }
-    
+
     .sidebar {
         top: 60px;
         height: calc(100vh - 60px);
@@ -631,26 +644,25 @@ button.dropdown-item[type="submit"]::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.2) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(255, 255, 255, 0.2) 50%,
-        rgba(255, 255, 255, 0.2) 75%,
-        transparent 75%,
-        transparent
-    );
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.2) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.2) 75%,
+            transparent 75%,
+            transparent);
     background-size: 20px 20px;
     z-index: 1;
 }
 
 @keyframes progressFill {
-    from { 
+    from {
         width: 0;
         opacity: 0;
     }
-    to { 
+
+    to {
         opacity: 1;
     }
 }
@@ -704,11 +716,11 @@ button.dropdown-item[type="submit"]::before {
     .container-fluid {
         padding: 1rem;
     }
-    
+
     .main-title {
         font-size: 2.5rem;
     }
-    
+
     .materials-container {
         padding: 0 10px;
     }
@@ -718,7 +730,7 @@ button.dropdown-item[type="submit"]::before {
     .main-title {
         font-size: 2rem;
     }
-    
+
     .materi-card-body {
         padding: 1.5rem;
     }
@@ -728,7 +740,7 @@ button.dropdown-item[type="submit"]::before {
     background: #fff;
     border-radius: 10px;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .progress-item-title {
@@ -824,6 +836,7 @@ button.dropdown-item[type="submit"]::before {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1004,7 +1017,8 @@ button.dropdown-item[type="submit"]::before {
 
 .card-header .text-end {
     margin-left: 75px;
-} 
+}
+
 /* Exercise Feedback Styles */
 .exercise-feedback {
     position: relative;
@@ -1015,7 +1029,7 @@ button.dropdown-item[type="submit"]::before {
     padding: 2rem;
     margin-top: 1rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    
+
     /* Prevent flickering */
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
@@ -1031,7 +1045,7 @@ button.dropdown-item[type="submit"]::before {
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
-    
+
     /* Prevent flickering */
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
@@ -1055,7 +1069,7 @@ button.dropdown-item[type="submit"]::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     /* Prevent flickering */
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
@@ -1079,25 +1093,31 @@ button.dropdown-item[type="submit"]::before {
     margin-top: 2rem;
 }
 
-#tryAgainBtn, #retryQuestionBtn, #nextQuestionBtn {
+#tryAgainBtn,
+#retryQuestionBtn,
+#nextQuestionBtn {
     border: none;
     padding: 0.5rem 2rem;
     margin: 0 0.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-#tryAgainBtn:hover, #retryQuestionBtn:hover, #nextQuestionBtn:hover {
+#tryAgainBtn:hover,
+#retryQuestionBtn:hover,
+#nextQuestionBtn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-#tryAgainBtn, #nextQuestionBtn {
+#tryAgainBtn,
+#nextQuestionBtn {
     background-color: #00A67E;
 }
 
 #retryQuestionBtn {
     background-color: #f0ad4e;
-} 
+}
+
 /* Material Show Page Styles */
 .container-fluid {
     max-width: 1200px;
@@ -1141,18 +1161,18 @@ button.dropdown-item[type="submit"]::before {
     margin-bottom: 1rem;
 }
 
-.content-text h1, 
-.content-text h2, 
-.content-text h3, 
-.content-text h4, 
-.content-text h5, 
+.content-text h1,
+.content-text h2,
+.content-text h3,
+.content-text h4,
+.content-text h5,
 .content-text h6 {
     margin-top: 1.5rem;
     margin-bottom: 1rem;
     color: #344767;
 }
 
-.content-text ul, 
+.content-text ul,
 .content-text ol {
     padding-left: 1.5rem;
     margin-bottom: 1rem;
@@ -1167,7 +1187,7 @@ button.dropdown-item[type="submit"]::before {
     height: auto;
     margin: 1rem 0;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 }
 
@@ -1213,7 +1233,8 @@ button.dropdown-item[type="submit"]::before {
     top: 0;
     left: 1rem;
     font-size: 3rem;
-    color: #0074D9;;
+    color: #0074D9;
+    ;
     opacity: 0.2;
 }
 
@@ -1224,6 +1245,7 @@ button.dropdown-item[type="submit"]::before {
     color: #344767;
     margin-bottom: 1rem;
 }
+
 .review-container {
     max-width: 900px;
     margin: 0 auto;
@@ -1437,13 +1459,13 @@ button.dropdown-item[type="submit"]::before {
     background: #fff;
     border-radius: 10px;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .progress-item-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .progress-item-title {
@@ -1459,13 +1481,13 @@ button.dropdown-item[type="submit"]::before {
     font-size: 0.9rem;
     font-weight: 500;
     background: linear-gradient(45deg, #004E98, #0074D9) !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
 }
 
 .guest-badge:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .guest-badge i {
@@ -1473,8 +1495,9 @@ button.dropdown-item[type="submit"]::before {
 }
 
 .navbar-brand {
-        background-color: transparent !important;
-    }
+    background-color: transparent !important;
+}
+
 /* Styling untuk gambar profil di navbar */
 .profile-image {
     width: 35px;
@@ -1498,9 +1521,11 @@ button.dropdown-item[type="submit"]::before {
     0% {
         box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
     }
+
     70% {
         box-shadow: 0 0 0 5px rgba(255, 255, 255, 0);
     }
+
     100% {
         box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
     }
@@ -1584,6 +1609,7 @@ button.dropdown-item[type="submit"]::before {
         transform: translateY(30px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -1593,8 +1619,8 @@ button.dropdown-item[type="submit"]::before {
 /* Current user rank styling */
 .current-user-rank {
     animation: fadeInScale 0.8s ease-out;
-    background: linear-gradient(135deg, rgba(0,78,152,0.05) 0%, rgba(0,116,217,0.08) 100%);
-    border: 2px solid rgba(0,78,152,0.1);
+    background: linear-gradient(135deg, rgba(0, 78, 152, 0.05) 0%, rgba(0, 116, 217, 0.08) 100%);
+    border: 2px solid rgba(0, 78, 152, 0.1);
     border-radius: 15px;
     transition: all 0.3s ease;
 }
@@ -1604,6 +1630,7 @@ button.dropdown-item[type="submit"]::before {
         transform: scale(0.95);
         opacity: 0;
     }
+
     to {
         transform: scale(1);
         opacity: 1;
@@ -1657,7 +1684,7 @@ button.dropdown-item[type="submit"]::before {
 
 .level-badge:hover {
     transform: translateY(-2px) rotate(2deg);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .level-success {
@@ -1688,9 +1715,11 @@ button.dropdown-item[type="submit"]::before {
     0% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
@@ -1714,9 +1743,9 @@ button.dropdown-item[type="submit"]::before {
     right: -2px;
     bottom: -2px;
     z-index: -1;
-    background: linear-gradient(90deg, 
-        var(--color-1), var(--color-2), #00BCD4, #4CAF50, #8BC34A, 
-        #CDDC39, #FFC107, #FF9800, var(--color-1));
+    background: linear-gradient(90deg,
+            var(--color-1), var(--color-2), #00BCD4, #4CAF50, #8BC34A,
+            #CDDC39, #FFC107, #FF9800, var(--color-1));
     background-size: 500% 500%;
     border-radius: 17px;
     animation: animatedBorder 8s linear infinite;
@@ -1726,9 +1755,11 @@ button.dropdown-item[type="submit"]::before {
     0% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
@@ -1822,9 +1853,17 @@ button.dropdown-item[type="submit"]::before {
     font-weight: bold;
 }
 
-.rank-1 { background: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%); }
-.rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #E0E0E0 100%); }
-.rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #D4A676 100%); }
+.rank-1 {
+    background: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%);
+}
+
+.rank-2 {
+    background: linear-gradient(135deg, #C0C0C0 0%, #E0E0E0 100%);
+}
+
+.rank-3 {
+    background: linear-gradient(135deg, #CD7F32 0%, #D4A676 100%);
+}
 
 /* Level System Styles */
 .level-container {
@@ -1854,7 +1893,7 @@ button.dropdown-item[type="submit"]::before {
     align-items: center;
     justify-content: center;
     margin: 0 auto 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
@@ -1872,7 +1911,7 @@ button.dropdown-item[type="submit"]::before {
 
 .level-item.unlocked .level-circle:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 .level-item.completed .level-circle {
@@ -1996,7 +2035,7 @@ button.dropdown-item[type="submit"]::before {
     justify-content: center;
     margin-right: 15px;
     flex-shrink: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .activity-content {
@@ -2039,7 +2078,7 @@ button.dropdown-item[type="submit"]::before {
 
 .podium-wrapper {
     padding: 2rem 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(0,78,152,0.05) 100%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 78, 152, 0.05) 100%);
     border-radius: 15px;
     margin-top: 30px;
 }
@@ -2061,7 +2100,7 @@ button.dropdown-item[type="submit"]::before {
     background: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%);
     border-radius: 25px;
     padding: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     text-align: center;
     min-width: 200px;
     margin-bottom: 1rem;
@@ -2071,7 +2110,7 @@ button.dropdown-item[type="submit"]::before {
 
 .player-avatar:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
 .first-place .player-avatar {
@@ -2088,16 +2127,20 @@ button.dropdown-item[type="submit"]::before {
 .second-place .player-avatar {
     background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
     border: 2px solid rgba(108, 117, 125, 0.3);
-    min-width: 250px; /* Match first place width */
-    padding-top: 30px; /* Similar padding to first place */
+    min-width: 250px;
+    /* Match first place width */
+    padding-top: 30px;
+    /* Similar padding to first place */
     padding-bottom: 30px;
 }
 
 .third-place .player-avatar {
     background: linear-gradient(135deg, #f8f9fa 0%, #fff5e6 100%);
     border: 2px solid rgba(205, 127, 50, 0.3);
-    min-width: 250px; /* Match first place width */
-    padding-top: 30px; /* Similar padding to first place */
+    min-width: 250px;
+    /* Match first place width */
+    padding-top: 30px;
+    /* Similar padding to first place */
     padding-bottom: 30px;
 }
 
@@ -2133,7 +2176,7 @@ button.dropdown-item[type="submit"]::before {
 
 .player-name {
     color: #000000;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     font-size: 1.2rem;
     font-weight: 600;
     margin: 0.5rem 0;
@@ -2169,6 +2212,7 @@ button.dropdown-item[type="submit"]::before {
         transform: translateY(30px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -2178,7 +2222,7 @@ button.dropdown-item[type="submit"]::before {
 /* Enhanced Current User Rank Section */
 .current-user-rank {
     animation: fadeInScale 0.8s ease-out;
-    background: linear-gradient(135deg, rgba(0,78,152,0.05) 0%, rgba(0,116,217,0.08) 100%);
+    background: linear-gradient(135deg, rgba(0, 78, 152, 0.05) 0%, rgba(0, 116, 217, 0.08) 100%);
 }
 
 @keyframes fadeInScale {
@@ -2186,6 +2230,7 @@ button.dropdown-item[type="submit"]::before {
         transform: scale(0.95);
         opacity: 0;
     }
+
     to {
         transform: scale(1);
         opacity: 1;
@@ -2214,6 +2259,7 @@ button.dropdown-item[type="submit"]::before {
         transform: translateY(50px) scale(0.8);
         opacity: 0;
     }
+
     to {
         transform: translateY(0) scale(1);
         opacity: 1;
@@ -2225,6 +2271,7 @@ button.dropdown-item[type="submit"]::before {
         transform: translateX(-50px) scale(0.8);
         opacity: 0;
     }
+
     to {
         transform: translateX(0) scale(1);
         opacity: 1;
@@ -2236,6 +2283,7 @@ button.dropdown-item[type="submit"]::before {
         transform: translateX(50px) scale(0.8);
         opacity: 0;
     }
+
     to {
         transform: translateX(0) scale(1);
         opacity: 1;
@@ -2247,7 +2295,7 @@ button.dropdown-item[type="submit"]::before {
     display: inline-block;
     transform-origin: center;
     animation: medalFloat 3s ease-in-out infinite;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
 
 .medal-gold {
@@ -2263,12 +2311,16 @@ button.dropdown-item[type="submit"]::before {
 }
 
 @keyframes medalFloat {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0) rotate(0deg);
     }
+
     25% {
         transform: translateY(-5px) rotate(5deg);
     }
+
     75% {
         transform: translateY(5px) rotate(-5deg);
     }
@@ -2282,9 +2334,11 @@ button.dropdown-item[type="submit"]::before {
     0% {
         transform: scale(1) rotate(0deg);
     }
+
     50% {
         transform: scale(1.2) rotate(180deg);
     }
+
     100% {
         transform: scale(1) rotate(360deg);
     }
@@ -2308,28 +2362,30 @@ button.dropdown-item[type="submit"]::before {
     top: -35px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 48px; /* Larger size */
+    font-size: 48px;
+    /* Larger size */
     color: #FFD700;
-    text-shadow: 
+    text-shadow:
         0 0 5px rgba(255, 215, 0, 0.8),
         0 0 10px rgba(255, 140, 0, 0.5),
         0 1px 2px rgba(0, 0, 0, 0.7);
-    filter: 
-        drop-shadow(0 3px 3px rgba(0, 0, 0, 0.3))
-        drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));
+    filter:
+        drop-shadow(0 3px 3px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));
     animation: floatCrown 3s ease-in-out infinite;
     z-index: 5;
 }
 
 /* More realistic floating animation */
 @keyframes floatCrown {
-    0% { 
+    0% {
         transform: translateX(-50%) translateY(0) rotate(-2deg);
     }
-    50% { 
+
+    50% {
         transform: translateX(-50%) translateY(-7px) rotate(2deg);
     }
-    100% { 
+
+    100% {
         transform: translateX(-50%) translateY(0) rotate(-2deg);
     }
 }
@@ -2355,12 +2411,12 @@ button.dropdown-item[type="submit"]::before {
 
 /* Highlight current user's row */
 .highlight-row {
-    background: linear-gradient(135deg, rgba(13,110,253,0.05), rgba(13,110,253,0.1));
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.05), rgba(13, 110, 253, 0.1));
     border-left: 4px solid #0d6efd;
 }
 
 .highlight-row:hover {
-    background: linear-gradient(135deg, rgba(13,110,253,0.1), rgba(13,110,253,0.15)) !important;
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.15)) !important;
 }
 
 /* Smooth transition for table cells */
@@ -2466,18 +2522,23 @@ button.dropdown-item[type="submit"]::before {
     0% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.1);
     }
+
     100% {
         transform: scale(1);
     }
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-10px);
     }
@@ -2544,7 +2605,7 @@ button.dropdown-item[type="submit"]::before {
     right: -50%;
     width: 100%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 60%);
     transform: rotate(-30deg);
     animation: shimmer 8s infinite linear;
 }
@@ -2609,6 +2670,7 @@ button.dropdown-item[type="submit"]::before {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2620,6 +2682,7 @@ button.dropdown-item[type="submit"]::before {
         opacity: 0;
         transform: translateX(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -2631,10 +2694,12 @@ button.dropdown-item[type="submit"]::before {
         transform: scale(1);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
+
     50% {
         transform: scale(1.05);
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     }
+
     100% {
         transform: scale(1);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -2645,15 +2710,19 @@ button.dropdown-item[type="submit"]::before {
     0% {
         transform: rotate(0deg);
     }
+
     25% {
         transform: rotate(15deg);
     }
+
     50% {
         transform: rotate(0deg);
     }
+
     75% {
         transform: rotate(-15deg);
     }
+
     100% {
         transform: rotate(0deg);
     }
@@ -2663,6 +2732,7 @@ button.dropdown-item[type="submit"]::before {
     from {
         transform: rotate(-30deg) translateX(-100%);
     }
+
     to {
         transform: rotate(-30deg) translateX(100%);
     }
@@ -2674,13 +2744,15 @@ button.dropdown-item[type="submit"]::before {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .welcome-icon {
         margin-right: 0;
         margin-bottom: 15px;
     }
-    
-    .welcome-title, .welcome-name, .welcome-message {
+
+    .welcome-title,
+    .welcome-name,
+    .welcome-message {
         animation-name: fadeInUp;
     }
 }
@@ -2834,17 +2906,20 @@ button.dropdown-item[type="submit"]::before {
 /* CSS untuk warna bintang tingkat kesulitan */
 .difficulty-star.beginner,
 .difficulty-item .beginner-star {
-    color: #28a745; /* Hijau untuk tingkat Beginner */
+    color: #28a745;
+    /* Hijau untuk tingkat Beginner */
 }
 
 .difficulty-star.medium,
 .difficulty-item .medium-star {
-    color: #ffc107; /* Kuning untuk tingkat Medium */
+    color: #ffc107;
+    /* Kuning untuk tingkat Medium */
 }
 
 .difficulty-star.hard,
 .difficulty-item .hard-star {
-    color: #dc3545; /* Merah untuk tingkat Hard/Advanced */
+    color: #dc3545;
+    /* Merah untuk tingkat Hard/Advanced */
 }
 
 /* Styling untuk item kesulitan pada sidebar */
@@ -2916,15 +2991,18 @@ button.dropdown-item[type="submit"]::before {
 
 /* Warna untuk bintang tingkat kesulitan */
 .beginner-star {
-    color: #28a745 !important; /* Hijau */
+    color: #28a745 !important;
+    /* Hijau */
 }
 
 .medium-star {
-    color: #ffc107 !important; /* Kuning */
+    color: #ffc107 !important;
+    /* Kuning */
 }
 
 .hard-star {
-    color: #dc3545 !important; /* Merah */
+    color: #dc3545 !important;
+    /* Merah */
 }
 
 /* Override warna ikon bintang pada item active */
@@ -3112,7 +3190,7 @@ button.dropdown-item[type="submit"]::before {
 }
 
 /* Base styling untuk item kesulitan */
-.difficulty-item, 
+.difficulty-item,
 .menu-item.sub-menu-item {
     display: flex;
     align-items: center;
@@ -3162,17 +3240,20 @@ button.dropdown-item[type="submit"]::before {
 
 /* Star colors */
 .beginner-star {
-    color: #28a745 !important; /* Hijau */
+    color: #28a745 !important;
+    /* Hijau */
     margin-right: 10px;
 }
 
 .medium-star {
-    color: #ffc107 !important; /* Kuning */
+    color: #ffc107 !important;
+    /* Kuning */
     margin-right: 10px;
 }
 
 .hard-star {
-    color: #dc3545 !important; /* Merah */
+    color: #dc3545 !important;
+    /* Merah */
     margin-right: 10px;
 }
 
@@ -3332,9 +3413,17 @@ button.dropdown-item[type="submit"]::before {
 }
 
 @keyframes floatCrown {
-    0% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-5px); }
-    100% { transform: translateX(-50%) translateY(0); }
+    0% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
 /* Level Badge Styling */
@@ -3379,17 +3468,18 @@ button.dropdown-item[type="submit"]::before {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 15px;
     padding: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0,78,152,0.1);
+    box-shadow: 0 5px 15px rgba(0, 78, 152, 0.1);
     text-align: center;
     min-width: 200px;
-    margin-bottom: 15px; /* Added space between avatar and podium */
+    margin-bottom: 15px;
+    /* Added space between avatar and podium */
     border: 2px solid rgba(0, 78, 152, 0.1);
     transition: all 0.3s ease;
 }
 
 .player-avatar:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
 .first-place .player-avatar {
@@ -3406,16 +3496,20 @@ button.dropdown-item[type="submit"]::before {
 .second-place .player-avatar {
     background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
     border: 2px solid rgba(108, 117, 125, 0.3);
-    min-width: 250px; /* Match first place width */
-    padding-top: 30px; /* Similar padding to first place */
+    min-width: 250px;
+    /* Match first place width */
+    padding-top: 30px;
+    /* Similar padding to first place */
     padding-bottom: 30px;
 }
 
 .third-place .player-avatar {
     background: linear-gradient(135deg, #f8f9fa 0%, #fff5e6 100%);
     border: 2px solid rgba(205, 127, 50, 0.3);
-    min-width: 250px; /* Match first place width */
-    padding-top: 30px; /* Similar padding to first place */
+    min-width: 250px;
+    /* Match first place width */
+    padding-top: 30px;
+    /* Similar padding to first place */
     padding-bottom: 30px;
 }
 
@@ -3427,9 +3521,11 @@ button.dropdown-item[type="submit"]::before {
     font-size: 2rem;
     font-weight: 700;
     color: white;
-    border-radius: 10px; /* Changed from pointy to more rounded */
+    border-radius: 10px;
+    /* Changed from pointy to more rounded */
     margin-top: 0;
-    width: 100%; /* Match the width of the avatar above */
+    width: 100%;
+    /* Match the width of the avatar above */
 }
 
 .podium-base.first {
@@ -3456,7 +3552,8 @@ button.dropdown-item[type="submit"]::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 10px; /* Add some horizontal spacing between podium items */
+    margin: 0 10px;
+    /* Add some horizontal spacing between podium items */
 }
 
 /* Add more space in podium display */
@@ -3464,13 +3561,15 @@ button.dropdown-item[type="submit"]::before {
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    gap: 20px; /* Increased gap between podium items */
+    gap: 20px;
+    /* Increased gap between podium items */
     padding: 0 2rem;
 }
 
 /* Reduce spacing above page headers */
 .dashboard-header {
-    padding-top: 1rem !important; /* Reduced from 2.5rem */
+    padding-top: 1rem !important;
+    /* Reduced from 2.5rem */
     margin-top: 1rem !important;
     margin-bottom: 1.5rem;
 }
@@ -3480,10 +3579,10 @@ button.dropdown-item[type="submit"]::before {
 }
 
 /* Fix spacing after navbar */
-.navbar + .container-fluid,
-.navbar + .dashboard-header,
-.navbar + .dashboard-content,
-.navbar + div {
+.navbar+.container-fluid,
+.navbar+.dashboard-header,
+.navbar+.dashboard-content,
+.navbar+div {
     margin-top: 1rem !important;
     padding-top: 0.5rem !important;
 }
@@ -3552,40 +3651,40 @@ button.dropdown-item[type="submit"]::before {
     .sidebar-toggler {
         display: block;
     }
-    
+
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
         z-index: 1030;
     }
-    
+
     .sidebar.show {
         transform: translateX(0);
     }
-    
+
     .main-content {
         margin-left: 0 !important;
         width: 100% !important;
         transition: margin 0.3s ease;
     }
-    
+
     .main-content.sidebar-open {
         margin-left: 250px !important;
     }
-    
+
     /* Fix profile dropdown on mobile */
     .profile-dropdown .dropdown-menu {
         position: absolute;
         width: 100%;
         max-width: 250px;
     }
-    
+
     /* Improve the profile section visibility */
     .profile-image {
         width: 32px !important;
         height: 32px !important;
     }
-    
+
     /* Add backdrop when sidebar is open */
     .sidebar-backdrop {
         position: fixed;
@@ -3599,7 +3698,7 @@ button.dropdown-item[type="submit"]::before {
         visibility: hidden;
         transition: opacity 0.3s ease;
     }
-    
+
     .sidebar-backdrop.show {
         opacity: 1;
         visibility: visible;

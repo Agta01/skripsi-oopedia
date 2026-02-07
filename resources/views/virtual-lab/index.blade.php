@@ -86,6 +86,9 @@
                 <!-- Code Editor & Output Panel -->
                 <form method="POST" action="{{ route('virtual-lab.execute') }}" id="codeForm" class="tw-flex tw-flex-col tw-h-full tw-bg-white tw-rounded-xl tw-shadow-lg tw-overflow-hidden tw-relative">
                     @csrf
+                    @if($activeTask)
+                        <input type="hidden" name="task_id" value="{{ $activeTask->id }}">
+                    @endif
                     
                     <!-- Toolbar -->
                     <div class="tw-bg-gray-50 tw-border-b tw-border-gray-200 tw-p-3 tw-flex tw-justify-between tw-items-center">

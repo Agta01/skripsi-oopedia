@@ -303,9 +303,12 @@ use Illuminate\Support\Str;
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        if (!sessionStorage.getItem('dashboard_tour_complete')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Only run if user hasn't seen the tour (server-side check)
+        @if(!auth()->user()->has_seen_tour)
             setTimeout(startDashboardTour, 800);
-        }
+        @endif
+    });
     });
 
     function startDashboardTour() {
@@ -375,10 +378,22 @@ use Illuminate\Support\Str;
             hidePrev: true,
             exitOnEsc: true
         }).oncomplete(function() {
-            sessionStorage.setItem('dashboard_tour_complete', 'true');
+        }).oncomplete(function() {
+            markTourAsComplete();
         }).onexit(function() {
-            sessionStorage.setItem('dashboard_tour_complete', 'true');
+            markTourAsComplete();
         }).start();
+    }
+
+    function markTourAsComplete() {
+        // Call server to update database
+        fetch("{{ route('mahasiswa.tour.complete') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            }
+        });
     }
 
     // Add sidebar toggle functionality

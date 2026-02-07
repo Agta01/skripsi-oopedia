@@ -97,6 +97,8 @@ Route::middleware('auth')->group(function () {
         // Materials & Questions
         Route::resource('materials', AdminMaterialController::class);
         Route::resource('questions', AdminQuestionController::class);
+        Route::resource('questions', AdminQuestionController::class);
+        Route::get('questions-dashboard', [AdminQuestionController::class, 'dashboard'])->name('questions.dashboard');
         Route::resource('materials.questions', AdminQuestionController::class)->except(['show']);
         
         // Students management
@@ -164,6 +166,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/ueq-survey', [MahasiswaUeqSurveyController::class, 'create'])->name('ueq.create');
             Route::post('/ueq-survey', [MahasiswaUeqSurveyController::class, 'store'])->name('ueq.store');
             Route::get('/ueq-survey/thankyou', [MahasiswaUeqSurveyController::class, 'thankyou'])->name('ueq.thankyou');
+            
+            // Tour Completion
+            Route::post('/tour-complete', [MahasiswaDashboardController::class, 'completeTour'])->name('tour.complete');
         });
         
         // Materials (for both mahasiswa and guest)

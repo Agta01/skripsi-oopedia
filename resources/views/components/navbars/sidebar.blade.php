@@ -53,39 +53,13 @@
 
             {{-- Menu Soal --}}
             <li class="nav-item">
-                <a class="nav-link text-white" 
-                   data-bs-toggle="collapse" 
-                   href="#questionsMenu" 
-                   role="button" 
-                   aria-expanded="{{ str_contains($activePage, 'questions') ? 'true' : 'false' }}">
+                <a class="nav-link text-white {{ $activePage == 'questions-dashboard' ? 'active bg-gradient-primary' : '' }}" 
+                   href="{{ route('admin.questions.dashboard') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">quiz</i>
                     </div>
                     <span class="nav-link-text ms-1">Kelola Soal</span>
-                    <i class="material-icons ms-auto">keyboard_arrow_down</i>
                 </a>
-                <div class="collapse {{ str_contains($activePage, 'questions') ? 'show' : '' }}" id="questionsMenu">
-                    <ul class="nav">
-                        @forelse($materials ?? [] as $material)
-                            <li class="nav-item">
-                                <a class="nav-link text-white {{ $activePage == 'questions-'.$material->id ? 'active bg-gradient-primary' : '' }}"
-                                    href="{{ route('admin.materials.questions.index', $material->id) }}">
-                                    <span class="sidenav-mini-icon">
-                                        <i class="material-icons opacity-10">article</i>
-                                    </span>
-                                    <span class="sidenav-normal ms-2">{{ $material->title }}</span>
-                                </a>
-                            </li>
-                        @empty
-                            <li class="nav-item">
-                                <span class="nav-link text-white-50">
-                                    <i class="material-icons opacity-10">info</i>
-                                    <span class="ms-2">Belum ada materi</span>
-                                </span>
-                            </li>
-                        @endforelse
-                    </ul>
-                </div>
             </li>
 
             {{-- Menu Bank Soal hanya untuk Admin dan Superadmin --}}
