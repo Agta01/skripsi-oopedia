@@ -174,19 +174,22 @@ class MahasiswaController extends Controller
             return $data->sortByDesc('weighted_score')->values();
         });
 
-        // 2. Assign Rank (Dilakukan di luar cache agar index-nya selalu fresh saat ditampilkan, 
-        // meskipun datanya sama, logic rank sederhana ini cepat)
-        // 2. Assign Rank Globally (Pre-Pagination)
+        // 2. Filter Active Users Only (Remove 0 score)
+        $leaderboardData = $leaderboardData->filter(function ($user) {
+            return $user->weighted_score > 0;
+        })->values();
+
+        // 3. Assign Rank Globally (Pre-Pagination)
         $rank = 1;
         foreach ($leaderboardData as $data) {
             $data->rank = $rank++;
         }
         
-        // 3. Find Current User Rank (Before slicing)
+        // 4. Find Current User Rank (Before slicing)
         $currentUserId = auth()->id();
         $currentUserRank = $leaderboardData->firstWhere('id', $currentUserId);
 
-        // 4. Manual Pagination
+        // 5. Manual Pagination
         $page = request()->get('page', 1);
         $perPage = 10;
         

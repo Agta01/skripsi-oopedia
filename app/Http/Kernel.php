@@ -93,6 +93,5 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
         'admin.approved' => \App\Http\Middleware\EnsureAdminIsApproved::class,
-        'guest.access' => \App\Http\Middleware\GuestAccess::class,
     ];
 }

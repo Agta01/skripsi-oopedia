@@ -13,17 +13,11 @@ class GuestLoginController extends Controller
 {
     public function login()
     {
-        $guestUser = User::create([
-            'name' => 'Tamu_' . Str::random(8),
-            'email' => 'guest_' . Str::random(8) . '@temporary.com',
-            'password' => Hash::make(Str::random(16)),
-            'role_id' => 4 
-        ]);
-
-        // Auth::login($guestUser);
+        // Set guest session flag
+        session(['is_guest' => true]);
         
-        // // Set a flash message to inform the user they're in guest mode
-        // session()->flash('info', 'Anda masuk sebagai tamu. Beberapa fitur dan konten materi akan terbatas.');
+        // Set a flash message to inform the user they're in guest mode
+        session()->flash('info', 'Anda masuk sebagai tamu. Beberapa fitur dan konten materi akan terbatas.');
         
         return redirect()->route('mahasiswa.materials.index');
     }

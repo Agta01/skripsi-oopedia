@@ -250,4 +250,17 @@ class VirtualLabController extends Controller
             ]);
         }
     }
+
+    /**
+     * Mark virtual lab tour as complete for the authenticated user
+     */
+    public function completeTour()
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->update(['has_seen_virtual_lab_tour' => true]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 401);
+    }
 }

@@ -107,8 +107,6 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Add this in the head section, before other scripts -->
-    <script src="{{ asset('assets/tinymce/tinymce.min.js') }}"></script>
     <script>
         // Only initialize TinyMCE when in read-only view
         document.addEventListener('DOMContentLoaded', function() {
@@ -144,6 +142,7 @@
     </script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
     <link href="{{ asset('css/loading-overlay.css') }}" rel="stylesheet">
 </head>
 <body>
@@ -167,6 +166,9 @@
         </main>
     </div>
 
+    <!-- jQuery (required for Lightbox) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -231,6 +233,28 @@
     document.addEventListener('DOMContentLoaded', function() {
         const loadingOverlay = document.getElementById('loading-overlay');
         
+        // Safety timeout to prevent infinite loading
+        let loadingTimeout;
+        
+        // Define helper functions FIRST before using them
+        window.showLoading = function() {
+            if (!loadingOverlay) return; // Guard clause
+            loadingOverlay.classList.add('show');
+            
+            // Set safety timeout
+            clearTimeout(loadingTimeout);
+            loadingTimeout = setTimeout(() => {
+                hideLoading();
+            }, 10000); // 10 seconds max
+        };
+        
+        window.hideLoading = function() {
+            if (!loadingOverlay) return; // Guard clause
+            clearTimeout(loadingTimeout);
+            loadingOverlay.classList.remove('show');
+        };
+        
+        // Now use the functions
         // Show loading on page load
         showLoading();
         
@@ -258,37 +282,20 @@
                 showLoading();
             }
         });
-        
-        // Safety timeout to prevent infinite loading
-        let loadingTimeout;
-        
-        // Helper functions
-        window.showLoading = function() {
-            loadingOverlay.classList.add('show');
-            
-            // Set safety timeout
-            clearTimeout(loadingTimeout);
-            loadingTimeout = setTimeout(() => {
-                hideLoading();
-            }, 10000); // 10 seconds max
-        };
-        
-        window.hideLoading = function() {
-            clearTimeout(loadingTimeout);
-            loadingOverlay.classList.remove('show');
-        };
     });
     </script>
 
     <!-- Lightbox untuk Galeri Gambar -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
     <script>
-        lightbox.option({
-            'resizeDuration': 200,
-            'wrapAround': true,
-            'albumLabel': "Gambar %1 dari %2"
-        });
+        // Initialize lightbox only if it loaded successfully
+        if (typeof lightbox !== 'undefined') {
+            lightbox.option({
+                'resizeDuration': 200,
+                'wrapAround': true,
+                'albumLabel': "Gambar %1 dari %2"
+            });
+        }
     </script>
 
     <!-- Sidebar backdrop for mobile -->

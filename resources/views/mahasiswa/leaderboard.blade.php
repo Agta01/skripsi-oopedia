@@ -97,7 +97,6 @@
                                 </thead>
                                 <tbody>
                                     @foreach($leaderboardData as $data)
-                                    @if($data->total_correct_questions > 0)
                                     <tr class="leaderboard-row @if($data->id === auth()->id()) highlight-row @endif">
                                         <td>
                                             <div class="d-flex px-3 py-2 justify-content-center">
@@ -146,7 +145,6 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    @endif
                                     @endforeach
                                 </tbody>
                             </table>

@@ -146,3 +146,168 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css">
+<style>
+    /* Custom Tour Styles */
+    .introjs-tooltip {
+        min-width: 350px;
+        max-width: 450px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .introjs-tooltiptext {
+        font-size: 15px;
+        line-height: 1.6;
+        padding: 15px;
+    }
+    
+    .introjs-button {
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        text-shadow: none;
+        border: none;
+    }
+    
+    .introjs-nextbutton {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    
+    .introjs-nextbutton:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+    
+    .introjs-skipbutton {
+        color: #64748b;
+    }
+    
+    .introjs-helperLayer {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+    }
+    
+    .introjs-tooltipReferenceLayer {
+        border-radius: 8px;
+    }
+</style>
+
+<script>
+    // Tour Guide Script
+    document.addEventListener('DOMContentLoaded', function() {
+        // Only run if user hasn't seen the tour
+        @if(!auth()->user()->has_seen_virtual_lab_tour)
+            setTimeout(startVirtualLabTour, 800);
+        @endif
+    });
+
+    function startVirtualLabTour() {
+        const tour = introJs().setOptions({
+            steps: [
+                {
+                    intro: `
+                        <div style="text-align: center;">
+                            <i class="fas fa-code" style="font-size: 48px; color: #3b82f6; margin-bottom: 15px;"></i>
+                            <h3 style="margin: 10px 0; color: #1e293b;">Selamat Datang di Virtual Lab! 🚀</h3>
+                            <p style="color: #64748b; margin: 10px 0;">
+                                Mari saya tunjukkan fitur-fitur yang tersedia untuk meningkatkan skill coding Anda.
+                            </p>
+                        </div>
+                    `
+                },
+                {
+                    element: document.querySelector('.tw-bg-gradient-to-r.tw-from-blue-600'),
+                    intro: `
+                        <h4 style="margin: 0 0 10px 0; color: #1e293b;">🎨 Sandbox Mode</h4>
+                        <p style="color: #64748b; margin: 0;">
+                            Ruang eksperimen bebas tanpa batasan soal. Anda bisa menulis, menjalankan, dan menguji kode Java sesuka hati.
+                            Sempurna untuk berlatih atau mencoba ide baru!
+                        </p>
+                    `,
+                    position: 'bottom'
+                },
+                {
+                    element: document.querySelector('.tw-text-2xl.tw-font-bold.tw-text-gray-900'),
+                    intro: `
+                        <h4 style="margin: 0 0 10px 0; color: #1e293b;">📚 Daftar Tugas</h4>
+                        <p style="color: #64748b; margin: 0;">
+                            Semua tugas praktikum tersedia di sini, dikelompokkan berdasarkan materi pembelajaran.
+                            Pilih tugas yang sesuai dengan tingkat kemampuan Anda.
+                        </p>
+                    `,
+                    position: 'bottom'
+                },
+                {
+                    element: document.querySelector('.tw-group.tw-relative.tw-bg-white'),
+                    intro: `
+                        <h4 style="margin: 0 0 10px 0; color: #1e293b;">🎯 Kartu Tugas</h4>
+                        <p style="color: #64748b; margin: 0 0 10px 0;">
+                            Setiap tugas memiliki:
+                        </p>
+                        <ul style="color: #64748b; margin: 0; padding-left: 20px;">
+                            <li><strong>Badge Tingkat Kesulitan</strong> - Beginner, Intermediate, atau Advanced</li>
+                            <li><strong>Deskripsi Singkat</strong> - Gambaran tentang tugas</li>
+                            <li><strong>Tombol "Kerjakan"</strong> - Klik untuk memulai coding!</li>
+                        </ul>
+                    `,
+                    position: 'right'
+                },
+                {
+                    intro: `
+                        <div style="text-align: center;">
+                            <i class="fas fa-rocket" style="font-size: 48px; color: #3b82f6; margin-bottom: 15px;"></i>
+                            <h3 style="margin: 10px 0; color: #1e293b;">Siap Mulai Coding! 💻</h3>
+                            <p style="color: #64748b; margin: 10px 0;">
+                                Pilih Sandbox Mode untuk eksplorasi bebas, atau pilih tugas untuk tantangan terstruktur.
+                                Selamat belajar dan happy coding!
+                            </p>
+                        </div>
+                    `
+                }
+            ],
+            showProgress: true,
+            exitOnOverlayClick: false,
+            showBullets: true,
+            scrollToElement: true,
+            nextLabel: 'Berikutnya →',
+            prevLabel: '← Sebelumnya',
+            skipLabel: 'X',
+            doneLabel: 'Mulai Coding!',
+            hidePrev: true,
+            exitOnEsc: true
+        });
+        
+        // Bind event handlers
+        tour.oncomplete(function() {
+            markTourAsComplete();
+        });
+        
+        tour.onexit(function() {
+            markTourAsComplete();
+        });
+        
+        // Start the tour
+        tour.start();
+    }
+
+    function markTourAsComplete() {
+        // Call server to update database
+        fetch("{{ route('virtual-lab.tour.complete') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        }).then(response => response.json())
+        .then(data => {
+            // Tour completion successful
+        }).catch(error => {
+            console.error('Error marking tour as complete:', error);
+        });
+    }
+</script>
+@endpush

@@ -301,4 +301,5 @@ Route::middleware(['auth', 'role:1|2'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/virtual-lab', [App\Http\Controllers\VirtualLabController::class, 'index'])->name('virtual-lab.index');
     Route::post('/virtual-lab/execute', [App\Http\Controllers\VirtualLabController::class, 'execute'])->name('virtual-lab.execute');
+    Route::post('/virtual-lab/tour-complete', [App\Http\Controllers\VirtualLabController::class, 'completeTour'])->name('virtual-lab.tour.complete');
 });

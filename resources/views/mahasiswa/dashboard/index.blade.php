@@ -300,15 +300,13 @@ use Illuminate\Support\Str;
 
 @push('scripts')
 <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    // Tour Guide Script
     document.addEventListener('DOMContentLoaded', function() {
         // Only run if user hasn't seen the tour (server-side check)
         @if(!auth()->user()->has_seen_tour)
             setTimeout(startDashboardTour, 800);
         @endif
-    });
     });
 
     function startDashboardTour() {
@@ -363,7 +361,7 @@ use Illuminate\Support\Str;
             }
         ];
 
-        introJs().setOptions({
+        const tour = introJs().setOptions({
             steps: steps,
             showProgress: true,
             exitOnOverlayClick: true,
@@ -377,12 +375,19 @@ use Illuminate\Support\Str;
             highlightClass: 'custom-highlight',
             hidePrev: true,
             exitOnEsc: true
-        }).oncomplete(function() {
-        }).oncomplete(function() {
+        });
+        
+        // Bind event handlers before starting
+        tour.oncomplete(function() {
             markTourAsComplete();
-        }).onexit(function() {
+        });
+        
+        tour.onexit(function() {
             markTourAsComplete();
-        }).start();
+        });
+        
+        // Start the tour
+        tour.start();
     }
 
     function markTourAsComplete() {
@@ -391,8 +396,14 @@ use Illuminate\Support\Str;
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Accept": "application/json"
             }
+        }).then(response => response.json())
+        .then(data => {
+            // Tour completion successful
+        }).catch(error => {
+            console.error('Error marking tour as complete:', error);
         });
     }
 
