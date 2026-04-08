@@ -121,10 +121,21 @@
                                             {{ strip_tags($task->description) }}
                                         </p>
 
-                                        <a href="{{ route('virtual-lab.index', ['task' => $task->id]) }}" 
-                                           class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-py-2.5 tw-bg-gray-50 tw-text-gray-700 tw-font-semibold tw-rounded-xl tw-border tw-border-gray-200 hover:tw-bg-blue-600 hover:tw-text-white hover:tw-border-blue-600 tw-transition-all tw-duration-200">
-                                            <span>Kerjakan</span>
-                                            <i class="fas fa-chevron-right tw-ml-2 tw-text-xs"></i>
+                                        @php
+                                            $isDone = isset($completedTaskIds) && in_array($task->id, $completedTaskIds);
+                                        @endphp
+                                        <a href="{{ route('virtual-lab.index', ['task' => $task->id]) }}"
+                                           class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-py-2.5 tw-font-semibold tw-rounded-xl tw-border tw-transition-all tw-duration-200
+                                               {{ $isDone
+                                                   ? 'tw-bg-green-50 tw-text-green-700 tw-border-green-200 hover:tw-bg-green-600 hover:tw-text-white hover:tw-border-green-600'
+                                                   : 'tw-bg-gray-50 tw-text-gray-700 tw-border-gray-200 hover:tw-bg-blue-600 hover:tw-text-white hover:tw-border-blue-600' }}">
+                                            @if($isDone)
+                                                <i class="fas fa-eye tw-mr-2 tw-text-xs"></i>
+                                                <span>Review</span>
+                                            @else
+                                                <span>Kerjakan</span>
+                                                <i class="fas fa-chevron-right tw-ml-2 tw-text-xs"></i>
+                                            @endif
                                         </a>
                                     </div>
                                 </div>
@@ -153,45 +164,114 @@
 <style>
     /* Custom Tour Styles */
     .introjs-tooltip {
-        min-width: 350px;
-        max-width: 450px;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        min-width: 200px;
+        max-width: 300px;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15); /* Blue glow shadow */
+        border: 2px solid #e0e7ff; /* Soft border */
+        background: rgba(255, 255, 255, 0.98);
+        padding: 0;
+        overflow: visible !important;
+    }
+    
+    /* Speech Bubble Arrow pointing to Robot */
+    .introjs-tooltip::after {
+        content: '';
+        position: absolute;
+        bottom: -10px; /* Adjust based on robot position */
+        left: 50%;
+        margin-left: -10px;
+        border-width: 10px;
+        border-style: solid;
+        border-color: #fff transparent transparent transparent;
+        z-index: 999;
     }
     
     .introjs-tooltiptext {
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1.6;
-        padding: 15px;
+        padding: 20px 24px;
+        color: #475569;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
+
+    
+    /* Modern Buttons */
     .introjs-button {
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-weight: 600;
+        border-radius: 20px; /* Pill shape */
+        padding: 6px 16px;
+        font-size: 12px;
+        font-weight: 700;
         text-shadow: none;
         border: none;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        text-transform: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+        margin: 4px;
     }
     
     .introjs-nextbutton {
         background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
     
     .introjs-nextbutton:hover {
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+    }
+
+    .introjs-prevbutton {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+
+    .introjs-prevbutton:hover {
+        background: #e2e8f0;
+        color: #1e293b;
     }
     
     .introjs-skipbutton {
-        color: #64748b;
+        color: #cbd5e1;
+        font-size: 24px;
+        font-weight: bold;
+        top: 10px;
+        right: 15px;
+        transition: color 0.2s;
+    }
+    
+    .introjs-skipbutton:hover {
+        color: #ef4444; /* Red on hover */
     }
     
     .introjs-helperLayer {
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 8px;
+        background-color: rgba(15, 23, 42, 0.75); /* Darker focus */
+        backdrop-filter: blur(4px); /* Blur effect */
+        border-radius: 16px;
+        border: 2px solid rgba(59, 130, 246, 0.5);
     }
     
-    .introjs-tooltipReferenceLayer {
-        border-radius: 8px;
+    /* Progress Dots */
+    .introjs-bullets ul li a {
+        background: #e2e8f0;
+        width: 8px;
+        height: 8px;
+        transition: all 0.3s;
+    }
+    
+    .introjs-bullets ul li a.active {
+        background: #3b82f6;
+        width: 20px; /* Elongated active dot */
+        border-radius: 4px;
+    }
+    
+    /* Remove default header background */
+    .introjs-tooltip-header {
+        display: none;
     }
 </style>
 
@@ -209,60 +289,80 @@
             steps: [
                 {
                     intro: `
-                        <div style="text-align: center;">
-                            <i class="fas fa-code" style="font-size: 48px; color: #3b82f6; margin-bottom: 15px;"></i>
-                            <h3 style="margin: 10px 0; color: #1e293b;">Selamat Datang di Virtual Lab! 🚀</h3>
-                            <p style="color: #64748b; margin: 10px 0;">
-                                Mari saya tunjukkan fitur-fitur yang tersedia untuk meningkatkan skill coding Anda.
+                        <div style="padding: 5px 0;">
+                            <div class="tw-flex tw-items-center tw-mb-3">
+                                <span class="tw-text-2xl tw-mr-2">👋</span>
+                                <h3 class="tw-text-lg tw-font-bold tw-text-gray-900">Halo, Sobat!</h3>
+                            </div>
+                            <p class="tw-text-sm tw-text-gray-600 tw-leading-relaxed">
+                                Saya <strong>Robo-Oopedia</strong>! Siap menemani Anda menjelajahi fitur keren di sini?
                             </p>
                         </div>
-                    `
+                    `,
                 },
                 {
                     element: document.querySelector('.tw-bg-gradient-to-r.tw-from-blue-600'),
                     intro: `
-                        <h4 style="margin: 0 0 10px 0; color: #1e293b;">🎨 Sandbox Mode</h4>
-                        <p style="color: #64748b; margin: 0;">
-                            Ruang eksperimen bebas tanpa batasan soal. Anda bisa menulis, menjalankan, dan menguji kode Java sesuka hati.
-                            Sempurna untuk berlatih atau mencoba ide baru!
-                        </p>
+                        <div>
+                            <div class="tw-flex tw-items-center tw-mb-2">
+                                <span class="tw-bg-blue-100 tw-text-blue-600 tw-p-1 tw-rounded tw-mr-2">
+                                    <i class="fas fa-code"></i>
+                                </span>
+                                <h4 class="tw-font-bold tw-text-gray-900 tw-text-sm">Sandbox Mode</h4>
+                            </div>
+                            <p class="tw-text-xs tw-text-gray-600">
+                                Ruang bebas eksperimen! Coding Java tanpa batasan soal.
+                            </p>
+                        </div>
                     `,
                     position: 'bottom'
                 },
                 {
                     element: document.querySelector('.tw-text-2xl.tw-font-bold.tw-text-gray-900'),
                     intro: `
-                        <h4 style="margin: 0 0 10px 0; color: #1e293b;">📚 Daftar Tugas</h4>
-                        <p style="color: #64748b; margin: 0;">
-                            Semua tugas praktikum tersedia di sini, dikelompokkan berdasarkan materi pembelajaran.
-                            Pilih tugas yang sesuai dengan tingkat kemampuan Anda.
-                        </p>
+                        <div>
+                            <div class="tw-flex tw-items-center tw-mb-2">
+                                <span class="tw-bg-green-100 tw-text-green-600 tw-p-1 tw-rounded tw-mr-2">
+                                    <i class="fas fa-book"></i>
+                                </span>
+                                <h4 class="tw-font-bold tw-text-gray-900 tw-text-sm">Tugas Praktikum</h4>
+                            </div>
+                            <p class="tw-text-xs tw-text-gray-600">
+                                Kumpulan tantangan coding yang sudah disesuaikan dengan materi Anda.
+                            </p>
+                        </div>
                     `,
                     position: 'bottom'
                 },
                 {
                     element: document.querySelector('.tw-group.tw-relative.tw-bg-white'),
                     intro: `
-                        <h4 style="margin: 0 0 10px 0; color: #1e293b;">🎯 Kartu Tugas</h4>
-                        <p style="color: #64748b; margin: 0 0 10px 0;">
-                            Setiap tugas memiliki:
-                        </p>
-                        <ul style="color: #64748b; margin: 0; padding-left: 20px;">
-                            <li><strong>Badge Tingkat Kesulitan</strong> - Beginner, Intermediate, atau Advanced</li>
-                            <li><strong>Deskripsi Singkat</strong> - Gambaran tentang tugas</li>
-                            <li><strong>Tombol "Kerjakan"</strong> - Klik untuk memulai coding!</li>
-                        </ul>
+                        <div>
+                            <div class="tw-flex tw-items-center tw-mb-2">
+                                <span class="tw-bg-yellow-100 tw-text-yellow-600 tw-p-1 tw-rounded tw-mr-2">
+                                    <i class="fas fa-star"></i>
+                                </span>
+                                <h4 class="tw-font-bold tw-text-gray-900 tw-text-sm">Pilih Tantangan</h4>
+                            </div>
+                            <p class="tw-text-xs tw-text-gray-600 tw-mb-2">
+                                Cek level kesulitannya dulu ya!
+                            </p>
+                            <div class="tw-inline-block tw-px-2 tw-py-1 tw-bg-blue-50 tw-text-blue-600 tw-rounded tw-text-xs tw-font-bold">
+                                Usahakan urut dari level Beginner!
+                            </div>
+                        </div>
                     `,
                     position: 'right'
                 },
                 {
                     intro: `
-                        <div style="text-align: center;">
-                            <i class="fas fa-rocket" style="font-size: 48px; color: #3b82f6; margin-bottom: 15px;"></i>
-                            <h3 style="margin: 10px 0; color: #1e293b;">Siap Mulai Coding! 💻</h3>
-                            <p style="color: #64748b; margin: 10px 0;">
-                                Pilih Sandbox Mode untuk eksplorasi bebas, atau pilih tugas untuk tantangan terstruktur.
-                                Selamat belajar dan happy coding!
+                        <div style="text-align: center; padding: 10px 0;">
+                            <div class="tw-w-12 tw-h-12 tw-bg-blue-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3">
+                                <i class="fas fa-rocket tw-text-blue-600 tw-text-xl"></i>
+                            </div>
+                            <h3 class="tw-text-lg tw-font-bold tw-text-gray-900 tw-mb-1">Siap Coding?</h3>
+                            <p class="tw-text-sm tw-text-gray-500">
+                                Jangan takut salah, ayo mulai perjalanan coding-mu!
                             </p>
                         </div>
                     `
@@ -272,14 +372,15 @@
             exitOnOverlayClick: false,
             showBullets: true,
             scrollToElement: true,
-            nextLabel: 'Berikutnya →',
-            prevLabel: '← Sebelumnya',
-            skipLabel: 'X',
-            doneLabel: 'Mulai Coding!',
-            hidePrev: true,
+            nextLabel: 'Lanjut',
+            prevLabel: 'Kembali',
+            skipLabel: '×',
+            doneLabel: 'Gass!',
+            hidePrev: false,
             exitOnEsc: true
         });
         
+
         // Bind event handlers
         tour.oncomplete(function() {
             markTourAsComplete();
@@ -294,7 +395,6 @@
     }
 
     function markTourAsComplete() {
-        // Call server to update database
         fetch("{{ route('virtual-lab.tour.complete') }}", {
             method: "POST",
             headers: {
@@ -302,12 +402,7 @@
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }
-        }).then(response => response.json())
-        .then(data => {
-            // Tour completion successful
-        }).catch(error => {
-            console.error('Error marking tour as complete:', error);
-        });
+        }).catch(error => console.error('Error marking tour:', error));
     }
 </script>
 @endpush

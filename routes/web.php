@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\{
     RegisteredUserController,
     SessionsController,
-    GuestLoginController,
     LogoutController
 };
 use App\Http\Controllers\Admin\{
@@ -14,7 +13,6 @@ use App\Http\Controllers\Admin\{
     QuestionController as AdminQuestionController,
     AdminUserController,
     PendingApprovalController,
-    LogoutController as AdminLogoutController,
     UeqSurveyController,
     QuestionBankController,
     UeqSurveyController as AdminUeqSurveyController
@@ -68,9 +66,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [SessionsController::class, 'store']);
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
-    
-    // Guest login
-    Route::get('/guest-login', [GuestLoginController::class, 'login'])->name('guest.login');
 });
 
 // Logout routes (for all authenticated users)
@@ -169,6 +164,8 @@ Route::middleware('auth')->group(function () {
             
             // Tour Completion
             Route::post('/tour-complete', [MahasiswaDashboardController::class, 'completeTour'])->name('tour.complete');
+            Route::post('/materials-tour-complete', [MahasiswaDashboardController::class, 'completeMaterialsTour'])->name('materials.tour.complete');
+            Route::post('/questions-tour-complete', [MahasiswaDashboardController::class, 'completeQuestionsTour'])->name('questions.tour.complete');
         });
         
         // Materials (for both mahasiswa and guest)
@@ -218,8 +215,8 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    // Admin logout route - keep this one
-    Route::post('/admin/logout', [AdminLogoutController::class, 'logout'])
+    // Admin logout route - using universal LogoutController
+    Route::post('/admin/logout', [LogoutController::class, 'logout']) // Uses Auth\LogoutController
         ->name('admin.logout')
         ->middleware('auth'); // Only require authentication
 });
@@ -276,10 +273,6 @@ Route::fallback(function () {
     return redirect()->route('login');
 });
 
-// Add this with your other guest routes
-Route::post('/guest-logout', [GuestLoginController::class, 'logout'])->name('guest.logout');
-
-
 Route::get('/mahasiswa/materials/{material}/questions/{question}/attempts', [MaterialQuestionController::class, 'getAttempts'])
     ->name('mahasiswa.materials.questions.attempts');
 
@@ -302,4 +295,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/virtual-lab', [App\Http\Controllers\VirtualLabController::class, 'index'])->name('virtual-lab.index');
     Route::post('/virtual-lab/execute', [App\Http\Controllers\VirtualLabController::class, 'execute'])->name('virtual-lab.execute');
     Route::post('/virtual-lab/tour-complete', [App\Http\Controllers\VirtualLabController::class, 'completeTour'])->name('virtual-lab.tour.complete');
+
+    // TBUT: Mahasiswa only
+    Route::middleware(['role:3'])->group(function () {
+        Route::post('/virtual-lab/save-code',   [App\Http\Controllers\VirtualLabController::class, 'saveCode'])->name('virtual-lab.save-code');
+        Route::post('/virtual-lab/submit-task', [App\Http\Controllers\VirtualLabController::class, 'submitTask'])->name('virtual-lab.submit-task');
+    });
+});
+
+// TBUT Analysis Dashboard — Admin/Dosen only
+Route::middleware(['auth', 'role:1|2'])->prefix('admin/tbut')->name('admin.tbut.')->group(function () {
+    Route::get('/',         [App\Http\Controllers\Admin\TbutAnalysisController::class, 'index'])->name('index');
+    Route::get('/{taskId}', [App\Http\Controllers\Admin\TbutAnalysisController::class, 'show'])->name('show');
 });

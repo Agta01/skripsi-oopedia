@@ -23,6 +23,26 @@ class DashboardController extends Controller
         return response()->json(['success' => false], 401);
     }
 
+    public function completeMaterialsTour()
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->update(['has_seen_materials_tour' => true]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 401);
+    }
+
+    public function completeQuestionsTour()
+    {
+        $user = auth()->user();
+        if ($user) {
+            $user->update(['has_seen_questions_tour' => true]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 401);
+    }
+
     public function index()
     {
         $userId = auth()->id();

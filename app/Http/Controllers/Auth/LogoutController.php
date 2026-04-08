@@ -21,6 +21,8 @@ class LogoutController extends Controller
             $user->delete();
         }
         
-        return redirect('/login');
+        $redirect = $request->input('redirect', '/login');
+        
+        return redirect($redirect);
     }
 } 

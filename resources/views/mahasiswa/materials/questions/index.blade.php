@@ -5,15 +5,7 @@
 @section('content')
 @if(auth()->check() && auth()->user()->role_id === 4)
 <!-- Hidden forms for guest logout and redirect -->
-<form id="guest-logout-login-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-    @csrf
-    <input type="hidden" name="redirect" value="{{ route('login') }}">
-</form>
 
-<form id="guest-logout-register-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-    @csrf
-    <input type="hidden" name="redirect" value="{{ route('register') }}">
-</form>
 @endif
 
 @if(!auth()->check() || (auth()->check() && auth()->user()->role_id === 4))
@@ -28,10 +20,26 @@
 </div>
 @endif
 
-<div class="dashboard-header text-center">
-    <h1 class="main-title">Latihan Soal PBO</h1>
-    <div class="title-underline"></div>
-    <p class="subtitle mt-3">Uji pemahaman Anda dengan mengerjakan latihan soal untuk setiap materi</p>
+<!-- Modern Colorful Hero Banner -->
+<div class="hero-section mb-5 position-relative overflow-hidden" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);">
+    <!-- Gradient Background -->
+    <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); z-index: 1;"></div>
+    
+    <!-- Decorative Elements -->
+    <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; background: rgba(255,255,255,0.05); top: -50px; left: -100px; filter: blur(2px); z-index: 2;"></div>
+    <div class="position-absolute rounded-circle" style="width: 250px; height: 250px; background: rgba(255,255,255,0.08); bottom: -80px; right: -50px; filter: blur(10px); z-index: 2;"></div>
+    <div class="position-absolute w-100 h-100" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 24px 24px; opacity: 0.5; z-index: 2;"></div>
+    
+    <!-- Content -->
+    <div class="hero-content position-relative text-center text-white py-5 px-4" style="z-index: 3;">
+        <div class="icon-wrapper mb-3 d-inline-block" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 50%; backdrop-filter: blur(5px);">
+            <i class="fas fa-clipboard-check fa-2x"></i>
+        </div>
+        <h1 class="fw-bold mb-3 text-white" style="letter-spacing: -0.5px; font-size: 2.8rem; text-shadow: 0 2px 10px rgba(0,0,0,0.15);">Latihan Soal PBO</h1>
+        <p class="lead opacity-9 mb-0 mx-auto" style="font-weight: 300; max-width: 700px; line-height: 1.6; font-size: 1.15rem;">
+            Uji pemahaman dan asah kemampuan logika pemrograman Anda dengan mengerjakan kuis interaktif untuk setiap materi.
+        </p>
+    </div>
 </div>
 
 <div class="materials-container">
@@ -127,33 +135,13 @@
 @push('css')
 <style>
 /* Perbaikan Gaya Halaman Materi */
-.dashboard-header {
-    padding: 2.5rem 0;
-    margin-bottom: 2rem;
+.hero-section {
+    margin-top: 10px;
+    transition: transform 0.3s ease;
 }
 
-.main-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--color-1);
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.title-underline {
-    width: 180px;
-    height: 5px;
-    background: var(--gradient-primary);
-    margin: 0 auto;
-    border-radius: 3px;
-}
-
-.subtitle {
-    font-size: 1.1rem;
-    color: var(--text-dark);
-    margin-top: 1rem;
-    font-weight: 500;
+.hero-section:hover {
+    transform: translateY(-2px);
 }
 
 .materials-container {
@@ -186,20 +174,22 @@
 /* Horizontal Card Redesign */
 .material-question-card.horizontal {
     background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 0 0 4px rgba(0,87,184,0.1), 0 6px 16px rgba(0,87,184,0.08);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
     overflow: hidden;
     position: relative;
     margin-bottom: 30px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: row;
     height: 180px;
+    border: 1px solid rgba(0,0,0,0.04);
 }
 
 .material-question-card.horizontal:hover {
     transform: translateY(-5px);
-    box-shadow: 0 0 0 4px rgba(0,87,184,0.2), 0 12px 30px rgba(0,87,184,0.15);
+    box-shadow: 0 15px 45px -10px rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.15);
 }
 
 /* Left Section - Image */
@@ -266,13 +256,13 @@
 }
 
 .material-badge {
-    background: linear-gradient(135deg, #28a745, #20c997);
+    background: linear-gradient(135deg, #10b981, #34d399); /* Emerald Gradient */
     color: white;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-size: 0.7rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
     font-weight: 600;
-    box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
     margin-right: 10px;
 }
 
@@ -368,16 +358,19 @@
 }
 
 .progress-bar-bg {
-    height: 8px;
-    background-color: #e9ecef;
-    border-radius: 4px;
+    height: 10px;
+    background-color: #f1f5f9;
+    border-radius: 20px;
     overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .progress-bar-fill {
     height: 100%;
-    background: linear-gradient(to right, #0057B8, #0074D9);
-    border-radius: 4px;
+    background: linear-gradient(to right, #3b82f6, #10b981); /* Blue to Emerald */
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
 }
 
 .progress-detail {
@@ -387,24 +380,24 @@
 
 /* Action Button */
 .btn-start-exercise {
-    background: linear-gradient(135deg, #0057B8, #0074D9);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
+    padding: 10px 24px;
+    border-radius: 24px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0,87,184,0.2);
+    box-shadow: 0 8px 20px -5px rgba(37, 99, 235, 0.4);
     border: none;
     display: inline-block;
 }
 
 .btn-start-exercise:hover {
-    background: linear-gradient(135deg, #004a9e, #0066c0);
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0,87,184,0.3);
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
     color: white;
     text-decoration: none;
 }
@@ -689,11 +682,14 @@
 @endpush
 
 @push('scripts')
+<script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        if (!sessionStorage.getItem('question_index_tour_complete')) {
+        @auth
+        @if(auth()->check() && auth()->user()->role_id == 3 && !auth()->user()->has_seen_questions_tour)
             setTimeout(startQuestionsIndexTour, 500);
-        }
+        @endif
+        @endauth
     });
 
     function startQuestionsIndexTour() {
@@ -762,13 +758,19 @@
         tooltipClass: 'custom-introjs-tooltip',
         hidePrev: true
     })
-    .oncomplete(function() {
-        sessionStorage.setItem('question_index_tour_complete', 'true');
-    })
-    .onexit(function() {
-        sessionStorage.setItem('question_index_tour_complete', 'true'); 
-    })
+    .oncomplete(markQuestionsTourComplete)
+    .onexit(markQuestionsTourComplete)
     .start();
+};
+
+function markQuestionsTourComplete() {
+    fetch("{{ route('mahasiswa.questions.tour.complete') }}", {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    }).catch(e => console.warn('Tour mark error:', e));
 }    
 </script>
 @endpush

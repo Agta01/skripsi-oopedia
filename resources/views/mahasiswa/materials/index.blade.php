@@ -7,21 +7,29 @@
 
 
 <!-- Hidden forms for guest logout and redirect -->
-<form id="guest-logout-login-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-    @csrf
-    <input type="hidden" name="redirect" value="{{ route('login') }}">
-</form>
 
-<form id="guest-logout-register-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-    @csrf
-    <input type="hidden" name="redirect" value="{{ route('register') }}">
-</form>
 @endif
 
-<div class="dashboard-header text-center">
-    <h1 class="main-title">Materi Pemrograman Berorientasi Objek</h1>
-    <div class="title-underline"></div>
-    <p class="subtitle mt-3">Pelajari konsep dasar dan lanjutan tentang Pemrograman Berorientasi Objek</p>
+<!-- Modern Colorful Hero Banner -->
+<div class="hero-section mb-5 position-relative overflow-hidden" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);">
+    <!-- Gradient Background -->
+    <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); z-index: 1;"></div>
+    
+    <!-- Decorative Elements -->
+    <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; background: rgba(255,255,255,0.05); top: -50px; left: -100px; filter: blur(2px); z-index: 2;"></div>
+    <div class="position-absolute rounded-circle" style="width: 250px; height: 250px; background: rgba(255,255,255,0.08); bottom: -80px; right: -50px; filter: blur(10px); z-index: 2;"></div>
+    <div class="position-absolute w-100 h-100" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 24px 24px; opacity: 0.5; z-index: 2;"></div>
+    
+    <!-- Content -->
+    <div class="hero-content position-relative text-center text-white py-5 px-4" style="z-index: 3;">
+        <div class="icon-wrapper mb-3 d-inline-block" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 50%; backdrop-filter: blur(5px);">
+            <i class="fas fa-graduation-cap fa-2x"></i>
+        </div>
+        <h1 class="fw-bold mb-3 text-white" style="letter-spacing: -0.5px; font-size: 2.8rem; text-shadow: 0 2px 10px rgba(0,0,0,0.15);">Materi Pembelajaran PBO</h1>
+        <p class="lead opacity-9 mb-0 mx-auto" style="font-weight: 300; max-width: 700px; line-height: 1.6; font-size: 1.15rem;">
+            Jelajahi, pahami, dan kuasai konsep dasar hingga lanjutan pemrograman berorientasi objek dengan modul dan latihan terstruktur kami.
+        </p>
+    </div>
 </div>
 
 <div class="row mt-5">
@@ -118,27 +126,13 @@
 
 @push('css')
 <style>
-    .dashboard-header {
-        margin-bottom: 50px;
+    .hero-section {
+        margin-top: 10px;
+        transition: transform 0.3s ease;
     }
     
-    .main-title {
-        color: #0057B8;
-        font-weight: 700;
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-    }
-    
-    .title-underline {
-        width: 180px;
-        height: 4px;
-        background-color: #0057B8;
-        margin: 0 auto;
-    }
-    
-    .subtitle {
-        color: #555;
-        font-size: 1.2rem;
+    .hero-section:hover {
+        transform: translateY(-2px);
     }
     
     .material-card {
@@ -326,84 +320,7 @@
         transform: translateX(3px);
     }
 
-    /* Perbaikan Gaya untuk Tour Guide */
-    .introjs-tooltip {
-        border-radius: 12px !important;
-        padding: 20px !important;
-        max-width: 400px !important;
-        box-shadow: 0 8px 25px rgba(0, 78, 152, 0.15) !important;
-        border: 1px solid rgba(0, 78, 152, 0.1) !important;
-    }
-
-    .introjs-tooltip-header {
-        padding-bottom: 10px !important;
-        border-bottom: 1px solid rgba(0, 78, 152, 0.1) !important;
-        margin-bottom: 15px !important;
-    }
-
-    .introjs-tooltiptext {
-        font-size: 15px !important;
-        line-height: 1.6 !important;
-        color: var(--text-dark) !important;
-    }
-
-    .introjs-tooltipbuttons {
-        border-top: 1px solid rgba(0, 78, 152, 0.1) !important;
-        padding-top: 15px !important;
-        margin-top: 15px !important;
-        text-align: right !important;
-    }
-
-    .introjs-button {
-        padding: 8px 16px !important;
-        border-radius: 8px !important;
-        font-weight: 500 !important;
-        transition: all 0.3s ease !important;
-        margin-left: 8px !important;
-    }
-
-    .introjs-skipbutton {
-        background-color: #f8f9fa !important;
-        color: var(--color-1) !important;
-        border: 1px solid rgba(0, 78, 152, 0.2) !important;
-    }
-
-    .introjs-skipbutton:hover {
-        background-color: #e9ecef !important;
-    }
-
-    .introjs-nextbutton {
-        background: var(--gradient-primary) !important;
-        color: white !important;
-    }
-
-    .introjs-nextbutton:hover {
-        background: var(--gradient-secondary) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 8px rgba(0, 78, 152, 0.2) !important;
-    }
-
-    .introjs-prevbutton {
-        background-color: white !important;
-        color: var(--color-1) !important;
-        border: 1px solid rgba(0, 78, 152, 0.2) !important;
-    }
-
-    .introjs-prevbutton:hover {
-        background-color: #f8f9fa !important;
-    }
-
-    .introjs-bullets {
-        bottom: -25px !important;
-    }
-
-    .introjs-bullets ul li a {
-        background: rgba(0, 78, 152, 0.2) !important;
-    }
-
-    .introjs-bullets ul li a.active {
-        background: var(--color-1) !important;
-    }
+    /* Tour CSS → sudah di mahasiswa.css (global) */
 </style>
 @endpush
 
@@ -411,96 +328,82 @@
 <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
 
 <script>
+    const MAT_LOGO = "{{ asset('images/logo.png') }}";
+    function matMascot(n, t) {
+        return `<div class="tour-mascot"><img src="${MAT_LOGO}" alt="OOP"></div><span class="tour-step-badge">${n}/${t}</span>`;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        if (!sessionStorage.getItem('material_index_tour_complete')) {
+        @auth
+        @if(auth()->check() && !auth()->user()->has_seen_materials_tour)
             setTimeout(startMaterialsIndexTour, 800);
-        }
+        @endif
+        @endauth
     });
 
     function startMaterialsIndexTour() {
-        const steps = [
-            {
-                intro: `
-                    <div class="text-center">
-                        <h4 style="margin-bottom: 10px; color: var(--color-1);">Selamat Datang</h4>
-                        <p>Di halaman Materi OOPEDIA!</p>
-                    </div>
-                `,
-                position: 'center'
-            },
-            {
-                element: document.querySelector('.material-card:first-child'),
-                intro: `
-                    <div>
-                        <h5 style="margin-bottom: 8px; color: var(--color-1);">Kartu Materi</h5>
-                        <p>Ini adalah kartu materi pembelajaran. Pilih salah satu materi untuk mulai belajar.</p>
-                    </div>
-                `,
-                position: 'auto'
-            },
-            {
-                element: document.querySelector('.material-actions .btn-read-material'),
-                intro: `
-                    <div>
-                        <h5 style="margin-bottom: 8px; color: var(--color-1);">Tombol Baca</h5>
-                        <p>Klik tombol ini untuk mulai mempelajari materi yang dipilih.</p>
-                    </div>
-                `,
-                position: 'auto'
-            },
-            {
-                intro: `
-                    <div class="text-center">
-                        <h4 style="margin-bottom: 10px; color: var(--color-1);">Selamat Belajar!</h4>
-                        <p>Mari eksplorasi dunia Pemrograman Berorientasi Objek bersama OOPEDIA.</p>
-                    </div>
-                `,
-                position: 'center'
-            }
-        ];
-
+        const total = 4;
         introJs().setOptions({
-            steps: steps,
+            steps: [
+                {
+                    title: matMascot(1, total) + ' Halaman Materi',
+                    intro: `<div class="tour-body">
+                        <h4>📚 Selamat Datang di Materi!</h4>
+                        <p>Di sini kamu bisa temukan semua materi <strong>Pemrograman Berorientasi Objek</strong> yang tersedia.</p>
+                        <span class="tour-badge tour-badge--blue"><i class="fas fa-book"></i> ${total} langkah panduan</span>
+                    </div>`
+                },
+                {
+                    title: matMascot(2, total) + ' Kartu Materi',
+                    element: document.querySelector('.material-card'),
+                    intro: `<div class="tour-body">
+                        <h4>🗂️ Kartu Materi</h4>
+                        <p>Setiap kartu menampilkan judul materi, jumlah soal latihan, dan tombol untuk membaca selengkapnya.</p>
+                        <span class="tour-badge tour-badge--green"><i class="fas fa-check"></i> Klik untuk membaca</span>
+                    </div>`,
+                    position: 'auto'
+                },
+                {
+                    title: matMascot(3, total) + ' Tombol Baca',
+                    element: document.querySelector('.material-link'),
+                    intro: `<div class="tour-body">
+                        <h4>👆 Mulai Belajar</h4>
+                        <p>Klik tombol <strong>"Baca Materi"</strong> untuk masuk ke halaman detail materi lengkap beserta video dan penjelasannya.</p>
+                        <span class="tour-badge tour-badge--orange"><i class="fas fa-arrow-right"></i> Mulai dari sini!</span>
+                    </div>`,
+                    position: 'top'
+                },
+                {
+                    title: matMascot(4, total) + ' Selesai!',
+                    intro: `<div class="tour-body" style="text-align:center">
+                        <h4>🎉 Selamat Belajar!</h4>
+                        <p>Pelajari semua materi secara urutan, lalu uji kemampuanmu di <strong>Latihan Soal</strong>!</p>
+                        <span class="tour-badge tour-badge--blue"><i class="fas fa-rocket"></i> OOP Master!</span>
+                    </div>`
+                }
+            ],
             showProgress: true,
-            exitOnOverlayClick: true,
             showBullets: true,
+            exitOnOverlayClick: true,
             scrollToElement: true,
-            nextLabel: 'Berikutnya',
-            prevLabel: 'Sebelumnya',
-            skipLabel: 'Lewati',
-            doneLabel: 'Selesai',
-            tooltipClass: 'custom-tour',
-            highlightClass: 'custom-highlight',
-            hidePrev: true,
+            nextLabel: 'Lanjut →',
+            prevLabel: '← Kembali',
+            skipLabel: '✕',
+            doneLabel: '🎯 Siap!',
             exitOnEsc: true
-        }).oncomplete(function() {
-            sessionStorage.setItem('material_index_tour_complete', 'true');
-        }).onexit(function() {
-            sessionStorage.setItem('material_index_tour_complete', 'true');
-        }).start();
+        }).oncomplete(markMaterialsTourComplete)
+          .onexit(markMaterialsTourComplete)
+          .start();
+    }
 
+    function markMaterialsTourComplete() {
+        fetch("{{ route('mahasiswa.materials.tour.complete') }}", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        }).catch(e => console.warn('Tour mark error:', e));
     }
-    
-    .no-image-icon {
-        font-size: 48px;
-        color: #0057B8;
-        opacity: 0.4;
-    }
-    
-    .guest-mode-badge {
-        font-size: 0.75rem;
-        background-color: rgba(255, 193, 7, 0.1);
-        color: #856404;
-        border-radius: 12px;
-        padding: 2px 8px;
-        vertical-align: middle;
-    }
-    
-    .stats-pill {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-</style>
+</script>
 @endpush

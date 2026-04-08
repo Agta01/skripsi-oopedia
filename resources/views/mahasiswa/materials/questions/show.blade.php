@@ -5,6 +5,8 @@
 @push('css')
 <link rel="stylesheet" href="{{ asset('css/material-show.css') }}">
 <link rel="stylesheet" href="{{ asset('css/question-review.css') }}">
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     .materi-card {
         background-color: #fff;
@@ -297,15 +299,7 @@
         </div>
 
         <!-- Hidden forms for guest logout and redirect -->
-        <form id="guest-logout-login-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-            @csrf
-            <input type="hidden" name="redirect" value="{{ route('login') }}">
-        </form>
 
-        <form id="guest-logout-register-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-            @csrf
-            <input type="hidden" name="redirect" value="{{ route('register') }}">
-        </form>
     @endif
 
     @if($currentQuestion)
@@ -410,6 +404,7 @@ function initializeQuestionForm() {
             })
             .then(response => response.json())
             .then(data => {
+                if (typeof window.hideLoading === 'function') window.hideLoading();
                 showFeedback(data);
             })
             .catch(error => {
@@ -608,108 +603,55 @@ function submitAnswer() {
 @endif
 
 function showFeedback(data) {
-    const feedbackElement = document.querySelector('.exercise-feedback');
-    const feedbackStatus = document.getElementById('feedbackStatus');
-    const feedbackIcon = document.getElementById('feedbackIcon');
-    const tryAgainBtn = document.getElementById('tryAgainBtn');
-    const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+    // Gunakan modern SweetAlert2 Popup ketimbang custom full-page block
     const questionForm = document.getElementById('questionForm');
     
-    // Set status dan icon
-    feedbackStatus.innerHTML = `<h3 class="${data.status === 'success' ? 'text-success' : 'text-danger'}">${data.message}</h3>`;
-    feedbackIcon.className = `feedback-icon ${data.status === 'success' ? 'success' : 'error'}`;
-    feedbackIcon.innerHTML = `<i class="fas ${data.status === 'success' ? 'fa-check-circle' : 'fa-times-circle'} fa-3x"></i>`;
-
     if (data.status === 'success') {
-        // Penanganan khusus untuk guest dengan redirect langsung
-        if (data.redirect_url) {
-            // Tampilkan feedback sebentar lalu redirect
-            feedbackElement.style.display = 'block';
-            feedbackElement.classList.remove('alert-danger');
-            feedbackElement.classList.add('alert-success');
-            feedbackIcon.className = 'fas fa-check-circle';
-            feedbackStatus.textContent = data.message;
-            
-            // Redirect setelah 1.5 detik
-            setTimeout(() => {
+        Swal.fire({
+            title: "Jawaban Lengkap!",
+            html: data.explanation ? `<div class="tw-text-sm tw-text-green-800 tw-mt-2">${data.explanation}</div>` : "<span class='tw-text-green-700 fw-medium'>Langkah penyelesaian Anda menakjubkan.</span>",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            background: "#f0fdf4",
+            color: "#166534",
+            customClass: { popup: 'tw-rounded-3xl tw-shadow-2xl border tw-border-green-200' }
+        });
+        
+        // Optimasi: Kurangi delay dari 2000ms ke 1000/1500ms
+        setTimeout(() => {
+            if (data.redirect_url) {
                 window.location.href = data.redirect_url;
-            }, 1500);
-            
-            return; // Penting: hentikan eksekusi di sini
-        }
-        
-        // Kode penanganan normal lainnya
-        tryAgainBtn.style.display = 'none';
-        nextQuestionBtn.style.display = 'inline-block';
-        nextQuestionBtn.innerHTML = '<i class="fas fa-list-ol me-2"></i>Kembali ke Level';
-        nextQuestionBtn.onclick = () => {
-            const currentDifficulty = '{{ request()->query('difficulty') }}';
-            const levelUrl = data.levelUrl || '{{ route('mahasiswa.materials.questions.levels', ['material' => $material->id, 'difficulty' => request()->query('difficulty')]) }}';
-            redirectToLevelWithScroll(levelUrl);
-        };
+            } else {
+                const nextUrl = data.levelUrl || '{{ route('mahasiswa.materials.questions.levels', ['material' => $material->id, 'difficulty' => request()->query('difficulty')]) }}';
+                window.location.href = nextUrl;
+            }
+        }, 1200);
+
     } else {
-        tryAgainBtn.style.display = 'inline-block';
-        nextQuestionBtn.style.display = 'none';
-        
-        tryAgainBtn.onclick = () => {
-            feedbackElement.style.display = 'none';
-            questionForm.style.display = 'block';
-            
+        Swal.fire({
+            title: "Jawaban Kurang Tepat",
+            text: "Coba tinjau materi kembali dan kerjakan dengan teliti.",
+            icon: "warning",
+            iconColor: "#dc2626",
+            confirmButtonText: "<i class='fas fa-redo tw-mr-2'></i>Coba Lagi",
+            confirmButtonColor: "#dc2626",
+            background: "#fef2f2",
+            color: "#991b1b",
+            customClass: { popup: 'tw-rounded-3xl tw-shadow-xl border tw-border-red-200', confirmButton: 'tw-px-6 tw-py-2 tw-rounded-xl tw-shadow-md' }
+        }).then(() => {
             const checkAnswerBtn = document.getElementById('checkAnswerBtn');
             if (checkAnswerBtn) {
                 checkAnswerBtn.disabled = false;
                 checkAnswerBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Periksa Jawaban';
             }
-        };
+        });
     }
-
-    feedbackElement.style.display = 'block';
-    questionForm.style.display = 'none';
 }
 
-// Event handler submit
-$(document).ready(function() {
-    $('#questionForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const currentDifficulty = '{{ request()->query('difficulty') }}';
-        formData.append('difficulty', currentDifficulty);
-        
-        $.ajax({
-            url: $(this).attr('action'),
-            method: 'POST',
-            data: $(this).serialize() + '&difficulty=' + currentDifficulty,
-            success: function(response) {
-                console.log("Answer response:", response);
-                
-                if (response.status === 'success') {
-                    // Show success feedback
-                    showFeedback(true, response.message, response.selectedAnswerText, 
-                                 response.correctAnswerText, response.explanation);
-                    
-                    // Then redirect after a delay
-                    setTimeout(function() {
-                        if (response.hasNextQuestion && response.nextUrl) {
-                            console.log("Redirecting to next question:", response.nextUrl);
-                            // Store in localStorage that we're redirecting
-                            localStorage.setItem('redirecting_from_question', 'true');
-                            window.location.href = response.nextUrl;
-                        } else {
-                            console.log("Redirecting to levels page:", response.levelUrl);
-                            localStorage.setItem('questionCompleted', 'true');
-                            window.location.href = response.levelUrl + (response.levelUrl.includes('?') ? '&' : '?') + 'scroll=true';
-                        }
-                    }, 2000);
-                } else {
-                    // Handle incorrect answer
-                    showFeedback(false, response.message, response.selectedAnswerText, 
-                                 response.correctAnswerText, response.explanation);
-                }
-            }
-        });
-    });
-});
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Add console logs for debugging

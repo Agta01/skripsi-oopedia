@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Material;
 use App\Models\Question;
 use App\Models\Progress;
+use App\Models\TbutSession;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -112,6 +113,13 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // TBUT Summary Stats
+        $tbutTotal      = TbutSession::count();
+        $tbutCompleted  = TbutSession::where('is_completed', true)->count();
+        $tbutCompRate   = $tbutTotal > 0 ? round(($tbutCompleted / $tbutTotal) * 100, 1) : 0;
+        $tbutAvgDur     = TbutSession::avg('duration_seconds');
+        $tbutAvgRun     = TbutSession::avg('run_count');
+
         return view('admin.dashboard.index', compact(
             'userName',
             'userRole',
@@ -122,7 +130,12 @@ class DashboardController extends Controller
             'recentProgress',
             'studentProgress',
             'materialStats',
-            'popularMaterials'
+            'popularMaterials',
+            'tbutTotal',
+            'tbutCompleted',
+            'tbutCompRate',
+            'tbutAvgDur',
+            'tbutAvgRun'
         ));
     }
 

@@ -1,302 +1,647 @@
 @props(['activePage', 'userName', 'userRole'])
 
-<aside
-    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 fixed-start bg-gradient-dark"
-    id="sidenav-main">
-    <br>
-    <div class="sidenav-header d-flex flex-column align-items-center justify-content-center py-3">
-        @php
-            $dashboardRoute = auth()->user()->role_id === 3 ? 'mahasiswa.dashboard' : 'admin.dashboard';
-        @endphp
-        <a class="navbar-brand w-100 text-center" href="{{ route($dashboardRoute) }}">
-            <img src="{{ asset('images/logo.png') }}" alt="OOPEDIA" class="img-fluid" style="max-height: 130px; width: auto;">
+@php
+    $dashboardRoute = auth()->user()->role_id === 3 ? 'mahasiswa.dashboard' : 'admin.dashboard';
+    $pendingCount   = \App\Models\User::where('role_id', 2)->where('is_approved', false)->count();
+    $initials       = strtoupper(substr($userName, 0, 1));
+@endphp
+
+<aside id="sidenav-main" class="oopsidebar">
+
+    <div class="oopsidebar__logo">
+        <a href="{{ route($dashboardRoute) }}" class="logo-link">
+            <img src="{{ asset('images/logo.png') }}" alt="OOPEDIA">
         </a>
+        <span class="logo-pulse"></span>
     </div>
-    <br>
-    <hr class="horizontal light mt-0 mb-2">
-    <div class="d-flex align-items-center mx-3">
-        <i class="material-icons opacity-10 me-2">person</i>
-        <div class="flex-grow-1 text-center">
-            <span class="font-weight-bold text-white">{{ $userName }}</span>
+
+    <div class="oopsidebar__user">
+        <div class="avatar-wrapper">
+            <div class="oopsidebar__user-avatar">{{ $initials }}</div>
+            <span class="status-dot"></span>
         </div>
-        <span class="text-white ms-2">{{ $userRole }}</span>
+        <div class="oopsidebar__user-info">
+            <strong>{{ $userName }}</strong>
+            <span>{{ $userRole }}</span>
+        </div>
     </div>
-    <hr class="horizontal light mt-2 mb-2">
-    <div class="collapse navbar-collapse w-auto max-height-vh-100" id="sidenav-collapse-main">
-        <ul class="navbar-nav">
-            {{-- Menu Dashboard untuk Semua Role --}}
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'dashboard' ? 'active bg-gradient-primary' : '' }}"
-                    href="{{ route($dashboardRoute) }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">dashboard</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Dashboard</span>
-                </a>
-            </li>
 
-            {{-- Menu Pembelajaran --}}
-            <li class="nav-item mt-3">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Kelola Pembelajaran</h6>
-            </li>
-            
-            {{-- Menu Materi --}}
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'materials' ? 'active bg-gradient-primary' : '' }}"
-                    href="{{ route('admin.materials.index') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">library_books</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Kelola Materi</span>
-                </a>
-            </li>
+    <nav class="oopsidebar__nav">
 
-            {{-- Menu Soal --}}
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'questions-dashboard' ? 'active bg-gradient-primary' : '' }}" 
-                   href="{{ route('admin.questions.dashboard') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">quiz</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Kelola Soal</span>
-                </a>
-            </li>
+        <a href="{{ route($dashboardRoute) }}"
+           class="oopsidebar__item {{ $activePage == 'dashboard' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">dashboard</i></span>
+            <span>Dashboard</span>
+            <span class="hover-highlight"></span>
+        </a>
 
-            {{-- Menu Bank Soal hanya untuk Admin dan Superadmin --}}
-            @if(auth()->user()->role_id <= 2)
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'question-banks' ? 'active bg-gradient-primary' : '' }}" href="{{ route('admin.question-banks.index') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">quiz</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Bank Soal</span>
-                </a>
-            </li>
+             <div class="oopsidebar__section">
+                <span>Kelola Pembelajaran</span>
+            </div>
+
+        <a href="{{ route('admin.materials.index') }}"
+           class="oopsidebar__item {{ $activePage == 'materials' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">library_books</i></span>
+            <span>Kelola Materi</span>
+            <span class="hover-highlight"></span>
+        </a>
+
+        <a href="{{ route('admin.questions.dashboard') }}"
+           class="oopsidebar__item {{ $activePage == 'questions-dashboard' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">quiz</i></span>
+            <span>Kelola Soal</span>
+            <span class="hover-highlight"></span>
+        </a>
+
+        @if(auth()->user()->role_id <= 2)
+        <a href="{{ route('admin.question-banks.index') }}"
+           class="oopsidebar__item {{ $activePage == 'question-banks' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">account_balance</i></span>
+            <span>Bank Soal</span>
+            <span class="hover-highlight"></span>
+        </a>
+        @endif
+
+        <a href="{{ route('virtual-lab.index') }}"
+           class="oopsidebar__item {{ $activePage == 'virtual-lab' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">code</i></span>
+            <span>Virtual Lab</span>
+            <span class="hover-highlight"></span>
+        </a>
+
+        @if(auth()->user()->role_id <= 2)
+        <a href="{{ route('admin.virtual-lab-tasks.index') }}"
+           class="oopsidebar__item {{ request()->routeIs('admin.virtual-lab-tasks.*') ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">assignment</i></span>
+            <span>Kelola Tugas Lab</span>
+            <span class="hover-highlight"></span>
+        </a>
+        @endif
+
+             <div class="oopsidebar__section">
+                <span>Data Mahasiswa</span>
+            </div>
+
+        <a href="{{ route('admin.students.index') }}"
+           class="oopsidebar__item {{ $activePage == 'students' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">school</i></span>
+            <span>Data Mahasiswa</span>
+            <span class="hover-highlight"></span>
+        </a>
+
+        {{-- Section: Dosen (Superadmin only) --}}
+        @if(auth()->user()->role_id == 1)
+        <div class="oopsidebar__section">
+            <span>Data Dosen</span>
+        </div>
+
+        <a href="{{ route('admin.users.index') }}"
+           class="oopsidebar__item {{ $activePage == 'users' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">manage_accounts</i></span>
+            <span>Data Dosen</span>
+            <span class="hover-highlight"></span>
+        </a>
+
+        <a href="{{ route('admin.pending-admins') }}"
+           class="oopsidebar__item {{ $activePage == 'pending-users' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">person_add</i></span>
+            <span>Dosen Pending</span>
+            @if($pendingCount > 0)
+            <span class="oopsidebar__badge">{{ $pendingCount }}</span>
             @endif
+            <span class="hover-highlight"></span>
+        </a>
+        @endif
 
-            {{-- Menu Virtual Lab untuk Semua Role --}}
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'virtual-lab' ? 'active bg-gradient-primary' : '' }}" href="{{ route('virtual-lab.index') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">code</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Virtual Lab</span>
-                </a>
-            </li>
+        {{-- Section: Feedback & Analisis --}}
+        @if(auth()->user()->role_id <= 2)
+        <div class="oopsidebar__section">
+            <span>Feedback &amp; Analisis</span>
+        </div>
 
-            {{-- Menu Kelola Tugas Virtual Lab (Admin/Dosen Only) --}}
-            @if(auth()->user()->role_id <= 2)
-            <li class="nav-item">
-                <a class="nav-link text-white {{ request()->routeIs('admin.virtual-lab-tasks.*') ? 'active bg-gradient-primary' : '' }}" href="{{ route('admin.virtual-lab-tasks.index') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">assignment</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Kelola Tugas Lab</span>
-                </a>
-            </li>
-            @endif
+        <a href="{{ route('admin.ueq.index') }}"
+           class="oopsidebar__item {{ $activePage == 'ueq' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">poll</i></span>
+            <span>UEQ Survey</span>
+            <span class="hover-highlight"></span>
+        </a>
 
-            {{-- Menu Progress Mahasiswa --}}
-            <li class="nav-item mt-3">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Data Mahasiswa</h6>
-            </li>
+        <a href="{{ route('admin.tbut.index') }}"
+           class="oopsidebar__item {{ $activePage == 'tbut' ? 'is-active' : '' }}">
+            <span class="oopsidebar__icon"><i class="material-icons">timer</i></span>
+            <span>Analisis TBUT</span>
+            <span class="hover-highlight"></span>
+        </a>
+        @endif
 
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'students' ? 'active bg-gradient-primary' : '' }}"
-                    href="{{ route('admin.students.index') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">school</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Data Mahasiswa</span>
-                </a>
-            </li>
+    </nav>
 
-            {{-- Menu Admin hanya untuk Superadmin --}}
-            @if(auth()->user()->role_id == 1)
-            <li class="nav-item mt-3">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Data Dosen</h6>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'users' ? 'active bg-gradient-primary' : '' }}"
-                    href="{{ route('admin.users.index') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">person</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Data Dosen</span>
-                </a>
-            </li>
-            
-            {{-- Menu Admin Pending hanya untuk Superadmin --}}
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'pending-users' ? 'active bg-gradient-primary' : '' }}" 
-                   href="{{ route('admin.pending-admins') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">person_add</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Dosen Pending</span>
-                    @php
-                        $pendingAdminsCount = \App\Models\User::where('role_id', 2)->where('is_approved', false)->count();
-                    @endphp
-                    @if($pendingAdminsCount > 0)
-                        <span class="badge bg-danger ms-auto">{{ $pendingAdminsCount }}</span>
-                    @endif
-                </a>
-            </li>
-            @endif
-
-            {{-- Menu UEQ Survey Results hanya untuk Admin dan Superadmin --}}
-            @if(auth()->user()->role_id <= 2)
-            <li class="nav-item mt-3">
-                <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Feedback</h6>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white {{ $activePage == 'ueq' ? 'active bg-gradient-primary' : '' }}"
-                    href="{{ route('admin.ueq.index') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">poll</i>
-                    </div>
-                    <span class="nav-link-text ms-1">UEQ Survey Results</span>
-                </a>
-            </li>
-            @endif
-        </ul>
+    <div class="oopsidebar__footer">
+        <form method="POST" action="{{ route('admin.logout') }}">
+            @csrf
+            <button type="submit" class="oopsidebar__logout">
+                <i class="material-icons">logout</i>
+                <span>Keluar</span>
+                <span class="logout-shine"></span>
+            </button>
+        </form>
     </div>
 </aside>
 
 <style>
-/* Styling untuk dropdown menu */
-#questionsMenu {
-    margin-left: 1rem;
-    transition: all 0.3s ease;
+:root {
+    --sidebar-bg-start: #0f1117;
+    --sidebar-bg-end: #1a1d29;
+    --sidebar-accent-primary: #4facfe;
+    --sidebar-accent-secondary: #00f2fe;
+    --sidebar-accent-purple: #667eea;
+    --sidebar-accent-purple-end: #764ba2;
+    --sidebar-text-primary: #fff;
+    --sidebar-text-secondary: rgba(255,255,255,0.65);
+    --sidebar-text-muted: rgba(255,255,255,0.3);
+    --sidebar-hover-bg: rgba(255,255,255,0.07);
+    --sidebar-active-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --sidebar-border: rgba(255,255,255,0.06);
+    --sidebar-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#questionsMenu .nav-link {
-    padding: 0.5rem 1rem;
-    margin: 0.25rem 0;
-    border-radius: 0.375rem;
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-#questionsMenu .nav-link:hover {
-    background-color: rgba(199, 199, 199, 0.2);
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(102,126,234,0.3); }
+    50% { box-shadow: 0 0 30px rgba(102,126,234,0.6); }
 }
 
-#questionsMenu .nav-link.active {
-    background: linear-gradient(195deg, #EC407A 0%, #D81B60 100%);
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
 }
 
-/* Animasi untuk icon dropdown */
-[aria-expanded="true"] .material-icons.ms-auto {
-    transform: rotate(180deg);
-    transition: transform 0.3s ease;
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 
-[aria-expanded="false"] .material-icons.ms-auto {
-    transform: rotate(0deg);
-    transition: transform 0.3s ease;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Styling untuk item dropdown */
-.sidenav-mini-icon {
-    display: inline-flex;
+@keyframes iconBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+.oopsidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--sidebar-bg-start) 0%, var(--sidebar-bg-end) 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 15s ease infinite;
+    border-right: 1px solid var(--sidebar-border);
+    overflow: hidden;
+    font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+}
+
+.oopsidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(79,172,254,0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(118,75,162,0.08) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.oopsidebar__nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.oopsidebar__nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.oopsidebar__nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.oopsidebar__nav::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
+
+.oopsidebar__nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.oopsidebar__logo {
+    padding: 20px 20px 12px;
+    text-align: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.oopsidebar__logo .logo-link {
+    display: inline-block;
+    position: relative;
+    transition: var(--sidebar-transition);
+}
+
+.oopsidebar__logo .logo-link:hover {
+    transform: scale(1.05);
+}
+
+.oopsidebar__logo img {
+    max-height: 56px;
+    width: auto;
+    filter: brightness(0) invert(1);
+    opacity: .9;
+    transition: var(--sidebar-transition);
+}
+
+.oopsidebar__logo img:hover {
+    opacity: 1;
+    filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(79,172,254,0.3));
+}
+
+.oopsidebar__logo .logo-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 30px;
+    background: radial-gradient(ellipse, rgba(79,172,254,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulseGlow 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.oopsidebar__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 12px 8px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    flex-shrink: 0;
+    transition: var(--sidebar-transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.oopsidebar__user::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: 0.5s;
+}
+
+.oopsidebar__user:hover::before {
+    left: 100%;
+}
+
+.oopsidebar__user:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.oopsidebar__user .avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.oopsidebar__user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--sidebar-accent-purple) 0%, var(--sidebar-accent-purple-end) 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 5s ease infinite;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    flex-shrink: 0;
+    transition: var(--sidebar-transition);
+    position: relative;
+    z-index: 1;
 }
 
-.sidenav-normal {
-    font-size: 0.875rem;
+.oopsidebar__user:hover .oopsidebar__user-avatar {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+}
+
+.status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background: #22c55e;
+    border: 2px solid #0f1117;
+    border-radius: 50%;
+    animation: float 2s ease-in-out infinite;
+}
+
+.oopsidebar__user-info {
+    overflow: hidden;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.oopsidebar__user-info strong {
+    display: block;
+    color: var(--sidebar-text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: var(--sidebar-transition);
+}
+
+.oopsidebar__user:hover .oopsidebar__user-info strong {
+    color: var(--sidebar-accent-secondary);
+}
+
+.oopsidebar__user-info span {
+    display: block;
+    font-size: 11px;
+    color: var(--sidebar-text-muted);
     font-weight: 400;
+    transition: var(--sidebar-transition);
 }
 
-.material-icons.ms-auto::after {
-    display: none !important;
-    content: none !important;
+.oopsidebar__user:hover .oopsidebar__user-info span {
+    color: var(--sidebar-text-secondary);
 }
 
-.nav-link::after {
-    display: none !important; /* Menghilangkan kotak */
+.oopsidebar__section {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sidebar-text-muted);
+    padding: 18px 10px 6px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--sidebar-transition);
 }
 
-.nav-item h6 {
-    margin: 0;
-    padding: 1rem 0;
+.oopsidebar__section::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    margin-left: 8px;
 }
 
-#exerciseMenu {
-    margin-left: 1rem;
-    transition: all 0.3s ease;
+.oopsidebar__section span {
+    animation: fadeInUp 0.4s ease-out;
 }
 
-#exerciseMenu .nav-link {
-    padding: 0.5rem 1rem;
-    margin: 0.25rem 0;
-    border-radius: 0.375rem;
+.oopsidebar__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: var(--sidebar-text-secondary);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--sidebar-transition);
+    margin-bottom: 2px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.4s ease-out;
+    animation-fill-mode: both;
 }
 
-#exerciseMenu .nav-link:hover {
-    background-color: rgba(199, 199, 199, 0.2);
+.oopsidebar__item:nth-child(2) { animation-delay: 0.05s; }
+.oopsidebar__item:nth-child(3) { animation-delay: 0.1s; }
+.oopsidebar__item:nth-child(4) { animation-delay: 0.15s; }
+.oopsidebar__item:nth-child(5) { animation-delay: 0.2s; }
+.oopsidebar__item:nth-child(6) { animation-delay: 0.25s; }
+.oopsidebar__item:nth-child(7) { animation-delay: 0.3s; }
+
+.oopsidebar__item .hover-highlight {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--sidebar-accent-primary), var(--sidebar-accent-secondary));
+    border-radius: 0 3px 3px 0;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
 }
 
-#exerciseMenu .nav-link.active {
-    background: linear-gradient(195deg, #EC407A 0%, #D81B60 100%);
+.oopsidebar__item:hover {
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-primary);
+    transform: translateX(4px);
 }
 
-.sidenav {
-    height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 100px; /* Menambah padding bottom */
+.oopsidebar__item:hover .hover-highlight {
+    transform: scaleY(1);
 }
 
-/* Menyembunyikan scrollbar tapi tetap bisa scroll */
-.sidenav::-webkit-scrollbar {
-    width: 0;  /* Untuk Chrome, Safari, dan Opera */
-    display: none;
+.oopsidebar__item.is-active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-text-primary);
+    box-shadow: 0 4px 15px rgba(102,126,234,0.35), 0 0 20px rgba(102,126,234,0.2);
+    transform: scale(1.02);
 }
 
-.sidenav {
-    -ms-overflow-style: none;  /* Untuk Internet Explorer dan Edge */
-    scrollbar-width: none;  /* Untuk Firefox */
+.oopsidebar__item.is-active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 2s infinite;
 }
 
-/* Memastikan konten sidebar memiliki ruang yang cukup */
-.sidenav .navbar-collapse {
-    height: auto;
-    min-height: calc(100vh - 100px);
+.oopsidebar__item.is-active .oopsidebar__icon {
+    opacity: 1;
+}
+
+.oopsidebar__item.is-active .oopsidebar__icon i {
+    animation: iconBounce 1s ease-in-out;
+}
+
+.oopsidebar__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: var(--sidebar-transition);
+    position: relative;
+}
+
+.oopsidebar__item:hover .oopsidebar__icon {
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.1);
+}
+
+.oopsidebar__item.is-active .oopsidebar__icon {
+    background: rgba(255,255,255,.18);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.oopsidebar__icon .material-icons {
+    font-size: 18px;
+    transition: var(--sidebar-transition);
+}
+
+.oopsidebar__item:hover .oopsidebar__icon .material-icons {
+    color: var(--sidebar-accent-secondary);
+}
+
+.oopsidebar__item.is-active .oopsidebar__icon .material-icons {
+    color: #fff;
+}
+
+.oopsidebar__badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    line-height: 1.4;
+    animation: pulseGlow 2s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(239,68,68,0.4);
+}
+
+.oopsidebar__footer {
+    padding: 12px;
+    border-top: 1px solid rgba(255,255,255,.06);
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.2);
+}
+
+.oopsidebar__logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #f87171;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--sidebar-transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.oopsidebar__logout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: 0.5s;
+}
+
+.oopsidebar__logout:hover::before {
+    left: 100%;
+}
+
+.oopsidebar__logout:hover {
+    background: rgba(239,68,68,0.25);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(239,68,68,0.3);
+}
+
+.oopsidebar__logout .material-icons {
+    font-size: 18px;
+    transition: var(--sidebar-transition);
+}
+
+.oopsidebar__logout:hover .material-icons {
+    transform: translateX(3px);
+}
+
+.logout-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: skewX(-20deg);
+    animation: shimmer 3s infinite;
+}
+
+.main-content {
+    margin-left: 260px !important;
+}
+
+@media (max-width: 991px) {
+    .oopsidebar { transform: translateX(-100%); }
+    .main-content { margin-left: 0 !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle all dropdown toggles
-    const dropdownToggles = document.querySelectorAll('[data-bs-toggle="collapse"]');
-    
-    dropdownToggles.forEach(function(toggle) {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetMenu = document.querySelector(targetId);
-            
-            // Tutup semua dropdown yang terbuka kecuali yang sedang di-klik
-            dropdownToggles.forEach(function(otherToggle) {
-                if (otherToggle !== toggle) {
-                    const otherId = otherToggle.getAttribute('href');
-                    const otherMenu = document.querySelector(otherId);
-                    otherToggle.setAttribute('aria-expanded', 'false');
-                    otherMenu?.classList.remove('show');
-                }
-            });
-
-            // Toggle dropdown yang di-klik
-            const willExpand = !targetMenu.classList.contains('show');
-            this.setAttribute('aria-expanded', willExpand);
-            targetMenu.classList.toggle('show');
-        });
-    });
-});
-</script>
-
-{{-- Tambahkan script tutorial di bagian bawah file --}}
 @push('js')
 @endpush

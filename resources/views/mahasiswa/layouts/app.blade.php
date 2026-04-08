@@ -144,14 +144,45 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
     <link href="{{ asset('css/loading-overlay.css') }}" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa !important; /* Latar abu-abu sangat muda */
+        }
+        @php
+            $isGuest = !auth()->check() || (auth()->check() && auth()->user()->role_id == 4);
+        @endphp
+        @media (min-width: 992px) {
+            .main-content {
+                margin-left: {{ $isGuest ? '0' : '260px' }} !important; /* Sidebar width(260) or 0 */
+                margin-top: 0 !important; /* Override mahasiswa.css margin-top */
+                padding-top: 10px !important; /* Diperkecil karena container sudah punya margin-top 62px */
+                padding-right: 20px !important;
+                padding-left: 20px !important;
+                min-height: 100vh;
+            }
+        }
+        @media (max-width: 991.98px) {
+            .main-content {
+                margin-top: 0 !important; /* Override mahasiswa.css margin-top */
+                padding-top: 10px !important; 
+            }
+        }
+    </style>
 </head>
 <body>
+    @php
+        $isGuest = !auth()->check() || (auth()->check() && auth()->user()->role_id == 4);
+    @endphp
+    
     <!-- Include Navbar Component -->
     @include('mahasiswa.components.navbar')
 
-    <div class="container">
+    <div class="container-fluid p-0" id="main-container">
         <!-- Include Sidebar Component -->
-        @include('mahasiswa.components.sidebar')
+        @if(!$isGuest)
+            @include('mahasiswa.components.sidebar')
+        @endif
 
         <!-- Main Content -->
         <main class="main-content">

@@ -79,16 +79,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
-        <!-- Hidden forms for guest logout and redirect -->
-        <form id="guest-logout-login-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-            @csrf
-            <input type="hidden" name="redirect" value="{{ route('login') }}">
-        </form>
-
-        <form id="guest-logout-register-form" action="{{ route('guest.logout') }}" method="POST" style="display: none;">
-            @csrf
-            <input type="hidden" name="redirect" value="{{ route('register') }}">
-        </form>
     @endguest
 
     <!-- Video Section -->

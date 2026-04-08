@@ -32,4 +32,9 @@ class VirtualLabTask extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function tbutSessions()
+    {
+        return $this->hasMany(\App\Models\TbutSession::class, 'task_id');
+    }
 }

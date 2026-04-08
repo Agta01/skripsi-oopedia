@@ -5,7 +5,7 @@
 <div class="materi-card shadow-sm rounded">
     <div class="materi-card-body p-4">
         <div id="questionContainer">
-            <form id="questionForm"
+            <form id="questionForm" class="ajax-form"
                 action="{{ route('questions.check-answer', [
                     'material' => $material->id,
                     'question' => $currentQuestion->id,
@@ -169,19 +169,32 @@
                             </div>
                         @else
                             <div class="question-content mb-4">
-                                <h5 class="mb-3"><i class="fas fa-question me-2"></i>Pertanyaan</h5>
-                                <div class="question-text whitespace-pre-wrap">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="tw-bg-indigo-100 tw-text-indigo-600 tw-p-2 tw-rounded-lg shadow-sm me-3">
+                                        <i class="fas fa-question fs-5"></i>
+                                    </div>
+                                    <h5 class="mb-0 fw-bold tw-text-gray-800">Pertanyaan</h5>
+                                </div>
+                                <div class="question-text whitespace-pre-wrap tw-bg-gradient-to-br tw-from-indigo-50 tw-to-blue-50 tw-border tw-border-indigo-100 tw-rounded-2xl tw-p-5 tw-shadow-sm tw-text-gray-800 tw-leading-relaxed">
                                     {!! $currentQuestion->question_text !!}
                                 </div>
                             </div>
-                            <!-- Tampilkan radio button untuk tipe soal lainnya -->
-                            @foreach ($currentQuestion->answers as $answer)
-                                <div class="answer-option p-3 mb-3 rounded d-flex align-items-center">
-                                    <input type="radio" name="answer" id="answer{{ $answer->id }}"
-                                        value="{{ $answer->id }}" class="me-3" required>
-                                    <label for="answer{{ $answer->id }}"
-                                        class="mb-0 w-100">{{ $answer->answer_text }}</label>
-                                </div>
+                            <!-- Tampilkan radio button bergaya SaaS Card Vibrant -->
+                            @foreach ($currentQuestion->answers as $index => $answer)
+                                @php
+                                    $bgColors = ['tw-bg-blue-50/80', 'tw-bg-green-50/80', 'tw-bg-purple-50/80', 'tw-bg-rose-50/80'];
+                                    $borderColors = ['tw-border-blue-200', 'tw-border-green-200', 'tw-border-purple-200', 'tw-border-rose-200'];
+                                    $hoverColors = ['hover:tw-bg-blue-100 hover:tw-border-blue-400', 'hover:tw-bg-green-100 hover:tw-border-green-400', 'hover:tw-bg-purple-100 hover:tw-border-purple-400', 'hover:tw-bg-rose-100 hover:tw-border-rose-400'];
+                                    $idx = $loop->index % 4;
+                                @endphp
+                                <label for="answer{{ $answer->id }}" class="tw-block tw-cursor-pointer tw-mb-3 answer-label-wrapper">
+                                    <div class="tw-p-4 tw-rounded-2xl tw-border {{ $borderColors[$idx] }} {{ $bgColors[$idx] }} {{ $hoverColors[$idx] }} hover:tw-shadow-md tw-transition-all d-flex align-items-center" data-base-classes="{{ $borderColors[$idx] }} {{ $bgColors[$idx] }}">
+                                        <input type="radio" name="answer" id="answer{{ $answer->id }}"
+                                            value="{{ $answer->id }}" class="tw-w-5 tw-h-5 tw-text-indigo-600 focus:tw-ring-indigo-500 tw-border-gray-300 me-3" required
+                                            onclick="document.querySelectorAll('.answer-label-wrapper div').forEach(div => { div.className = 'tw-p-4 tw-rounded-2xl tw-border hover:tw-shadow-md tw-transition-all d-flex align-items-center ' + div.getAttribute('data-base-classes'); }); this.parentElement.className = 'tw-p-4 tw-rounded-2xl tw-border tw-transition-all d-flex align-items-center tw-bg-indigo-100 tw-border-indigo-500 tw-shadow-md tw-ring-2 tw-ring-indigo-300';">
+                                        <div class="mb-0 w-100 tw-text-gray-800 fw-medium tw-leading-relaxed" style="font-size: 15px;">{!! $answer->answer_text !!}</div>
+                                    </div>
+                                </label>
                             @endforeach
                         @endif
                     @endif
@@ -195,30 +208,7 @@
             </form>
         </div>
 
-        <!-- Feedback container (initially hidden) -->
-        <div class="exercise-feedback" style="display: none;">
-            <div class="feedback-container">
-                <div id="feedbackIcon" class="feedback-icon">
-                    <!-- Icon will be inserted here by JS -->
-                </div>
-                <div id="feedbackStatus">
-                    <!-- Status will be inserted here by JS -->
-                </div>
-                <div id="explanationBox" style="display: none;" class="explanation-box mt-4 p-3 bg-light rounded">
-                    <h5><i class="fas fa-info-circle me-2"></i>Penjelasan</h5>
-                    <p id="explanationText" class="mb-0"></p>
-                </div>
-                <div class="feedback-actions mt-4">
-                    <button id="tryAgainBtn" class="btn btn-outline-light px-4 py-2">
-                        <i class="fas fa-redo me-2"></i>Coba Lagi
-                    </button>
-                    <button id="nextQuestionBtn" class="btn btn-success px-4 py-2" style="display: none;">
-                        Lanjut ke Soal Berikutnya <i class="fas fa-arrow-right ms-2"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+        <!-- Feedback UI removed, handled by SweetAlert2 -->
 </div>
 
 <style>

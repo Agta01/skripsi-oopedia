@@ -4,28 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\TbutSession;
 
 class VirtualLabController extends Controller
 {
     /**
      * Display the virtual lab page
      */
-    /**
-     * Display the virtual lab page
-     */
     public function index(Request $request)
     {
         // 1. Fetch data needed for Task List (and Sidebar)
-        // Order tasks by title for consistent display
         $materials = \App\Models\Material::with(['virtualLabTasks' => function($query) {
             $query->orderBy('title');
         }])->get();
 
         // 2. Determine Mode: Sandbox vs Task vs List
-        // If 'task' param exists -> Show specific task in Editor
-        // If 'mode' param is 'sandbox' -> Show Sandbox in Editor
-        // Else -> Show Task List View
-        
         $showEditor = false;
         $activeTask = null;
         
@@ -38,75 +31,128 @@ class VirtualLabController extends Controller
             $showEditor = true;
         }
 
-        // 3. Render View based on logic
-        
-        // 3. Render View based on logic
-        
+        // 3. TBUT: Start/Resume session when student opens a task
+        $tbutSession = null;
+        if ($showEditor && $activeTask && auth()->check() && auth()->user()->role_id == 3) {
+            $tbutSession = TbutSession::firstOrCreate(
+                ['user_id' => auth()->id(), 'task_id' => $activeTask->id],
+                ['started_at' => now(), 'run_count' => 0, 'is_completed' => false]
+            );
+            // NOTE: if already completed, we still show the view but in read-only mode
+            // (handled in the Blade view by checking $tbutSession->is_completed)
+        }
+
+        // 4. Render View based on logic
         // If User is Admin/Dosen (Role 1 & 2)
         if (auth()->check() && auth()->user()->role_id <= 2) {
             if ($showEditor) {
-                // Return Admin Editor View
-                // Prepared default files for Sandbox
-                $filesData = [
-                    [
-                        'filename' => 'Main.java',
-                        'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"
-                    ]
-                ];
-
+                $filesData = [['filename' => 'Main.java', 'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"]];
                 if ($activeTask) {
-                    $filesData = [
-                        [
-                            'filename' => 'Main.java',
-                            'content' => $activeTask->template_code
-                        ]
-                    ];
+                    $filesData = [['filename' => 'Main.java', 'content' => $activeTask->template_code]];
                 }
-
                 return view('virtual-lab.index', [
                     'materials' => $materials,
                     'activeTask' => $activeTask,
                     'files' => $filesData
                 ]);
             } else {
-                // Return Admin Task List View
-                return view('virtual-lab.admin-task-list', [
-                    'materials' => $materials
-                ]);
+                return view('virtual-lab.admin-task-list', ['materials' => $materials]);
             }
         }
 
-        // If User is Mahasiswa (Role 3), switch between List and Editor
+        // If User is Mahasiswa (Role 3)
         if ($showEditor) {
-            // Prepared default files for Sandbox
-            $filesData = [
-                [
-                    'filename' => 'Main.java',
-                    'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"
-                ]
-            ];
+            $filesData = [['filename' => 'Main.java', 'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"]];
 
-            // If Task is active, override with template code
+            // If Task is active, load saved code or template
             if ($activeTask) {
-                $filesData = [
-                    [
-                        'filename' => 'Main.java',
-                        'content' => $activeTask->template_code
-                    ]
-                ];
+                $savedCode = $tbutSession?->final_code ?? $activeTask->template_code;
+                $filesData = [['filename' => 'Main.java', 'content' => $savedCode]];
             }
 
             return view('virtual-lab.mahasiswa', [
-                'materials' => $materials,
-                'activeTask' => $activeTask,
-                'files' => $filesData
+                'materials'    => $materials,
+                'activeTask'   => $activeTask,
+                'files'        => $filesData,
+                'tbutSession'  => $tbutSession,
             ]);
         } else {
-            // Show the Task Selection List
+            // Pass set of completed task IDs so task-list can render 'Review' button
+            $completedTaskIds = [];
+            if (auth()->check() && auth()->user()->role_id == 3) {
+                $completedTaskIds = TbutSession::where('user_id', auth()->id())
+                    ->where('is_completed', true)
+                    ->pluck('task_id')
+                    ->toArray();
+            }
             return view('virtual-lab.task-list', [
-                'materials' => $materials
+                'materials'        => $materials,
+                'completedTaskIds' => $completedTaskIds,
             ]);
         }
+    }
+
+    /**
+     * Save code (AJAX, without execution) — TBUT: records intermediate code.
+     */
+    public function saveCode(Request $request)
+    {
+        $request->validate([
+            'task_id'    => 'required|integer|exists:virtual_lab_tasks,id',
+            'code'       => 'required|string',
+            'elapsed'    => 'nullable|integer', // seconds elapsed from JS timer
+        ]);
+
+        if (!auth()->check() || auth()->user()->role_id != 3) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $session = TbutSession::where('user_id', auth()->id())
+            ->where('task_id', $request->task_id)
+            ->first();
+
+        if (!$session) {
+            return response()->json(['success' => false, 'message' => 'Sesi tidak ditemukan'], 404);
+        }
+
+        $session->update([
+            'final_code'       => $request->code,
+            'duration_seconds' => $request->elapsed ?? $session->duration_seconds,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Kode disimpan!']);
+    }
+
+    /**
+     * Submit task — TBUT: marks session as completed with final metrics.
+     */
+    public function submitTask(Request $request)
+    {
+        $request->validate([
+            'task_id' => 'required|integer|exists:virtual_lab_tasks,id',
+            'code'    => 'required|string',
+            'elapsed' => 'nullable|integer',
+        ]);
+
+        if (!auth()->check() || auth()->user()->role_id != 3) {
+            return redirect()->route('virtual-lab.index')->with('error', 'Unauthorized');
+        }
+
+        $session = TbutSession::where('user_id', auth()->id())
+            ->where('task_id', $request->task_id)
+            ->first();
+
+        if ($session) {
+            $session->update([
+                'final_code'       => $request->code,
+                'duration_seconds' => $request->elapsed ?? $session->duration_seconds,
+                'submitted_at'     => now(),
+                'is_completed'     => true,
+            ]);
+        }
+
+        return redirect()->route('virtual-lab.index')
+            ->with('success', '✅ Tugas berhasil diselesaikan! Kode Anda telah disimpan.');
     }
 
     /**
@@ -115,21 +161,14 @@ class VirtualLabController extends Controller
     public function execute(Request $request)
     {
         $request->validate([
-            'files' => 'required|array|max:5',
+            'files'   => 'required|array|max:5',
             'files.*.filename' => 'required|string',
-            'files.*.content' => 'required|string',
-            'action' => 'nullable|string'
+            'files.*.content'  => 'required|string',
+            'action'  => 'nullable|string',
         ]);
 
-        // Normalize files array to ensure 0-indexed list for the View
         $filesData = array_values($request->input('files'));
-        $action = $request->action;
-
-        // Handle submit action
-        if ($action === 'submit') {
-            return redirect()->route('virtual-lab.index')
-                ->with('success', 'Kode Anda telah disubmit untuk dinilai!');
-        }
+        $action    = $request->action;
 
         // Fetch Active Task if ID is present
         $activeTask = null;
@@ -137,10 +176,28 @@ class VirtualLabController extends Controller
             $activeTask = \App\Models\VirtualLabTask::find($request->input('task_id'));
         }
 
-        // Fetch Materials for sidebar (needed for view)
+        // Fetch Materials for sidebar
         $materials = \App\Models\Material::with(['virtualLabTasks' => function($query) {
             $query->orderBy('title');
         }])->get();
+
+        // TBUT: Increment run_count for mahasiswa
+        $tbutSession = null;
+        if ($activeTask && auth()->check() && auth()->user()->role_id == 3) {
+            $tbutSession = TbutSession::where('user_id', auth()->id())
+                ->where('task_id', $activeTask->id)
+                ->first();
+
+            if ($tbutSession) {
+                $tbutSession->increment('run_count');
+                // Also save a snapshot of current code
+                $mainCode = $filesData[0]['content'] ?? null;
+                if ($mainCode) {
+                    $tbutSession->update(['final_code' => $mainCode]);
+                }
+                $tbutSession->refresh();
+            }
+        }
 
         // Handle run action
         try {
@@ -149,106 +206,72 @@ class VirtualLabController extends Controller
             $mainFileIndex = 0;
 
             foreach ($filesData as $index => $fileData) {
-                $content = $fileData['content'];
-                $originalFilename = trim($fileData['filename']);
-
-                // Default: Use original filename, ensuring exactly one .java extension
-                $baseName = preg_replace('/(\.java)+$/i', '', $originalFilename);
+                $content  = $fileData['content'];
+                $baseName = preg_replace('/(\\.java)+$/i', '', trim($fileData['filename']));
                 $finalFilename = $baseName . '.java';
 
-                // PRIORITY: Auto-detect Public Class Name
-                // If the file defines a class (public class X or class X), we MUST name the file X.java
-                // regardless of what the tab says. This fixes "File3.java" -> "User.java" issues.
-                if (preg_match('/(?:public\s+)?class\s+([a-zA-Z0-9_]+)/', $content, $matches)) {
-                    $detectedClassName = $matches[1];
-                    $finalFilename = $detectedClassName . '.java';
+                // Auto-detect class name
+                if (preg_match('/(?:public\\s+)?class\\s+([a-zA-Z0-9_]+)/', $content, $matches)) {
+                    $finalFilename = $matches[1] . '.java';
                 }
 
-                $apiFiles[] = [
-                    'name' => $finalFilename,
-                    'content' => $content
-                ];
+                $apiFiles[] = ['name' => $finalFilename, 'content' => $content];
 
-                // Detect Main class (public static void main)
-                if (preg_match('/public\s+static\s+void\s+main\s*\(/i', $content)) {
+                if (preg_match('/public\\s+static\\s+void\\s+main\\s*\\(/i', $content)) {
                     $mainFileIndex = $index;
                 }
             }
 
-            // Move Main file to the top (Index 0) for Piston execution
             if ($mainFileIndex > 0) {
                 $mainFile = $apiFiles[$mainFileIndex];
                 unset($apiFiles[$mainFileIndex]);
                 array_unshift($apiFiles, $mainFile);
             }
 
-            // Using Piston API to execute Java code
             $response = Http::timeout(30)->post('https://emkc.org/api/v2/piston/execute', [
                 'language' => 'java',
-                'version' => '15.0.2',
-                'files' => $apiFiles
+                'version'  => '15.0.2',
+                'files'    => $apiFiles
             ]);
 
             if ($response->successful()) {
                 $result = $response->json();
-                
                 $output = $result['run']['output'] ?? '';
                 $stderr = $result['run']['stderr'] ?? '';
-                $error = false;
+                $error  = false;
 
                 if ($stderr) {
-                    // Check if success but with stderr (warnings) or actual error
                     if ($result['run']['code'] !== 0) {
-                         $output = "Error:\n" . $stderr;
-                         $error = true;
+                        $output = "Error:\n" . $stderr;
+                        $error  = true;
                     } else {
-                         // Warnings or mixed output
-                         $output .= "\n" . $stderr;
+                        $output .= "\n" . $stderr;
                     }
                 } elseif (empty($output)) {
                     $output = 'Program executed successfully (no output)';
                 }
-
-                // Determine View based on Role
-                $viewName = 'virtual-lab.index';
-                if (auth()->check() && auth()->user()->role_id == 3) {
-                     $viewName = 'virtual-lab.mahasiswa';
-                }
-
-                return view($viewName, [
-                    'materials' => $materials,
-                    'activeTask' => $activeTask,
-                    'files' => $filesData, // Return original order to UI
-                    'output' => $output,
-                    'error' => $error
-                ]);
             } else {
-                 // Determine View based on Role
-                $viewName = 'virtual-lab.index';
-                if (auth()->check() && auth()->user()->role_id == 3) {
-                     $viewName = 'virtual-lab.mahasiswa';
-                }
-
-                return view($viewName, [
-                    'materials' => $materials,
-                    'activeTask' => $activeTask,
-                    'files' => $filesData,
-                    'output' => 'Failed to execute code. API Status: ' . $response->status(),
-                    'error' => true
-                ]);
+                $output = 'Failed to execute code. API Status: ' . $response->status();
+                $error  = true;
             }
         } catch (\Exception $e) {
-            // Check role for error view
-            $viewName = (auth()->check() && auth()->user()->role_id == 3) ? 'virtual-lab.mahasiswa' : 'virtual-lab.index';
-
-            return view($viewName, [
-                'materials' => $materials,
-                'activeTask' => $activeTask,
-                'files' => $filesData,
-                'output' => 'Error: ' . $e->getMessage(),
-                'error' => true
-            ]);
+            $output = 'Error: ' . $e->getMessage();
+            $error  = true;
         }
+
+        // Determine View based on Role
+        $viewName = (auth()->check() && auth()->user()->role_id == 3)
+            ? 'virtual-lab.mahasiswa'
+            : 'virtual-lab.index';
+
+        return view($viewName, [
+            'materials'   => $materials,
+            'activeTask'  => $activeTask,
+            'files'       => $filesData,
+            'output'      => $output,
+            'error'       => $error,
+            'tbutSession' => $tbutSession,
+        ]);
     }
 
     /**
