@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Pagination\Paginator::useBootstrapFive();
+        
         View::composer('components.navbars.sidebar', function ($view) {
             $view->with('materials', Material::orderBy('created_at', 'asc')->get());
         });

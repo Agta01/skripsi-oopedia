@@ -13,17 +13,17 @@
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
             <ul class="navbar-nav ms-auto me-3">
                 <li class="nav-item d-flex align-items-center">
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" class="mb-0">
                         @csrf
-                        <button type="submit" class="nav-link px-3 nav-logout-btn">
-                            <i class="material-icons opacity-10">logout</i>
-                            <span class="nav-link-text ms-1">Logout</span>
+                        <button type="submit" class="nav-logout-btn">
+                            <i class="material-icons" style="font-size: 16px;">logout</i>
+                            <span>Logout</span>
                         </button>
                     </form>
                 </li>
                 <li class="nav-item px-3 d-flex align-items-center">
-                    <a href="javascript:;" class="nav-link text-body p-0 nav-reset-btn" onclick="resetAllTutorials()">
-                        <i class="fa fa-redo me-sm-1"></i>
+                    <a href="javascript:;" class="nav-reset-btn" onclick="resetAllTutorials()">
+                        <i class="fa fa-redo" style="font-size: 13px;"></i>
                         <span class="d-sm-inline d-none">Reset Tutorial</span>
                     </a>
                 </li>
@@ -103,19 +103,22 @@
 }
 
 .nav-logout-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 12px;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 10px;
     background: rgba(239, 68, 68, 0.08);
     border: 1px solid rgba(239, 68, 68, 0.15);
-    color: #dc2626;
-    font-weight: 500;
+    color: #dc2626 !important;
+    font-weight: 600;
     font-size: 13px;
+    line-height: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .nav-logout-btn::before {
@@ -150,17 +153,20 @@
 }
 
 .nav-reset-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 10px 14px;
-    border-radius: 12px;
+    padding: 8px 16px;
+    border-radius: 10px;
     background: rgba(79, 172, 254, 0.08);
     border: 1px solid rgba(79, 172, 254, 0.15);
-    color: #0284c7;
-    font-weight: 500;
+    color: #0284c7 !important;
+    font-weight: 600;
     font-size: 13px;
+    line-height: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
 }
 
 .nav-reset-btn:hover {
@@ -247,7 +253,7 @@ function resetAllTutorials() {
         icon: 'success',
         confirmButtonText: 'OK'
     }).then(() => {
-        const currentPage = '{{ request()->route()->getName() }}';
+        const currentPage = '{{ request()->route() ? request()->route()->getName() : "" }}';
         startAdminTutorial();
     });
 }

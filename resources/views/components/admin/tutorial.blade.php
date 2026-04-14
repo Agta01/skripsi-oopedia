@@ -4,7 +4,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const currentPage = '{{ request()->route()->getName() }}';
+    const currentPage = '{{ request()->route() ? request()->route()->getName() : "" }}';
     const tutorialKey = `admin_${currentPage}_tutorial_complete`;
     
     if (!localStorage.getItem(tutorialKey) && !localStorage.getItem('skip_admin_tour')) {
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function startAdminTutorial() {
-    const currentPage = '{{ request()->route()->getName() }}';
+    const currentPage = '{{ request()->route() ? request()->route()->getName() : "" }}';
     const steps = getTutorialSteps(currentPage);
     
     if (!steps) return;

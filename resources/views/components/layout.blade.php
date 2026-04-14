@@ -1022,6 +1022,8 @@
     <!-- Add this before the closing </body> tag -->
     <x-loading-overlay />
 
+    <!-- Fix for material-dashboard.min.js referenceButtons error -->
+    <div data-class="bg-transparent" style="display:none"></div>
 </body>
 
 </html>

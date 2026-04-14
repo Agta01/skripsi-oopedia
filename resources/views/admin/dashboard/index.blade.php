@@ -477,210 +477,184 @@
         </div>{{-- /container-fluid --}}
     </main>
     <x-admin.tutorial />
-</x-layout>
 
-@push('js')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            Chart.defaults.font.family = "'Inter', 'Plus Jakarta Sans', sans-serif";
+            Chart.defaults.color = '#7b809a';
 
-    Chart.defaults.font.family = "'Inter', 'Plus Jakarta Sans', sans-serif";
-    Chart.defaults.color = '#7b809a';
+            // ── 1. Bar Chart: Completion Rate per Materi ──────────────────────────
+            const matLabels = @json($materialStats->pluck('title'));
+            const matRates  = @json($materialStats->pluck('completion_rate'));
+            const matCount  = @json($materialStats->pluck('active_students'));
 
-    const chartAnimation = {
-        duration: 1000,
-        easing: 'easeOutQuart'
-    };
+            const gradients = ['#667eea','#11998e','#f093fb','#4facfe','#f5576c','#fa8231','#a29bfe'];
+            const bgColors  = matLabels.map((_, i) => gradients[i % gradients.length]);
 
-    const barAnimation = {
-        duration: 1500,
-        easing: 'easeOutQuart',
-        delay: (context) => context.dataIndex * 100
-    };
+            const matCtx = document.getElementById('materialChart');
+            if (matCtx) {
+                matCtx.style.width  = '100%';
+                matCtx.style.height = '250px';
+                matCtx.parentElement.style.position = 'relative';
+                matCtx.parentElement.style.height = '250px';
 
-    // ── 1. Bar Chart: Completion Rate per Materi ──────────────────────────
-    const matLabels = @json($materialStats->pluck('title'));
-    const matRates  = @json($materialStats->pluck('completion_rate'));
-    const matCount  = @json($materialStats->pluck('active_students'));
-
-    const gradients = ['#667eea','#11998e','#f093fb','#4facfe','#f5576c','#fa8231','#a29bfe'];
-    const bgColors  = matLabels.map((_, i) => gradients[i % gradients.length]);
-
-    const materialChart = new Chart(document.getElementById('materialChart'), {
-        type: 'bar',
-        data: {
-            labels: matLabels,
-            datasets: [
-                {
-                    label: 'Completion Rate (%)',
-                    data: matRates,
-                    backgroundColor: bgColors.map(c => c + 'cc'),
-                    borderColor: bgColors,
-                    borderWidth: 2,
-                    borderRadius: 8,
-                    yAxisID: 'y',
-                },
-                {
-                    label: 'Mahasiswa Aktif',
-                    data: matCount,
-                    type: 'line',
-                    borderColor: '#764ba2',
-                    backgroundColor: 'rgba(118,75,162,0.12)',
-                    borderWidth: 2.5,
-                    pointBackgroundColor: '#764ba2',
-                    pointRadius: 5,
-                    pointHoverRadius: 8,
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y2',
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-                legend: { 
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        font: { size: 12, weight: '500' }
-                    }
-                },
-                tooltip: { 
-                    borderRadius: 8,
-                    padding: 12,
-                    backgroundColor: 'rgba(26, 29, 41, 0.95)',
-                    titleFont: { size: 13, weight: '600' },
-                    bodyFont: { size: 12 },
-                    cornerRadius: 8,
-                    displayColors: true,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
+                new Chart(matCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: matLabels,
+                        datasets: [
+                            {
+                                label: 'Completion Rate (%)',
+                                data: matRates,
+                                backgroundColor: bgColors.map(c => c + 'cc'),
+                                borderColor: bgColors,
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                yAxisID: 'y',
+                            },
+                            {
+                                label: 'Mahasiswa Aktif',
+                                data: matCount,
+                                type: 'line',
+                                borderColor: '#764ba2',
+                                backgroundColor: 'rgba(118,75,162,0.12)',
+                                borderWidth: 2.5,
+                                pointBackgroundColor: '#764ba2',
+                                pointRadius: 5,
+                                pointHoverRadius: 8,
+                                tension: 0.4,
+                                fill: true,
+                                yAxisID: 'y2',
                             }
-                            if (context.parsed.y !== null) {
-                                label += context.parsed.y;
-                                if (context.datasetIndex === 0) label += '%';
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    font: { size: 12, weight: '500' }
+                                }
+                            },
+                            tooltip: {
+                                borderRadius: 8,
+                                padding: 12,
+                                backgroundColor: 'rgba(26, 29, 41, 0.95)',
+                                titleFont: { size: 13, weight: '600' },
+                                bodyFont: { size: 12 },
+                                cornerRadius: 8,
+                                displayColors: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y;
+                                            if (context.datasetIndex === 0) label += '%';
+                                        }
+                                        return label;
+                                    }
+                                }
                             }
-                            return label;
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: { display: true, text: 'Completion Rate (%)' },
+                                grid: { color: '#f0f0f0' },
+                                ticks: { font: { size: 11 } }
+                            },
+                            y2: {
+                                position: 'right',
+                                beginAtZero: true,
+                                title: { display: true, text: 'Mahasiswa Aktif' },
+                                grid: { display: false },
+                                ticks: { font: { size: 11 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { size: 11 } }
+                            }
                         }
                     }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    title: { display: true, text: 'Completion Rate (%)' },
-                    grid: { color: '#f0f0f0' },
-                    ticks: { font: { size: 11 } }
-                },
-                y2: {
-                    position: 'right',
-                    beginAtZero: true,
-                    title: { display: true, text: 'Mahasiswa Aktif' },
-                    grid: { display: false },
-                    ticks: { font: { size: 11 } }
-                },
-                x: { 
-                    grid: { display: false },
-                    ticks: { font: { size: 11 } }
-                }
-            },
-            animation: {
-                ...barAnimation,
-                onComplete: function() {
-                    const chart = this;
-                    chart.data.datasets[1].animation = {
-                        duration: 1500,
-                        easing: 'easeOutQuart'
-                    };
-                }
+                });
             }
+
+            // ── 2. Donut Chart: TBUT Completion ───────────────────────────────────
+            const tbutCompleted = {{ $tbutCompleted }};
+            const tbutPending   = {{ $tbutTotal - $tbutCompleted }};
+
+            const donutCtx = document.getElementById('tbutDonut');
+            if (donutCtx) {
+                new Chart(donutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Selesai', 'Belum Selesai'],
+                        datasets: [{
+                            data: [tbutCompleted, tbutPending],
+                            backgroundColor: ['#11998e', '#e9ecef'],
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        cutout: '72%',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                borderRadius: 8,
+                                padding: 12,
+                                backgroundColor: 'rgba(26, 29, 41, 0.95)',
+                                cornerRadius: 8
+                            }
+                        }
+                    },
+                    plugins: [{
+                        id: 'centerText',
+                        afterDraw(chart) {
+                            try {
+                                const { ctx, chartArea } = chart;
+                                if (!chartArea) return;
+                                const cx = (chartArea.left + chartArea.right) / 2;
+                                const cy = (chartArea.top + chartArea.bottom) / 2;
+                                const total = tbutCompleted + tbutPending;
+                                const pct = total > 0 ? Math.round((tbutCompleted / total) * 100) : 0;
+                                ctx.save();
+                                ctx.font = 'bold 24px Inter, sans-serif';
+                                ctx.fillStyle = '#344767';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillText(pct + '%', cx, cy - 8);
+                                ctx.font = '12px Inter, sans-serif';
+                                ctx.fillStyle = '#7b809a';
+                                ctx.fillText('selesai', cx, cy + 14);
+                                ctx.restore();
+                            } catch (e) {
+                                console.error('Donut afterDraw Error:', e);
+                            }
+                        }
+                    }]
+                });
+            }
+
+        } catch (error) {
+            console.error("Dashboard Chart Error:", error);
+            const b1 = document.getElementById('materialChart');
+            if (b1) b1.insertAdjacentHTML('afterend', '<div class="alert alert-danger m-3">Chart Error: ' + error.message + '</div>');
         }
     });
+    </script>
+    @endpush
 
-    // ── 2. Donut Chart: TBUT Completion ───────────────────────────────────
-    const tbutCompleted = {{ $tbutCompleted }};
-    const tbutPending   = {{ $tbutTotal - $tbutCompleted }};
-
-    const tbutDonut = new Chart(document.getElementById('tbutDonut'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Selesai', 'Belum Selesai'],
-            datasets: [{
-                data: [tbutCompleted, tbutPending],
-                backgroundColor: [
-                    '#11998e',
-                    '#e9ecef'
-                ],
-                borderWidth: 0,
-                hoverOffset: 8
-            }]
-        },
-        options: {
-            cutout: '72%',
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { 
-                    borderRadius: 8,
-                    padding: 12,
-                    backgroundColor: 'rgba(26, 29, 41, 0.95)',
-                    cornerRadius: 8
-                }
-            },
-            animation: {
-                animateRotate: true,
-                animateScale: true,
-                duration: 1200,
-                easing: 'easeOutQuart'
-            }
-        },
-        plugins: [{
-            id: 'centerText',
-            afterDraw(chart) {
-                const { ctx, chartArea: { top, bottom, left, right } } = chart;
-                const cx = (left + right) / 2;
-                const cy = (top + bottom) / 2;
-                const total = tbutCompleted + tbutPending;
-                const pct = total > 0 ? Math.round((tbutCompleted / total) * 100) : 0;
-                ctx.save();
-                ctx.font = 'bold 24px Inter, sans-serif';
-                ctx.fillStyle = '#344767';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(pct + '%', cx, cy - 8);
-                ctx.font = '12px Inter, sans-serif';
-                ctx.fillStyle = '#7b809a';
-                ctx.fillText('selesai', cx, cy + 14);
-                ctx.restore();
-            }
-        }]
-    });
-
-    // Add smooth hover effects
-    document.querySelectorAll('.chart-container').forEach(container => {
-        container.addEventListener('mouseenter', () => {
-            container.style.transform = 'translateY(-2px)';
-            container.style.boxShadow = '0 15px 35px rgba(0,0,0,0.15)';
-        });
-        container.addEventListener('mouseleave', () => {
-            container.style.transform = 'translateY(0)';
-            container.style.boxShadow = '';
-        });
-    });
-});
-</script>
-<style>
-    #materialChart, #tbutDonut {
-        transition: all 0.3s ease;
-    }
-</style>
-@endpush
+</x-layout>
