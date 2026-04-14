@@ -32,182 +32,183 @@
     <link href="{{ asset('assets') }}/css/nucleo-icons.css" rel="stylesheet" />
     <link href="{{ asset('assets') }}/css/nucleo-svg.css" rel="stylesheet" />
     <!-- Font Awesome Icons -->
-    <!-- Font Awesome Icons -->
-    {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
+    {{--
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets') }}/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
-    <script src="https://cdn.tiny.cloud/1/9iw2xqwn1593xsb15d6xpi0y41mtrets5ms0l5s8kekdgf63/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/9iw2xqwn1593xsb15d6xpi0y41mtrets5ms0l5s8kekdgf63/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <link href="{{ asset('css/admin-theme.css') }}" rel="stylesheet">
 
     @auth
-    <style>
-        /* Style khusus untuk user yang sudah login */
-        .g-sidenav-show {
-            overflow-x: hidden;
-        }
+        <style>
+            /* Style khusus untuk user yang sudah login */
+            .g-sidenav-show {
+                overflow-x: hidden;
+            }
 
-        .g-sidenav-show .sidenav {
-            z-index: 1009;
-            position: fixed;
-            display: block;
-        }
+            .g-sidenav-show .sidenav {
+                z-index: 1009;
+                position: fixed;
+                display: block;
+            }
 
-        /* Perbaikan untuk main content */
-        .main-content {
-            position: relative;
-            float: right;
-            width: calc(100% - 280px);
-            margin-left: 280px;
-            min-height: 100vh;
-            padding: 0;
-            transition: all .2s ease-in-out;
-        }
-
-        .container-fluid {
-            padding: 1.5rem 1.5rem !important;
-            width: 100%;
-            position: relative;
-        }
-
-        /* Responsive fixes */
-        @media (max-width: 991.98px) {
+            /* Perbaikan untuk main content */
             .main-content {
-                width: 100%;
-                margin-left: 0;
-            }
-            
-            .g-sidenav-show.g-sidenav-pinned .main-content {
+                position: relative;
+                float: right;
+                width: calc(100% - 280px);
                 margin-left: 280px;
+                min-height: 100vh;
+                padding: 0;
+                transition: all .2s ease-in-out;
             }
-        }
 
-        /* Fix untuk navbar */
-        .navbar.navbar-main {
-            margin-left: 0;
-            margin-right: 0;
-            left: 0;
-            width: 100%;
-        }
+            .container-fluid {
+                padding: 1.5rem 1.5rem !important;
+                width: 100%;
+                position: relative;
+            }
 
-        /* Fix untuk cards */
-        .card {
-            margin-bottom: 1.5rem;
-        }
+            /* Responsive fixes */
+            @media (max-width: 991.98px) {
+                .main-content {
+                    width: 100%;
+                    margin-left: 0;
+                }
 
-        /* Fix untuk sidebar scroll */
-        .sidenav {
-            height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
+                .g-sidenav-show.g-sidenav-pinned .main-content {
+                    margin-left: 280px;
+                }
+            }
 
-        /* Fix untuk dropdown menu */
-        #questionsMenu {
-            position: relative;
-            background: transparent;
-        }
+            /* Fix untuk navbar */
+            .navbar.navbar-main {
+                margin-left: 0;
+                margin-right: 0;
+                left: 0;
+                width: 100%;
+            }
 
-        #questionsMenu .nav-link {
-            padding-left: 3rem;
-        }
-    </style>
+            /* Fix untuk cards */
+            .card {
+                margin-bottom: 1.5rem;
+            }
+
+            /* Fix untuk sidebar scroll */
+            .sidenav {
+                height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            /* Fix untuk dropdown menu */
+            #questionsMenu {
+                position: relative;
+                background: transparent;
+            }
+
+            #questionsMenu .nav-link {
+                padding-left: 3rem;
+            }
+        </style>
     @endauth
 
     @guest
-    <style>
-        /* Style umum yang tetap berlaku untuk semua halaman */
-        .g-sidenav-show {
-            overflow-x: hidden;
-        }
+        <style>
+            /* Style umum yang tetap berlaku untuk semua halaman */
+            .g-sidenav-show {
+                overflow-x: hidden;
+            }
 
-        /* Style khusus untuk halaman auth (sebelum login) */
-        .auth-layout {
-            min-height: 100vh;
-            background-color: #f0f2f5;
-        }
+            /* Style khusus untuk halaman auth (sebelum login) */
+            .auth-layout {
+                min-height: 100vh;
+                background-color: #f0f2f5;
+            }
 
-        .auth-layout .main-content {
-            width: 100% !important;
-            margin-left: 0 !important;
-            min-height: 100vh;
-            padding: 0;
-        }
+            .auth-layout .main-content {
+                width: 100% !important;
+                margin-left: 0 !important;
+                min-height: 100vh;
+                padding: 0;
+            }
 
-        .auth-layout .container-fluid {
-            padding: 1.5rem 1.5rem !important;
-            width: 100%;
-            position: relative;
-        }
-
-        .auth-layout .card {
-            margin-bottom: 1.5rem;
-            max-width: 450px;
-            margin: 0 auto;
-        }
-
-        /* Style untuk halaman setelah login */
-        .dashboard-layout .g-sidenav-show .sidenav {
-            z-index: 1009;
-            position: fixed;
-            display: block;
-        }
-
-        .dashboard-layout .main-content {
-            position: relative;
-            float: right;
-            width: calc(100% - 280px);
-            margin-left: 280px;
-            min-height: 100vh;
-            padding: 0;
-            transition: all .2s ease-in-out;
-        }
-
-        .dashboard-layout .container-fluid {
-            padding: 1.5rem 1.5rem !important;
-            width: 100%;
-            position: relative;
-        }
-
-        /* Responsive fixes untuk dashboard */
-        @media (max-width: 991.98px) {
-            .dashboard-layout .main-content {
+            .auth-layout .container-fluid {
+                padding: 1.5rem 1.5rem !important;
                 width: 100%;
-                margin-left: 0;
+                position: relative;
             }
-            
-            .dashboard-layout.g-sidenav-show.g-sidenav-pinned .main-content {
+
+            .auth-layout .card {
+                margin-bottom: 1.5rem;
+                max-width: 450px;
+                margin: 0 auto;
+            }
+
+            /* Style untuk halaman setelah login */
+            .dashboard-layout .g-sidenav-show .sidenav {
+                z-index: 1009;
+                position: fixed;
+                display: block;
+            }
+
+            .dashboard-layout .main-content {
+                position: relative;
+                float: right;
+                width: calc(100% - 280px);
                 margin-left: 280px;
+                min-height: 100vh;
+                padding: 0;
+                transition: all .2s ease-in-out;
             }
-        }
 
-        /* Fix untuk navbar di dashboard */
-        .dashboard-layout .navbar.navbar-main {
-            margin-left: 0;
-            margin-right: 0;
-            left: 0;
-            width: 100%;
-        }
+            .dashboard-layout .container-fluid {
+                padding: 1.5rem 1.5rem !important;
+                width: 100%;
+                position: relative;
+            }
 
-        /* Fix untuk sidebar scroll di dashboard */
-        .dashboard-layout .sidenav {
-            height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
+            /* Responsive fixes untuk dashboard */
+            @media (max-width: 991.98px) {
+                .dashboard-layout .main-content {
+                    width: 100%;
+                    margin-left: 0;
+                }
 
-        /* Fix untuk dropdown menu di dashboard */
-        .dashboard-layout #questionsMenu {
-            position: relative;
-            background: transparent;
-        }
+                .dashboard-layout.g-sidenav-show.g-sidenav-pinned .main-content {
+                    margin-left: 280px;
+                }
+            }
 
-        .dashboard-layout #questionsMenu .nav-link {
-            padding-left: 3rem;
-        }
-    </style>
+            /* Fix untuk navbar di dashboard */
+            .dashboard-layout .navbar.navbar-main {
+                margin-left: 0;
+                margin-right: 0;
+                left: 0;
+                width: 100%;
+            }
+
+            /* Fix untuk sidebar scroll di dashboard */
+            .dashboard-layout .sidenav {
+                height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            /* Fix untuk dropdown menu di dashboard */
+            .dashboard-layout #questionsMenu {
+                position: relative;
+                background: transparent;
+            }
+
+            .dashboard-layout #questionsMenu .nav-link {
+                padding-left: 3rem;
+            }
+        </style>
     @endguest
 
     <style>
@@ -228,7 +229,7 @@
         }
 
         /* Text Content Handling */
-        .materi-description, 
+        .materi-description,
         .question-content,
         .answer-content {
             overflow-wrap: break-word;
@@ -308,212 +309,249 @@
         <!-- IntroJS CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.0.1/introjs.min.css">
     @endpush
-    
+
     <style>
         :root {
             --animate-duration: 0.5s;
             --animate-delay: 0.1s;
             --animate-iterations: 1;
         }
-        
+
         /* Global Animations */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
-        
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         @keyframes fadeInDown {
             from {
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         @keyframes slideInRight {
             from {
                 opacity: 0;
                 transform: translateX(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
-        
+
         @keyframes slideInLeft {
             from {
                 opacity: 0;
                 transform: translateX(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
-        
+
         @keyframes zoomIn {
             from {
                 opacity: 0;
                 transform: scale(0.9);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
             }
         }
-        
+
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }
         }
-        
+
         @keyframes bounce {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0);
             }
+
             50% {
                 transform: translateY(-10px);
             }
         }
-        
+
         @keyframes shimmer {
             0% {
                 background-position: -200% 0;
             }
+
             100% {
                 background-position: 200% 0;
             }
         }
-        
+
         @keyframes float {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0);
             }
+
             50% {
                 transform: translateY(-5px);
             }
         }
-        
+
         @keyframes glow {
-            0%, 100% {
+
+            0%,
+            100% {
                 box-shadow: 0 0 5px rgba(79, 172, 254, 0.3);
             }
+
             50% {
                 box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
             }
         }
-        
+
         /* Animation Utility Classes */
         .animate-fade-in {
             animation: fadeIn 0.5s ease-out forwards;
         }
-        
+
         .animate-fade-in-up {
             animation: fadeInUp 0.5s ease-out forwards;
         }
-        
+
         .animate-fade-in-down {
             animation: fadeInDown 0.5s ease-out forwards;
         }
-        
+
         .animate-slide-in-right {
             animation: slideInRight 0.5s ease-out forwards;
         }
-        
+
         .animate-slide-in-left {
             animation: slideInLeft 0.5s ease-out forwards;
         }
-        
+
         .animate-zoom-in {
             animation: zoomIn 0.5s ease-out forwards;
         }
-        
+
         .animate-pulse {
             animation: pulse 2s ease-in-out infinite;
         }
-        
+
         .animate-bounce {
             animation: bounce 2s ease-in-out infinite;
         }
-        
+
         .animate-float {
             animation: float 3s ease-in-out infinite;
         }
-        
+
         .animate-glow {
             animation: glow 2s ease-in-out infinite;
         }
-        
+
         /* Stagger Delays */
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
-        
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+
         /* Hover Transitions */
         .hover-lift {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .hover-lift:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
-        
+
         .hover-scale {
             transition: transform 0.3s ease;
         }
-        
+
         .hover-scale:hover {
             transform: scale(1.05);
         }
-        
+
         .hover-glow {
             transition: box-shadow 0.3s ease;
         }
-        
+
         .hover-glow:hover {
             box-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
         }
-        
+
         /* Page Transition */
         .page-enter {
             opacity: 0;
             transform: translateY(10px);
         }
-        
+
         .page-enter-active {
             opacity: 1;
             transform: translateY(0);
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        
+
         /* Button Ripple Effect Base */
         .ripple-effect {
             position: relative;
             overflow: hidden;
         }
-        
+
         .ripple-effect::after {
             content: '';
             position: absolute;
@@ -526,25 +564,26 @@
             transform: translate(-50%, -50%);
             transition: width 0.3s ease, height 0.3s ease;
         }
-        
+
         .ripple-effect:active::after {
             width: 200px;
             height: 200px;
         }
-        
+
         /* Smooth Scroll */
         html {
             scroll-behavior: smooth;
         }
-        
+
         /* Custom Selection */
         ::selection {
             background: rgba(79, 172, 254, 0.3);
             color: #1a1d29;
         }
-        
+
         /* Reduced Motion */
         @media (prefers-reduced-motion: reduce) {
+
             *,
             *::before,
             *::after {
@@ -553,33 +592,33 @@
                 transition-duration: 0.01ms !important;
             }
         }
-        
+
         /* Skeleton Loading */
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
         }
-        
+
         /* Card Hover Effects */
         .card-elevated {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .card-elevated:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
         }
-        
+
         /* Icon Rotation on Hover */
         .icon-rotate {
             transition: transform 0.3s ease;
         }
-        
+
         .icon-rotate:hover {
             transform: rotate(15deg);
         }
-        
+
         /* Text Gradient */
         .text-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -587,12 +626,12 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         /* Border Animation */
         .border-animated {
             position: relative;
         }
-        
+
         .border-animated::before {
             content: '';
             position: absolute;
@@ -603,11 +642,11 @@
             background: linear-gradient(90deg, #4facfe, #00f2fe);
             transition: width 0.3s ease;
         }
-        
+
         .border-animated:hover::before {
             width: 100%;
         }
-        
+
         /* Loading Spinner */
         .spinner {
             width: 40px;
@@ -617,18 +656,18 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             to {
                 transform: rotate(360deg);
             }
         }
-        
+
         /* Tooltip Enhancement */
         .tooltip-custom {
             position: relative;
         }
-        
+
         .tooltip-custom::after {
             content: attr(data-tooltip);
             position: absolute;
@@ -645,20 +684,20 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .tooltip-custom:hover::after {
             opacity: 1;
             visibility: visible;
             bottom: calc(100% + 8px);
         }
-        
+
         /* Gradient Border */
         .gradient-border {
             position: relative;
             background: white;
             border-radius: 12px;
         }
-        
+
         .gradient-border::before {
             content: '';
             position: absolute;
@@ -669,173 +708,183 @@
             background-size: 300% 300%;
             animation: gradientShift 5s ease infinite;
         }
-        
+
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
     </style>
 </head>
+
 <body class="{{ $bodyClass }}">
 
-@if (Session::has('success'))
-    <div class="d-flex justify-content-center mt-3">
-        <div id="success-alert" class="col-10 col-md-6 col-lg-4">
-            <div class="alert alert-success alert-dismissible text-white text-center fade show" role="alert">
-                <span class="text-sm">{{ Session::get('success') }}</span>
-                <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+    @if (Session::has('success'))
+        <div class="d-flex justify-content-center mt-3">
+            <div id="success-alert" class="col-10 col-md-6 col-lg-4">
+                <div class="alert alert-success alert-dismissible text-white text-center fade show" role="alert">
+                    <span class="text-sm">{{ Session::get('success') }}</span>
+                    <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert"
+                        aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // Menghilangkan alert setelah 3 detik (3000ms)
-        setTimeout(function() {
-            let alertBox = document.getElementById('success-alert');
-            if (alertBox) {
-                alertBox.style.transition = "opacity 0.5s ease";
-                alertBox.style.opacity = "0";
-                setTimeout(() => alertBox.remove(), 500); // Hapus elemen setelah animasi selesai
-            }
-        }, 3000);
-    </script>
-@endif
+        <script>
+            // Menghilangkan alert setelah 3 detik (3000ms)
+            setTimeout(function () {
+                let alertBox = document.getElementById('success-alert');
+                if (alertBox) {
+                    alertBox.style.transition = "opacity 0.5s ease";
+                    alertBox.style.opacity = "0";
+                    setTimeout(() => alertBox.remove(), 500); // Hapus elemen setelah animasi selesai
+                }
+            }, 3000);
+        </script>
+    @endif
 
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
-{{ $slot }}
+    {{ $slot }}
 
-<!-- <script src="{{ asset('assets') }}/js/core/popper.min.js"></script>
+    <!-- <script src="{{ asset('assets') }}/js/core/popper.min.js"></script>
 <script src="{{ asset('assets') }}/js/core/bootstrap.min.js"></script>
 <script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
 <script src="{{ asset('assets') }}/js/plugins/smooth-scrollbar.min.js"></script> -->
 
-<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
-<!-- <script src="{{ asset('assets/js/material-dashboard.min.js') }}"></script> -->
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
+    <!-- <script src="{{ asset('assets/js/material-dashboard.min.js') }}"></script> -->
 
-@stack('js')
-<script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-        var options = {
-            damping: '0.5'
-        }
-        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
-
-    // Global Loading Helpers - Defined immediately
-    const loadingOverlay = document.getElementById('loading-overlay');
-    let loadingTimeout;
-
-    window.showLoading = function() {
-        if(loadingOverlay) {
-            loadingOverlay.classList.add('show');
-            // Set safety timeout
-            clearTimeout(loadingTimeout);
-            loadingTimeout = setTimeout(() => {
-                hideLoading();
-            }, 10000); // 10 seconds max
-        }
-    };
-    
-    window.hideLoading = function() {
-        if(loadingOverlay) {
-            clearTimeout(loadingTimeout);
-            loadingOverlay.classList.remove('show');
-        }
-    };
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Show loading on page load
-        showLoading();
-        
-        // Hide when page is fully loaded
-        window.addEventListener('load', function() {
-            hideLoading();
-        });
-        
-        // Show loading on navigation
-        document.addEventListener('click', function(event) {
-            const link = event.target.closest('a');
-            if (link && 
-                link.href && 
-                !link.target && 
-                link.hostname === window.location.hostname && 
-                !link.hasAttribute('data-bs-toggle') && 
-                !link.classList.contains('no-loading')) {
-                showLoading();
+    @stack('js')
+    <script>
+        var win = navigator.platform.indexOf('Win') > -1;
+        if (win && document.querySelector('#sidenav-scrollbar')) {
+            var options = {
+                damping: '0.5'
             }
-        });
-        
-        // Show loading on form submissions
-        document.addEventListener('submit', function(event) {
-            if (!event.target.classList.contains('ajax-form')) {
-                showLoading();
+            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+        }
+
+        // Global Loading Helpers - Defined immediately
+        const loadingOverlay = document.getElementById('loading-overlay');
+        let loadingTimeout;
+
+        window.showLoading = function () {
+            if (loadingOverlay) {
+                loadingOverlay.classList.add('show');
+                // Set safety timeout
+                clearTimeout(loadingTimeout);
+                loadingTimeout = setTimeout(() => {
+                    hideLoading();
+                }, 10000); // 10 seconds max
             }
-        });
-        
-        // Intercept fetch requests
-        const originalFetch = window.fetch;
-        window.fetch = function() {
-            showLoading();
-            return originalFetch.apply(this, arguments)
-                .then(response => {
-                    hideLoading();
-                    return response;
-                })
-                .catch(error => {
-                    hideLoading();
-                    throw error;
-                });
         };
 
-        // Perfect Scrollbar initialization
-        if (document.querySelector('.sidenav')) {
-            var fixedPlugin = document.querySelector('.fixed-plugin');
-            var fixedPluginButton = document.querySelector('.fixed-plugin-button');
-            var fixedPluginButtonNav = document.querySelector('.fixed-plugin-button-nav');
-            var fixedPluginCard = document.querySelector('.fixed-plugin .card');
-            var fixedPluginCloseButton = document.querySelectorAll('.fixed-plugin-close-button');
-            var navbar = document.getElementById('navbarBlur');
-            var buttonNavbarFixed = document.getElementById('navbarFixed');
+        window.hideLoading = function () {
+            if (loadingOverlay) {
+                clearTimeout(loadingTimeout);
+                loadingOverlay.classList.remove('show');
+            }
+        };
 
-            if (fixedPluginButton) {
-                fixedPluginButton.onclick = function() {
-                    if (!fixedPlugin.classList.contains('show')) {
-                        fixedPlugin.classList.add('show');
-                    } else {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Show loading on page load
+            showLoading();
+
+            // Hide when page is fully loaded
+            window.addEventListener('load', function () {
+                hideLoading();
+            });
+
+            // Show loading on navigation
+            document.addEventListener('click', function (event) {
+                const link = event.target.closest('a');
+                if (link &&
+                    link.href &&
+                    !link.target &&
+                    link.hostname === window.location.hostname &&
+                    !link.hasAttribute('data-bs-toggle') &&
+                    !link.classList.contains('no-loading')) {
+                    showLoading();
+                }
+            });
+
+            // Show loading on form submissions
+            document.addEventListener('submit', function (event) {
+                if (!event.target.classList.contains('ajax-form')) {
+                    showLoading();
+                }
+            });
+
+            // Intercept fetch requests
+            const originalFetch = window.fetch;
+            window.fetch = function () {
+                showLoading();
+                return originalFetch.apply(this, arguments)
+                    .then(response => {
+                        hideLoading();
+                        return response;
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        throw error;
+                    });
+            };
+
+            // Perfect Scrollbar initialization
+            if (document.querySelector('.sidenav')) {
+                var fixedPlugin = document.querySelector('.fixed-plugin');
+                var fixedPluginButton = document.querySelector('.fixed-plugin-button');
+                var fixedPluginButtonNav = document.querySelector('.fixed-plugin-button-nav');
+                var fixedPluginCard = document.querySelector('.fixed-plugin .card');
+                var fixedPluginCloseButton = document.querySelectorAll('.fixed-plugin-close-button');
+                var navbar = document.getElementById('navbarBlur');
+                var buttonNavbarFixed = document.getElementById('navbarFixed');
+
+                if (fixedPluginButton) {
+                    fixedPluginButton.onclick = function () {
+                        if (!fixedPlugin.classList.contains('show')) {
+                            fixedPlugin.classList.add('show');
+                        } else {
+                            fixedPlugin.classList.remove('show');
+                        }
+                    }
+                }
+
+                document.querySelector('body').onclick = function (e) {
+                    if (e.target != fixedPluginButton && e.target != fixedPluginButtonNav && e.target.closest('.fixed-plugin .card') != fixedPluginCard) {
                         fixedPlugin.classList.remove('show');
                     }
                 }
             }
+        });
 
-            document.querySelector('body').onclick = function(e) {
-                if (e.target != fixedPluginButton && e.target != fixedPluginButtonNav && e.target.closest('.fixed-plugin .card') != fixedPluginCard) {
-                    fixedPlugin.classList.remove('show');
-                }
-            }
-        }
-    });
-
-    // Add this before the existing script content
-    tinymce.init({
-        selector: 'textarea.tinymce',
-        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-        menubar: false,
-        height: 400,
-        content_style: `
+        // Add this before the existing script content
+        tinymce.init({
+            selector: 'textarea.tinymce',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+            menubar: false,
+            height: 400,
+            content_style: `
             body { 
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
                 font-size: 16px;
@@ -848,129 +897,131 @@
             pre { background: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
             code { background: #f5f5f5; padding: 2px 4px; border-radius: 4px; }
         `,
-        setup: function(editor) {
-            editor.on('change', function() {
-                editor.save();
-            });
-        }
-    });
-</script>
-<!-- Github buttons -->
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-@if(!request()->is('virtual-lab*'))
-    <script src="{{ asset('assets') }}/js/material-dashboard.min.js?v=3.0.0"></script>
-    <script>
-        // Fix for FontAwesome loading error in Firefox/some browsers
-        window.addEventListener('load', function() {
-            // Check if material dashboard script loaded correctly
-            if(typeof materialDashboard === 'undefined') {
-                console.log('Material Dashboard script suppressed or failed.');
+            setup: function (editor) {
+                editor.on('change', function () {
+                    editor.save();
+                });
             }
         });
     </script>
-@endif
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    @if(!request()->is('virtual-lab*'))
+        <script src="{{ asset('assets') }}/js/material-dashboard.min.js?v=3.0.0"></script>
+        <script>
+            // Fix for FontAwesome loading error in Firefox/some browsers
+            window.addEventListener('load', function () {
+                // Check if material dashboard script loaded correctly
+                if (typeof materialDashboard === 'undefined') {
+                    console.log('Material Dashboard script suppressed or failed.');
+                }
+            });
+        </script>
+    @endif
 
-{{-- Tambahkan CSS untuk tooltip tutorial --}}
-@push('head')
-<style>
-    /* Custom styling untuk tooltip tutorial */
-    .customTooltip {
-        max-width: 350px;
-        background-color: #fff;
-        color: #333;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        border-left: 5px solid #7b1fa2;
-    }
-    
-    .introjs-button {
-        background-color: #7b1fa2;
-        color: white;
-        border: none;
-        text-shadow: none;
-        border-radius: 4px;
-    }
-    
-    .introjs-button:hover, .introjs-button:focus {
-        background-color: #9c27b0;
-        color: white;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-    
-    .introjs-skipbutton {
-        color: #666;
-        font-size: 20px;
-        font-weight: bold;
-        line-height: 1;
-        text-decoration: none;
-        text-shadow: none;
-        position: absolute;
-        right: 8px;
-        top: 8px;
-        padding: 5px 10px;
-        border-radius: 50%;
-        transition: all 0.2s ease;
-    }
-    
-    .introjs-skipbutton:hover {
-        background: rgba(0,0,0,0.1);
-        color: #333;
-    }
-    
-    .introjs-progress {
-        background-color: #e0e0e0;
-    }
-    
-    .introjs-progressbar {
-        background-color: #7b1fa2;
-    }
-    
-    .introjs-helperLayer {
-        background-color: rgba(255, 255, 255, 0.7);
-        border: none;
-        box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
-    }
+    {{-- Tambahkan CSS untuk tooltip tutorial --}}
+    @push('head')
+        <style>
+            /* Custom styling untuk tooltip tutorial */
+            .customTooltip {
+                max-width: 350px;
+                background-color: #fff;
+                color: #333;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                border-left: 5px solid #7b1fa2;
+            }
 
-    /* Navbar & Dropdown Styling */
-    .navbar-nav .dropdown-menu {
-        position: absolute;
-        background: white;
-        border: 0;
-        border-radius: 0.75rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
+            .introjs-button {
+                background-color: #7b1fa2;
+                color: white;
+                border: none;
+                text-shadow: none;
+                border-radius: 4px;
+            }
 
-    .dropdown-item {
-        padding: 0.5rem 1rem;
-        color: #344767;
-        font-weight: 500;
-        font-size: 0.875rem;
-        transition: all 0.3s ease;
-    }
+            .introjs-button:hover,
+            .introjs-button:focus {
+                background-color: #9c27b0;
+                color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            }
 
-    .dropdown-item:hover {
-        background-color: #f8f9fa;
-        color: #7b1fa2;
-    }
+            .introjs-skipbutton {
+                color: #666;
+                font-size: 20px;
+                font-weight: bold;
+                line-height: 1;
+                text-decoration: none;
+                text-shadow: none;
+                position: absolute;
+                right: 8px;
+                top: 8px;
+                padding: 5px 10px;
+                border-radius: 50%;
+                transition: all 0.2s ease;
+            }
 
-    .dropdown-item i {
-        font-size: 1rem;
-        margin-right: 8px;
-        vertical-align: middle;
-    }
-</style>
-@endpush
+            .introjs-skipbutton:hover {
+                background: rgba(0, 0, 0, 0.1);
+                color: #333;
+            }
 
-@push('js')
-    <!-- IntroJS JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.0.1/intro.min.js"></script>
-@endpush
+            .introjs-progress {
+                background-color: #e0e0e0;
+            }
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            .introjs-progressbar {
+                background-color: #7b1fa2;
+            }
 
-<!-- Add this before the closing </body> tag -->
-<x-loading-overlay />
+            .introjs-helperLayer {
+                background-color: rgba(255, 255, 255, 0.7);
+                border: none;
+                box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+            }
+
+            /* Navbar & Dropdown Styling */
+            .navbar-nav .dropdown-menu {
+                position: absolute;
+                background: white;
+                border: 0;
+                border-radius: 0.75rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+            .dropdown-item {
+                padding: 0.5rem 1rem;
+                color: #344767;
+                font-weight: 500;
+                font-size: 0.875rem;
+                transition: all 0.3s ease;
+            }
+
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #7b1fa2;
+            }
+
+            .dropdown-item i {
+                font-size: 1rem;
+                margin-right: 8px;
+                vertical-align: middle;
+            }
+        </style>
+    @endpush
+
+    @push('js')
+        <!-- IntroJS JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.0.1/intro.min.js"></script>
+    @endpush
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Add this before the closing </body> tag -->
+    <x-loading-overlay />
 
 </body>
+
 </html>
