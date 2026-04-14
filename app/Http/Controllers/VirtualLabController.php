@@ -3,114 +3,80 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Models\TbutSession;
 
 class VirtualLabController extends Controller
 {
-    /**
-     * Display the virtual lab page
-     */
     public function index(Request $request)
     {
-        // 1. Fetch data needed for Task List (and Sidebar)
         $materials = \App\Models\Material::with(['virtualLabTasks' => function($query) {
             $query->orderBy('title');
         }])->get();
 
-        // 2. Determine Mode: Sandbox vs Task vs List
         $showEditor = false;
         $activeTask = null;
-        
+
         if ($request->has('task') && $request->task != '') {
             $activeTask = \App\Models\VirtualLabTask::find($request->task);
-            if ($activeTask) {
-                $showEditor = true;
-            }
+            if ($activeTask) $showEditor = true;
         } elseif ($request->input('mode') === 'sandbox') {
             $showEditor = true;
         }
 
-        // 3. TBUT: Start/Resume session when student opens a task
         $tbutSession = null;
         if ($showEditor && $activeTask && auth()->check() && auth()->user()->role_id == 3) {
             $tbutSession = TbutSession::firstOrCreate(
                 ['user_id' => auth()->id(), 'task_id' => $activeTask->id],
                 ['started_at' => now(), 'run_count' => 0, 'is_completed' => false]
             );
-            // NOTE: if already completed, we still show the view but in read-only mode
-            // (handled in the Blade view by checking $tbutSession->is_completed)
         }
 
-        // 4. Render View based on logic
-        // If User is Admin/Dosen (Role 1 & 2)
         if (auth()->check() && auth()->user()->role_id <= 2) {
             if ($showEditor) {
                 $filesData = [['filename' => 'Main.java', 'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"]];
                 if ($activeTask) {
                     $filesData = [['filename' => 'Main.java', 'content' => $activeTask->template_code]];
                 }
-                return view('virtual-lab.index', [
-                    'materials' => $materials,
-                    'activeTask' => $activeTask,
-                    'files' => $filesData
-                ]);
-            } else {
-                return view('virtual-lab.admin-task-list', ['materials' => $materials]);
+                return view('virtual-lab.index', ['materials' => $materials, 'activeTask' => $activeTask, 'files' => $filesData]);
             }
+            return view('virtual-lab.admin-task-list', ['materials' => $materials]);
         }
 
-        // If User is Mahasiswa (Role 3)
         if ($showEditor) {
             $filesData = [['filename' => 'Main.java', 'content' => "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}"]];
-
-            // If Task is active, load saved code or template
             if ($activeTask) {
                 $savedCode = $tbutSession?->final_code ?? $activeTask->template_code;
                 $filesData = [['filename' => 'Main.java', 'content' => $savedCode]];
             }
-
             return view('virtual-lab.mahasiswa', [
-                'materials'    => $materials,
-                'activeTask'   => $activeTask,
-                'files'        => $filesData,
-                'tbutSession'  => $tbutSession,
-            ]);
-        } else {
-            // Pass set of completed task IDs so task-list can render 'Review' button
-            $completedTaskIds = [];
-            if (auth()->check() && auth()->user()->role_id == 3) {
-                $completedTaskIds = TbutSession::where('user_id', auth()->id())
-                    ->where('is_completed', true)
-                    ->pluck('task_id')
-                    ->toArray();
-            }
-            return view('virtual-lab.task-list', [
-                'materials'        => $materials,
-                'completedTaskIds' => $completedTaskIds,
+                'materials'   => $materials,
+                'activeTask'  => $activeTask,
+                'files'       => $filesData,
+                'tbutSession' => $tbutSession,
             ]);
         }
+
+        $completedTaskIds = [];
+        if (auth()->check() && auth()->user()->role_id == 3) {
+            $completedTaskIds = TbutSession::where('user_id', auth()->id())
+                ->where('is_completed', true)->pluck('task_id')->toArray();
+        }
+        return view('virtual-lab.task-list', ['materials' => $materials, 'completedTaskIds' => $completedTaskIds]);
     }
 
-    /**
-     * Save code (AJAX, without execution) — TBUT: records intermediate code.
-     */
     public function saveCode(Request $request)
     {
         $request->validate([
-            'task_id'    => 'required|integer|exists:virtual_lab_tasks,id',
-            'code'       => 'required|string',
-            'elapsed'    => 'nullable|integer', // seconds elapsed from JS timer
+            'task_id' => 'required|integer|exists:virtual_lab_tasks,id',
+            'code'    => 'required|string',
+            'elapsed' => 'nullable|integer',
         ]);
 
         if (!auth()->check() || auth()->user()->role_id != 3) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $session = TbutSession::where('user_id', auth()->id())
-            ->where('task_id', $request->task_id)
-            ->first();
-
+        $session = TbutSession::where('user_id', auth()->id())->where('task_id', $request->task_id)->first();
         if (!$session) {
             return response()->json(['success' => false, 'message' => 'Sesi tidak ditemukan'], 404);
         }
@@ -123,9 +89,6 @@ class VirtualLabController extends Controller
         return response()->json(['success' => true, 'message' => 'Kode disimpan!']);
     }
 
-    /**
-     * Submit task — TBUT: marks session as completed with final metrics.
-     */
     public function submitTask(Request $request)
     {
         $request->validate([
@@ -138,10 +101,7 @@ class VirtualLabController extends Controller
             return redirect()->route('virtual-lab.index')->with('error', 'Unauthorized');
         }
 
-        $session = TbutSession::where('user_id', auth()->id())
-            ->where('task_id', $request->task_id)
-            ->first();
-
+        $session = TbutSession::where('user_id', auth()->id())->where('task_id', $request->task_id)->first();
         if ($session) {
             $session->update([
                 'final_code'       => $request->code,
@@ -156,102 +116,142 @@ class VirtualLabController extends Controller
     }
 
     /**
-     * Execute Java code using Piston API
+     * Execute Java code via Wandbox API using native PHP streams.
+     *
+     * IMPORTANT: Piston/emkc.org has been whitelist-only since Feb 2026 (returns 401).
+     * Laravel Http facade was sending wrong Content-Type (form-encoded) causing Wandbox 422.
+     * Solution: use file_get_contents + stream_context which sends proper application/json.
+     *
+     * Wandbox stores the primary 'code' field as prog.java, so 'public' must be stripped
+     * from class declarations to avoid the "should be declared in file named X.java" error.
      */
     public function execute(Request $request)
     {
         $request->validate([
-            'files'   => 'required|array|max:5',
+            'files'            => 'required|array|max:5',
             'files.*.filename' => 'required|string',
-            'files.*.content'  => 'required|string',
-            'action'  => 'nullable|string',
+            'files.*.content'  => 'nullable|string',
+            'action'           => 'nullable|string',
+            'elapsed'          => 'nullable|integer',
+            'stdin'            => 'nullable|string',
         ]);
 
         $filesData = array_values($request->input('files'));
-        $action    = $request->action;
 
-        // Fetch Active Task if ID is present
         $activeTask = null;
         if ($request->has('task_id')) {
             $activeTask = \App\Models\VirtualLabTask::find($request->input('task_id'));
         }
 
-        // Fetch Materials for sidebar
         $materials = \App\Models\Material::with(['virtualLabTasks' => function($query) {
             $query->orderBy('title');
         }])->get();
 
-        // TBUT: Increment run_count for mahasiswa
+        // TBUT: Increment run_count
         $tbutSession = null;
         if ($activeTask && auth()->check() && auth()->user()->role_id == 3) {
             $tbutSession = TbutSession::where('user_id', auth()->id())
-                ->where('task_id', $activeTask->id)
-                ->first();
+                ->where('task_id', $activeTask->id)->first();
 
             if ($tbutSession) {
                 $tbutSession->increment('run_count');
-                // Also save a snapshot of current code
+                $elapsed  = $request->input('elapsed');
                 $mainCode = $filesData[0]['content'] ?? null;
-                if ($mainCode) {
-                    $tbutSession->update(['final_code' => $mainCode]);
-                }
+                $upd = [];
+                if ($mainCode)         $upd['final_code']       = $mainCode;
+                if ($elapsed !== null) $upd['duration_seconds'] = max($elapsed, $tbutSession->duration_seconds);
+                if (!empty($upd))      $tbutSession->update($upd);
                 $tbutSession->refresh();
             }
         }
 
-        // Handle run action
+        // Cast stdin to string to prevent ConvertEmptyStringsToNull from sending null
+        // Wandbox API explicitly returns 422 if stdin is null instead of string.
+        $stdin  = (string) $request->input('stdin', '');
+        $output = '';
+        $error  = false;
+
         try {
-            // Prepare files for Piston API
-            $apiFiles = [];
-            $mainFileIndex = 0;
+            // Strip "public" from class/interface/enum — Wandbox stores code as prog.java
+            // so public class X {} would fail with "should be declared in file named X.java"
+            $stripPublic = fn(string $code): string =>
+                preg_replace('/\bpublic\s+(?=class\s|interface\s|enum\s)/', '', $code);
 
-            foreach ($filesData as $index => $fileData) {
-                $content  = $fileData['content'];
-                $baseName = preg_replace('/(\\.java)+$/i', '', trim($fileData['filename']));
-                $finalFilename = $baseName . '.java';
-
-                // Auto-detect class name
-                if (preg_match('/(?:public\\s+)?class\\s+([a-zA-Z0-9_]+)/', $content, $matches)) {
-                    $finalFilename = $matches[1] . '.java';
-                }
-
-                $apiFiles[] = ['name' => $finalFilename, 'content' => $content];
-
-                if (preg_match('/public\\s+static\\s+void\\s+main\\s*\\(/i', $content)) {
-                    $mainFileIndex = $index;
-                }
+            $mainCode        = $stripPublic($filesData[0]['content'] ?? '');
+            
+            if (empty(trim($mainCode))) {
+                throw new \Exception("Kode kosong! Silakan tulis kode Java terlebih dahulu.");
             }
 
-            if ($mainFileIndex > 0) {
-                $mainFile = $apiFiles[$mainFileIndex];
-                unset($apiFiles[$mainFileIndex]);
-                array_unshift($apiFiles, $mainFile);
+            $additionalFiles = [];
+
+            foreach ($filesData as $i => $fd) {
+                if ($i === 0) continue;
+                $content  = $stripPublic($fd['content'] ?? '');
+                $baseName = preg_replace('/(\\.java)+$/i', '', trim($fd['filename']));
+                if (preg_match('/class\s+([a-zA-Z0-9_]+)/', $content, $m)) {
+                    $baseName = $m[1];
+                }
+                $additionalFiles[] = ['file' => $baseName . '.java', 'code' => $content];
             }
 
-            $response = Http::timeout(30)->post('https://emkc.org/api/v2/piston/execute', [
-                'language' => 'java',
-                'version'  => '15.0.2',
-                'files'    => $apiFiles
-            ]);
+            $payload = [
+                'compiler' => 'openjdk-jdk-21+35',
+                'code'     => $mainCode,
+            ];
+            if ($stdin !== "") {
+                $payload['stdin'] = $stdin;
+            }
+            if (!empty($additionalFiles)) {
+                $payload['codes'] = $additionalFiles;
+            }
+
+            // Using Laravel Http facade to ensure proper JSON encoding and headers
+            // This prevents the intermittent 422 Unprocessable Entity errors from Wandbox
+            
+            // Add robust logging to catch 422 issues
+            \Illuminate\Support\Facades\Log::info('Wandbox Request Payload', $payload);
+
+            $response = \Illuminate\Support\Facades\Http::timeout(45)
+                ->withHeaders([
+                    'Accept' => 'application/json',
+                    'User-Agent' => 'Laravel/OOPedia-VirtualLab'
+                ])
+                ->asJson()
+                ->post('https://wandbox.org/api/compile.json', $payload);
+
+            $httpCode = $response->status();
+            
+            \Illuminate\Support\Facades\Log::info('Wandbox Response', ['status' => $httpCode, 'body' => $response->body()]);
 
             if ($response->successful()) {
-                $result = $response->json();
-                $output = $result['run']['output'] ?? '';
-                $stderr = $result['run']['stderr'] ?? '';
-                $error  = false;
+                $result      = $response->json() ?? [];
+                $programOut  = $result['program_output'] ?? '';
+                $compilerErr = $result['compiler_error']  ?? '';  // Wandbox: actual compile errors
+                $compilerWrn = $result['compiler_output'] ?? '';  // Wandbox: compile warnings
+                $programErr  = $result['program_error']   ?? '';  // Wandbox: runtime stderr
+                $exitStatus  = intval($result['status']   ?? 0);
 
-                if ($stderr) {
-                    if ($result['run']['code'] !== 0) {
-                        $output = "Error:\n" . $stderr;
-                        $error  = true;
-                    } else {
-                        $output .= "\n" . $stderr;
+                if ($exitStatus !== 0) {
+                    $parts = [];
+                    if (!empty($compilerErr)) $parts[] = "Compile Error:\n" . $compilerErr;
+                    if (!empty($programErr))  $parts[] = "Runtime Error:\n" . $programErr;
+                    if (!empty($programOut))  $parts[] = $programOut;
+                    $output = implode("\n", $parts) ?: "Program exited with status: $exitStatus";
+                    $error  = true;
+                } else {
+                    $output = $programOut;
+                    if (!empty($compilerWrn)) {
+                        $output .= (empty($output) ? '' : "\n") . "[Compiler Warning]\n" . $compilerWrn;
                     }
-                } elseif (empty($output)) {
-                    $output = 'Program executed successfully (no output)';
+                    if (empty(trim($output))) {
+                        $output = 'Program executed successfully (no output)';
+                    }
                 }
             } else {
-                $output = 'Failed to execute code. API Status: ' . $response->status();
+                $rawBody = $response->body();
+                $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $output = "Gagal menjalankan kode. Server error (HTTP $httpCode). Coba beberapa saat lagi.\nWandbox Response: " . ($rawBody ?: 'None');
                 $error  = true;
             }
         } catch (\Exception $e) {
@@ -259,7 +259,15 @@ class VirtualLabController extends Controller
             $error  = true;
         }
 
-        // Determine View based on Role
+        // TBUT: Compare output with expected_output
+        if (!$error && $activeTask && $tbutSession && !empty($activeTask->expected_output)) {
+            $norm = fn($s) => preg_replace('/\s+/', ' ', trim(strtolower($s)));
+            if ($norm($output) === $norm($activeTask->expected_output)) {
+                $tbutSession->update(['is_success' => true]);
+                $tbutSession->refresh();
+            }
+        }
+
         $viewName = (auth()->check() && auth()->user()->role_id == 3)
             ? 'virtual-lab.mahasiswa'
             : 'virtual-lab.index';
@@ -271,12 +279,10 @@ class VirtualLabController extends Controller
             'output'      => $output,
             'error'       => $error,
             'tbutSession' => $tbutSession,
+            'stdin'       => $stdin,
         ]);
     }
 
-    /**
-     * Mark virtual lab tour as complete for the authenticated user
-     */
     public function completeTour()
     {
         $user = auth()->user();

@@ -222,6 +222,7 @@ Route::middleware('auth')->group(function () {
 });
 // ✅ TAMU bisa akses materi
 Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
+    Route::get('materials/search-suggestions', [MahasiswaMaterialController::class, 'searchSuggestions'])->name('materials.search-suggestions');
     Route::get('materials', [MahasiswaMaterialController::class, 'index'])->name('materials.index');
     Route::get('materials/{material}', [MahasiswaMaterialController::class, 'show'])->name('materials.show');
     

@@ -479,7 +479,7 @@
     <x-admin.tutorial />
 </x-layout>
 
-@push('scripts')
+@push('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -616,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 data: [tbutCompleted, tbutPending],
                 backgroundColor: [
-                    'linear-gradient(135deg, #11998e, #38ef7d)',
+                    '#11998e',
                     '#e9ecef'
                 ],
                 borderWidth: 0,
@@ -641,28 +641,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 animateScale: true,
                 duration: 1200,
                 easing: 'easeOutQuart'
-            },
-            plugins: [{
-                id: 'centerText',
-                afterDraw(chart) {
-                    const { ctx, chartArea: { top, bottom, left, right } } = chart;
-                    const cx = (left + right) / 2;
-                    const cy = (top + bottom) / 2;
-                    const total = tbutCompleted + tbutPending;
-                    const pct = total > 0 ? Math.round((tbutCompleted / total) * 100) : 0;
-                    ctx.save();
-                    ctx.font = 'bold 24px Inter, sans-serif';
-                    ctx.fillStyle = '#344767';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(pct + '%', cx, cy - 8);
-                    ctx.font = '12px Inter, sans-serif';
-                    ctx.fillStyle = '#7b809a';
-                    ctx.fillText('selesai', cx, cy + 14);
-                    ctx.restore();
-                }
-            }]
-        }
+            }
+        },
+        plugins: [{
+            id: 'centerText',
+            afterDraw(chart) {
+                const { ctx, chartArea: { top, bottom, left, right } } = chart;
+                const cx = (left + right) / 2;
+                const cy = (top + bottom) / 2;
+                const total = tbutCompleted + tbutPending;
+                const pct = total > 0 ? Math.round((tbutCompleted / total) * 100) : 0;
+                ctx.save();
+                ctx.font = 'bold 24px Inter, sans-serif';
+                ctx.fillStyle = '#344767';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pct + '%', cx, cy - 8);
+                ctx.font = '12px Inter, sans-serif';
+                ctx.fillStyle = '#7b809a';
+                ctx.fillText('selesai', cx, cy + 14);
+                ctx.restore();
+            }
+        }]
     });
 
     // Add smooth hover effects

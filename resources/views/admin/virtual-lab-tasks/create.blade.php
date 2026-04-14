@@ -60,6 +60,12 @@
                                 </div>
 
                                 <div class="mb-4">
+                                    <label class="form-label fw-bold">Expected Output (Kunci Jawaban Output)</label>
+                                    <small class="d-block text-muted mb-2">Opsional. Masukkan persis hasil output terminal yang dianggap benar. Sistem akan memeriksa secara otomatis tanpa mempedulikan kelebihan spasi baris.</small>
+                                    <textarea name="expected_output" class="form-control font-monospace" rows="5" style="border: 1px solid #ced4da; padding: 10px; border-radius: 6px;" placeholder="Hello World!"></textarea>
+                                </div>
+
+                                <div class="mb-4">
                                     <label class="form-label">Test Cases (JSON Output)</label>
                                     <small class="d-block text-muted mb-2">Opsional. Format JSON untuk input/output testing (Future Feature).</small>
                                     <textarea name="test_cases" class="form-control font-monospace" rows="5" placeholder='[{"input": "5", "output": "25"}]'></textarea>

@@ -18,12 +18,14 @@ class TbutSession extends Model
         'run_count',
         'is_completed',
         'final_code',
+        'is_success',
     ];
 
     protected $casts = [
         'started_at'    => 'datetime',
         'submitted_at'  => 'datetime',
         'is_completed'  => 'boolean',
+        'is_success'    => 'boolean',
         'duration_seconds' => 'integer',
         'run_count'     => 'integer',
     ];

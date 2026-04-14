@@ -15,6 +15,7 @@ class VirtualLabTask extends Model
         'template_code',
         'solution_code',
         'test_cases',
+        'expected_output',
         'difficulty',
         'created_by'
     ];

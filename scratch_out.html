@@ -1,0 +1,953 @@
+<!--
+=========================================================
+* Material Dashboard 2 - v3.0.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/material-dashboard
+* Copyright 2021 Creative Tim (https://www.creative-tim.com) & UPDIVISION (https://www.updivision.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by www.creative-tim.com & www.updivision.com
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="apple-touch-icon" sizes="76x76" href="http://127.0.0.1:8000/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="http://127.0.0.1:8000/assets/img/favicon.png">
+    <title>
+        Media Pembalajaran OOPedia
+    </title>
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700|Inter:300,400,500,600,700|Plus+Jakarta+Sans:400,500,600,700&display=swap" />
+    <!-- Nucleo Icons -->
+    <link href="http://127.0.0.1:8000/assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="http://127.0.0.1:8000/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <!-- Font Awesome Icons -->
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="http://127.0.0.1:8000/assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
+    <script src="https://cdn.tiny.cloud/1/9iw2xqwn1593xsb15d6xpi0y41mtrets5ms0l5s8kekdgf63/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <link href="http://127.0.0.1:8000/css/admin-theme.css" rel="stylesheet">
+
+    
+        <style>
+        /* Style umum yang tetap berlaku untuk semua halaman */
+        .g-sidenav-show {
+            overflow-x: hidden;
+        }
+
+        /* Style khusus untuk halaman auth (sebelum login) */
+        .auth-layout {
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .auth-layout .main-content {
+            width: 100% !important;
+            margin-left: 0 !important;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .auth-layout .container-fluid {
+            padding: 1.5rem 1.5rem !important;
+            width: 100%;
+            position: relative;
+        }
+
+        .auth-layout .card {
+            margin-bottom: 1.5rem;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        /* Style untuk halaman setelah login */
+        .dashboard-layout .g-sidenav-show .sidenav {
+            z-index: 1009;
+            position: fixed;
+            display: block;
+        }
+
+        .dashboard-layout .main-content {
+            position: relative;
+            float: right;
+            width: calc(100% - 280px);
+            margin-left: 280px;
+            min-height: 100vh;
+            padding: 0;
+            transition: all .2s ease-in-out;
+        }
+
+        .dashboard-layout .container-fluid {
+            padding: 1.5rem 1.5rem !important;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Responsive fixes untuk dashboard */
+        @media (max-width: 991.98px) {
+            .dashboard-layout .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+            
+            .dashboard-layout.g-sidenav-show.g-sidenav-pinned .main-content {
+                margin-left: 280px;
+            }
+        }
+
+        /* Fix untuk navbar di dashboard */
+        .dashboard-layout .navbar.navbar-main {
+            margin-left: 0;
+            margin-right: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        /* Fix untuk sidebar scroll di dashboard */
+        .dashboard-layout .sidenav {
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Fix untuk dropdown menu di dashboard */
+        .dashboard-layout #questionsMenu {
+            position: relative;
+            background: transparent;
+        }
+
+        .dashboard-layout #questionsMenu .nav-link {
+            padding-left: 3rem;
+        }
+    </style>
+    
+    <style>
+        /* TinyMCE Editor Improvements */
+        .tox-tinymce {
+            min-height: 400px !important;
+            margin-bottom: 20px;
+        }
+
+        /* Card Content Improvements */
+        .card {
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Text Content Handling */
+        .materi-description, 
+        .question-content,
+        .answer-content {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+            max-width: 100%;
+        }
+
+        /* TinyMCE Content Display */
+        .content-display {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            max-width: 100%;
+            padding: 15px;
+        }
+
+        .content-display img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .content-display pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .content-display code {
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        /* Dashboard Card Improvements */
+        .materi-card {
+            height: 100%;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .materi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .materi-card-body {
+            padding: 1.5rem;
+        }
+
+        .materi-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #344767;
+        }
+
+        .materi-description {
+            font-size: 0.875rem;
+            color: #67748e;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+    
+        
+    <style>
+        :root {
+            --animate-duration: 0.5s;
+            --animate-delay: 0.1s;
+            --animate-iterations: 1;
+        }
+        
+        /* Global Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(79, 172, 254, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
+            }
+        }
+        
+        /* Animation Utility Classes */
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        
+        .animate-fade-in-down {
+            animation: fadeInDown 0.5s ease-out forwards;
+        }
+        
+        .animate-slide-in-right {
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+        
+        .animate-slide-in-left {
+            animation: slideInLeft 0.5s ease-out forwards;
+        }
+        
+        .animate-zoom-in {
+            animation: zoomIn 0.5s ease-out forwards;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .animate-bounce {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        /* Stagger Delays */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        
+        /* Hover Transitions */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        
+        .hover-glow {
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .hover-glow:hover {
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
+        }
+        
+        /* Page Transition */
+        .page-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        .page-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        /* Button Ripple Effect Base */
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple-effect::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+        
+        .ripple-effect:active::after {
+            width: 200px;
+            height: 200px;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom Selection */
+        ::selection {
+            background: rgba(79, 172, 254, 0.3);
+            color: #1a1d29;
+        }
+        
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        /* Card Hover Effects */
+        .card-elevated {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-elevated:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Icon Rotation on Hover */
+        .icon-rotate {
+            transition: transform 0.3s ease;
+        }
+        
+        .icon-rotate:hover {
+            transform: rotate(15deg);
+        }
+        
+        /* Text Gradient */
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Border Animation */
+        .border-animated {
+            position: relative;
+        }
+        
+        .border-animated::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            transition: width 0.3s ease;
+        }
+        
+        .border-animated:hover::before {
+            width: 100%;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(79, 172, 254, 0.2);
+            border-top-color: #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Tooltip Enhancement */
+        .tooltip-custom {
+            position: relative;
+        }
+        
+        .tooltip-custom::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: #1a1d29;
+            color: white;
+            font-size: 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .tooltip-custom:hover::after {
+            opacity: 1;
+            visibility: visible;
+            bottom: calc(100% + 8px);
+        }
+        
+        /* Gradient Border */
+        .gradient-border {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #4facfe, #00f2fe);
+            border-radius: 14px;
+            z-index: -1;
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+
+
+<!-- Navbar removed as per user request -->
+        <main class="main-content mt-0 p-0">
+        <div class="row g-0 vh-100 bg-white">
+            
+            <!-- Left Side: Modern Branding -->
+            <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-center align-items-center position-relative overflow-hidden" 
+                 style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);">
+                <!-- Decorative Elements -->
+                <div class="position-absolute w-100 h-100" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 24px 24px; opacity: 0.6;"></div>
+                <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; background: rgba(255,255,255,0.05); top: -50px; left: -100px; filter: blur(2px);"></div>
+                <div class="position-absolute rounded-circle" style="width: 200px; height: 200px; background: rgba(255,255,255,0.08); bottom: -30px; right: -50px; filter: blur(1px);"></div>
+                
+                <!-- Content -->
+                <div class="position-relative z-index-2 text-center px-4">
+                    <img src="http://127.0.0.1:8000/images/logo.png" alt="Logo OOPedia" class="mb-4 img-fluid drop-shadow-lg" style="max-height: 140px;">
+                    <h2 class="text-white font-weight-bolder mb-3" style="letter-spacing: -0.5px;">Selamat Datang Kembali!</h2>
+                    <p class="text-white opacity-8 fs-6 px-lg-4" style="line-height: 1.6;">
+                        Lanjutkan progres pembelajaran Pemrograman Berorientasi Objek Anda dan raih pemahaman mendalam secara praktis dan interaktif.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Side: Clean Form Form -->
+            <div class="col-lg-7 col-12 d-flex align-items-center justify-content-center position-relative bg-white pt-5 pt-lg-0">
+                <div class="w-100 px-4 px-md-5 px-lg-6" style="max-width: 550px;">
+                    <div class="text-center mb-5">
+                        <h3 class="font-weight-bolder text-dark mb-2" style="font-size: 28px;">Masuk ke Akun Anda</h3>
+                        <p class="text-secondary">Silakan masukkan email dan password untuk melanjutkan</p>
+                    </div>
+
+                    <form role="form" method="POST" action="http://127.0.0.1:8000/login" class="modern-form">
+                        <input type="hidden" name="_token" value="tMxRiGHrscvR54TpKMUPqIDnKtv7Nv1OavN17LW4" autocomplete="off">                        
+                        
+                        <!-- Input Email -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label ms-1 fw-bold text-dark text-sm">Alamat Email</label>
+                            <div class="custom-input-group mt-1">
+                                <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                                <input type="email" id="email" class="form-control" name="email" placeholder="contoh@kampus.ac.id" required autofocus>
+                            </div>
+                                                    </div>
+
+                        <!-- Input Password -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label ms-1 fw-bold text-dark text-sm">Kata Sandi</label>
+                            <div class="custom-input-group mt-1">
+                                <span class="input-icon"><i class="fas fa-lock"></i></span>
+                                <input type="password" id="password" class="form-control" name="password" placeholder="Masukkan kata sandi Anda" required>
+                            </div>
+                                                    </div>
+
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn btn-login w-100 mb-3">MASUK SEKARANG</button>
+                        </div>
+                        
+                        <div class="row align-items-center justify-content-center mt-4 pt-2 border-top border-light">
+                            <div class="col-12 text-center mt-3">
+                                <p class="text-sm text-secondary mb-2">
+                                    Belum punya akun? 
+                                    <a href="http://127.0.0.1:8000/register" class="text-primary fw-bold text-decoration-none">Daftar di sini</a>
+                                </p>
+                                <p class="text-sm text-secondary mb-0">
+                                    Ingin mencoba materi gratis? 
+                                    <a href="http://127.0.0.1:8000/mahasiswa/materials" class="text-info fw-bold text-decoration-none">Mode Tamu</a>
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Footer for mobile view, hidden on desktop -->
+                <div class="d-lg-none position-absolute bottom-0 w-100 text-center pb-3">
+                    <footer class="footer position-absolute bottom-footer py-2 w-100 z-index-1">
+    <div class="container">
+        <div class="row align-items-center justify-content-lg-between">
+            <div class="col-12 col-md-6 my-auto">
+                
+            </div>
+            <div class="col-12 col-md-6">
+                
+            </div>
+        </div>
+    </div>
+</footer>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    
+    <style>
+        /* Modern Clean Form Setup */
+        .custom-input-group {
+            position: relative;
+            background: #f8fafc;
+            border-radius: 14px;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 4px 16px;
+        }
+        
+        .custom-input-group.is-focused {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+        
+        .custom-input-group .input-icon {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-right: 12px;
+            transition: color 0.3s ease;
+        }
+        
+        .custom-input-group.is-focused .input-icon {
+            color: #3b82f6;
+        }
+
+        .custom-input-group .form-control {
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 12px 0 12px 0 !important;
+            color: #1e293b !important;
+            font-weight: 500;
+            font-size: 15px;
+            width: 100%;
+        }
+        
+        .custom-input-group .form-control::placeholder {
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+        
+        /* Modern Bold Button */
+        .btn-login {
+            background: linear-gradient(to right, #2563eb, #3b82f6) !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 24px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.5) !important;
+            background: linear-gradient(to right, #1d4ed8, #2563eb) !important;
+        }
+        
+        .btn-login:active {
+            transform: translateY(1px);
+        }
+        
+        .drop-shadow-lg {
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.25));
+        }
+
+        /* Prevent scroll if possible */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+
+<!-- <script src="http://127.0.0.1:8000/assets/js/core/popper.min.js"></script>
+<script src="http://127.0.0.1:8000/assets/js/core/bootstrap.min.js"></script>
+<script src="http://127.0.0.1:8000/assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="http://127.0.0.1:8000/assets/js/plugins/smooth-scrollbar.min.js"></script> -->
+
+<script src="http://127.0.0.1:8000/assets/js/core/popper.min.js"></script>
+<script src="http://127.0.0.1:8000/assets/js/core/bootstrap.min.js"></script>
+<script src="http://127.0.0.1:8000/assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="http://127.0.0.1:8000/assets/js/plugins/smooth-scrollbar.min.js"></script>
+<!-- <script src="http://127.0.0.1:8000/assets/js/material-dashboard.min.js"></script> -->
+
+    <script src="http://127.0.0.1:8000/assets/js/jquery.min.js"></script>
+    <script>
+        $(function() {
+            // Animating icons on focus
+            $(".custom-input-group input").on("focus", function() {
+                $(this).parent().addClass("is-focused");
+            }).on("blur", function() {
+                $(this).parent().removeClass("is-focused");
+            });
+        });
+    </script>
+    <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+        var options = {
+            damping: '0.5'
+        }
+        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+
+    // Global Loading Helpers - Defined immediately
+    const loadingOverlay = document.getElementById('loading-overlay');
+    let loadingTimeout;
+
+    window.showLoading = function() {
+        if(loadingOverlay) {
+            loadingOverlay.classList.add('show');
+            // Set safety timeout
+            clearTimeout(loadingTimeout);
+            loadingTimeout = setTimeout(() => {
+                hideLoading();
+            }, 10000); // 10 seconds max
+        }
+    };
+    
+    window.hideLoading = function() {
+        if(loadingOverlay) {
+            clearTimeout(loadingTimeout);
+            loadingOverlay.classList.remove('show');
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show loading on page load
+        showLoading();
+        
+        // Hide when page is fully loaded
+        window.addEventListener('load', function() {
+            hideLoading();
+        });
+        
+        // Show loading on navigation
+        document.addEventListener('click', function(event) {
+            const link = event.target.closest('a');
+            if (link && 
+                link.href && 
+                !link.target && 
+                link.hostname === window.location.hostname && 
+                !link.hasAttribute('data-bs-toggle') && 
+                !link.classList.contains('no-loading')) {
+                showLoading();
+            }
+        });
+        
+        // Show loading on form submissions
+        document.addEventListener('submit', function(event) {
+            if (!event.target.classList.contains('ajax-form')) {
+                showLoading();
+            }
+        });
+        
+        // Intercept fetch requests
+        const originalFetch = window.fetch;
+        window.fetch = function() {
+            showLoading();
+            return originalFetch.apply(this, arguments)
+                .then(response => {
+                    hideLoading();
+                    return response;
+                })
+                .catch(error => {
+                    hideLoading();
+                    throw error;
+                });
+        };
+
+        // Perfect Scrollbar initialization
+        if (document.querySelector('.sidenav')) {
+            var fixedPlugin = document.querySelector('.fixed-plugin');
+            var fixedPluginButton = document.querySelector('.fixed-plugin-button');
+            var fixedPluginButtonNav = document.querySelector('.fixed-plugin-button-nav');
+            var fixedPluginCard = document.querySelector('.fixed-plugin .card');
+            var fixedPluginCloseButton = document.querySelectorAll('.fixed-plugin-close-button');
+            var navbar = document.getElementById('navbarBlur');
+            var buttonNavbarFixed = document.getElementById('navbarFixed');
+
+            if (fixedPluginButton) {
+                fixedPluginButton.onclick = function() {
+                    if (!fixedPlugin.classList.contains('show')) {
+                        fixedPlugin.classList.add('show');
+                    } else {
+                        fixedPlugin.classList.remove('show');
+                    }
+                }
+            }
+
+            document.querySelector('body').onclick = function(e) {
+                if (e.target != fixedPluginButton && e.target != fixedPluginButtonNav && e.target.closest('.fixed-plugin .card') != fixedPluginCard) {
+                    fixedPlugin.classList.remove('show');
+                }
+            }
+        }
+    });
+
+    // Add this before the existing script content
+    tinymce.init({
+        selector: 'textarea.tinymce',
+        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+        menubar: false,
+        height: 400,
+        content_style: `
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                font-size: 16px;
+                line-height: 1.6;
+                color: #333;
+                margin: 15px;
+            }
+            p { margin: 0 0 1em 0; }
+            img { max-width: 100%; height: auto; }
+            pre { background: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+            code { background: #f5f5f5; padding: 2px 4px; border-radius: 4px; }
+        `,
+        setup: function(editor) {
+            editor.on('change', function() {
+                editor.save();
+            });
+        }
+    });
+</script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="http://127.0.0.1:8000/assets/js/material-dashboard.min.js?v=3.0.0"></script>
+    <script>
+        // Fix for FontAwesome loading error in Firefox/some browsers
+        window.addEventListener('load', function() {
+            // Check if material dashboard script loaded correctly
+            if(typeof materialDashboard === 'undefined') {
+                console.log('Material Dashboard script suppressed or failed.');
+            }
+        });
+    </script>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Add this before the closing </body> tag -->
+<div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading...</p>
+    </div>
+</div> 
+</body>
+</html>

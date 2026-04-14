@@ -19,7 +19,17 @@ class MaterialQuestionController extends Controller
         $isGuest = !auth()->check() || (auth()->check() && auth()->user()->role_id === 4);
         $userId = $isGuest ? session()->getId() : auth()->id();
         
-        $allMaterials = Material::with(['questions', 'media'])->get();
+        $query = Material::with(['questions', 'media'])->orderBy('created_at', 'asc');
+        
+        if (request()->has('search') && request('search') != '') {
+            $searchTerm = request('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('content', 'like', '%' . $searchTerm . '%');
+            });
+        }
+        
+        $allMaterials = $query->get();
         
         // Untuk guest, hanya tampilkan setengah dari total materi
         if ($isGuest) {
@@ -416,19 +426,37 @@ class MaterialQuestionController extends Controller
             
             // Logic untuk mengecek jawaban
             $isCorrect = false;
+            $correctAnswerText = null;
+            $selectedAnswerText = null;
+            $explanation = null;
             $questionType = $question->question_type;
             
             // Check jawaban berdasarkan tipe soal
             if ($questionType === 'multiple_choice') {
                 $selectedAnswer = Answer::findOrFail($request->answer);
                 $isCorrect = $selectedAnswer->is_correct;
+                $selectedAnswerText = $selectedAnswer->answer_text;
+                $explanation = $selectedAnswer->explanation;
+                
+                if (!$isCorrect) {
+                    $correctAnswer = Answer::where('question_id', $question->id)
+                                        ->where('is_correct', true)
+                                        ->first();
+                    $correctAnswerText = $correctAnswer->answer_text ?? null;
+                }
             } elseif ($questionType === 'fill_in_the_blank') {
                 $answer = trim(strtolower($request->fill_in_the_blank_answer));
                 $correctAnswer = trim(strtolower($question->correct_answer));
                 $isCorrect = $answer === $correctAnswer;
+                $selectedAnswerText = $request->fill_in_the_blank_answer;
+                $correctAnswerText = $question->correct_answer;
+                $explanation = $question->explanation;
             } elseif ($questionType === 'true_false') {
                 $selectedAnswer = ($request->answer === 'true');
                 $isCorrect = $selectedAnswer === $question->is_true;
+                $selectedAnswerText = $selectedAnswer ? 'Benar' : 'Salah';
+                $correctAnswerText = $question->is_true ? 'Benar' : 'Salah';
+                $explanation = $question->explanation;
             }
             
             // Jika user auth, simpan progress ke database

@@ -24,7 +24,15 @@
         
         /* Fix Grid Layout since we disabled preflight */
         .tw-grid { display: grid; }
+        
+        /* CodeMirror Custom Fixes */
+        .CodeMirror { height: 100% !important; font-family: 'Courier New', Courier, monospace !important; border-top: 1px solid #2d3748; }
+        .CodeMirror-hints { z-index: 9999 !important; font-family: 'Courier New', Courier, monospace !important; }
     </style>
+    <!-- CodeMirror Assets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.css">
 @endpush
 
 @section('content')
@@ -102,9 +110,14 @@
                     <div class="tw-w-px tw-h-5 tw-bg-gray-200"></div>
 
                     <!-- Task Success Rate (Status) -->
-                    <div class="tw-flex tw-items-center tw-gap-2" title="Task Success Rate">
-                        <i class="fas fa-spinner fa-spin tw-text-indigo-500"></i>
-                        <span class="tw-text-indigo-600 tw-text-xs tw-font-bold">Memproses</span>
+                    <div class="tw-flex tw-items-center tw-gap-2" title="Status Evaluasi Output">
+                        @if($tbutSession->is_success)
+                            <i class="fas fa-check-circle tw-text-green-500"></i>
+                            <span class="tw-text-green-600 tw-text-xs tw-font-bold">Output Tepat!</span>
+                        @else
+                            <i class="fas fa-spinner fa-spin tw-text-indigo-500"></i>
+                            <span class="tw-text-indigo-600 tw-text-xs tw-font-bold">Belum Tepat</span>
+                        @endif
                     </div>
                 </div>
 
@@ -172,6 +185,7 @@
                 @csrf
                 @if($activeTask)
                     <input type="hidden" name="task_id" value="{{ $activeTask->id }}">
+                    <input type="hidden" name="elapsed" id="execute-elapsed">
                 @endif
                 
                 <!-- Editor Toolbar -->
@@ -202,7 +216,7 @@
                 <!-- Editor Area (Single Frame) -->
                 <div class="tw-flex-1 tw-relative tw-bg-[#1e1e1e]" id="editors-container">
                     <div id="{{ $currentId }}" class="editor-pane tw-absolute tw-inset-0 tw-w-full tw-h-full">
-                        <textarea name="files[{{ $currentId }}][content]"
+                        <textarea id="code-editor-textarea" name="files[{{ $currentId }}][content]"
                                   class="tw-w-full tw-h-full tw-p-6 tw-font-mono tw-text-sm tw-bg-[#1e1e1e] tw-text-gray-200 tw-resize-none focus:tw-outline-none tw-leading-relaxed"
                                   spellcheck="false"
                                   placeholder="// Tulis instruksi kode Java Anda di sini..."
@@ -211,8 +225,21 @@
                     </div>
                 </div>
 
-                <!-- Terminal Output -->
-                <div class="tw-h-1/3 tw-min-h-[180px] tw-bg-[#0f1115] tw-border-t tw-border-gray-800 tw-flex tw-flex-col">
+                <!-- Terminal: stdin + output -->
+                <div class="tw-h-1/3 tw-min-h-[220px] tw-bg-[#0f1115] tw-border-t tw-border-gray-800 tw-flex tw-flex-col">
+                    <!-- Stdin panel -->
+                    <div class="tw-px-4 tw-pt-2 tw-pb-1 tw-bg-[#1a1c23] tw-border-b tw-border-gray-800 tw-flex tw-items-center tw-gap-2">
+                        <i class="fas fa-keyboard tw-text-yellow-400 tw-text-xs"></i>
+                        <span class="tw-text-xs tw-font-mono tw-uppercase tw-tracking-widest tw-text-yellow-400">Program Input (stdin)</span>
+                        <span class="tw-text-xs tw-text-gray-500 tw-ml-1">— isi jika kode memakai Scanner</span>
+                    </div>
+                    <textarea id="stdin-input" name="stdin"
+                        rows="2"
+                        class="tw-w-full tw-bg-[#131620] tw-text-yellow-200 tw-font-mono tw-text-sm tw-px-4 tw-py-2 tw-resize-none focus:tw-outline-none tw-border-b tw-border-gray-800"
+                        placeholder="Contoh: 5&#10;3"
+                        spellcheck="false">{{ $stdin ?? '' }}</textarea>
+
+                    <!-- Output header -->
                     <div class="tw-px-4 tw-py-2 tw-bg-[#1a1c23] tw-border-b tw-border-gray-800 tw-flex tw-justify-between tw-items-center">
                         <span class="tw-text-xs tw-font-mono tw-uppercase tw-tracking-widest tw-text-gray-500">Terminal Output</span>
                         
@@ -230,6 +257,7 @@
                     <pre class="tw-flex-1 tw-p-4 tw-font-mono tw-text-sm tw-overflow-auto tw-whitespace-pre-wrap tw-leading-relaxed terminal-scroll tw-text-gray-300">{{ $output ?? '// Hasil eksekusi akan muncul di sini...' }}</pre>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
@@ -332,10 +360,15 @@
     if (codeForm && runCountEl) {
         codeForm.addEventListener('submit', function() {
             runCountEl.textContent = parseInt(runCountEl.textContent || '0') + 1;
+            const elapsedInput = document.getElementById('execute-elapsed');
+            if (elapsedInput) elapsedInput.value = elapsed;
         });
     }
 
     function getCurrentCode() {
+        if (window.editorInstance) {
+            return window.editorInstance.getValue();
+        }
         const activePane = document.querySelector('.editor-pane:not(.tw-hidden) textarea');
         return activePane ? activePane.value : '';
     }
@@ -426,15 +459,50 @@
 
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/anyword-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
 <script>
     console.log('Virtual Lab: Inline Script Loaded (Single Tab Workspace)');
 
+    // Initialize CodeMirror Editor with Automation (Autoclose, Hinting)
+    document.addEventListener("DOMContentLoaded", function() {
+        const textarea = document.getElementById("code-editor-textarea");
+        if (textarea) {
+            window.editorInstance = CodeMirror.fromTextArea(textarea, {
+                mode: "text/x-java",
+                theme: "dracula",
+                lineNumbers: true,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                indentUnit: 4,
+                readOnly: textarea.hasAttribute('readonly'),
+                extraKeys: {"Ctrl-Space": "autocomplete"}
+            });
+            window.editorInstance.setSize("100%", "100%");
 
-    // Loading Indicator
-    const form = document.getElementById('codeForm');
-    if (form) {
-        form.addEventListener('submit', function() {
-            document.getElementById('loading-indicator').classList.remove('tw-hidden');
-        });
-    }
+            // Sync CodeMirror → textarea BEFORE form submits
+            // Use capture phase (3rd arg = true) so our handler runs first
+            const form = document.getElementById('codeForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Save CodeMirror content back to hidden textarea
+                    window.editorInstance.save();
+
+                    // Guard: if code textarea is now empty, warn and stop
+                    const ta = document.getElementById('code-editor-textarea');
+                    if (ta && ta.value.trim() === '') {
+                        e.preventDefault();
+                        alert('Editor kosong! Tulis kode Java terlebih dahulu sebelum Run Code.');
+                        return;
+                    }
+
+                    document.getElementById('loading-indicator').classList.remove('tw-hidden');
+                }, true); // capture phase ensures we run before default submission
+            }
+        }
+    });
+
 </script>@endsection

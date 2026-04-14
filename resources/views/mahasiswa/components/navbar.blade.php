@@ -337,9 +337,9 @@
 </style>
 
 <nav class="navbar">
-    <div class="container-fluid">
+    <div class="container-fluid position-relative">
         {{-- ─── LEFT: TOGGLE & BRAND/BREADCRUMB ─── --}}
-        <div class="d-flex align-items-center" style="width: 250px;">
+        <div class="d-flex align-items-center" style="{{ $isGuest ? '' : 'width: 250px;' }}">
             @if(!$isGuest)
             <button id="sidebarToggleBtn" class="btn btn-icon d-lg-none">
                 <i class="fas fa-bars"></i>
@@ -356,20 +356,19 @@
                 </h6>
             </div>
             @endauth
+
+            @guest
+            <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="{{ url('/') }}" style="text-decoration: none;">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 38px; object-fit: contain;">
+                <span class="fw-bold fs-5 text-primary" style="letter-spacing: -0.5px;">OOPEDIA</span>
+            </a>
+            @endguest
         </div>
 
         {{-- ─── CENTER: SEARCH BAR ─── --}}
-        <div class="flex-grow-1 d-none d-md-flex justify-content-center px-4">
-            @auth
-            <form action="{{ route('mahasiswa.materials.index') }}" method="GET" class="search-wrapper m-0">
-                <input type="text" name="search" class="search-input" placeholder="Cari materi atau latihan soal..." value="{{ request('search') }}">
-                <i class="fas fa-search search-icon"></i>
-                <button type="submit" class="d-none"></button>
-            </form>
-            @endauth
-
-            @guest
-            <ul class="nav-menu list-unstyled d-flex mb-0 align-items-center justify-content-center w-100" style="gap: 10px;">
+        @if($isGuest)
+        <div class="d-none d-md-flex position-absolute top-50 start-50 translate-middle z-index-1">
+            <ul class="nav-menu list-unstyled d-flex mb-0 align-items-center justify-content-center" style="gap: 10px;">
                 <li>
                     <a href="{{ route('mahasiswa.materials.index') }}"
                        class="nav-link {{ request()->routeIs('mahasiswa.materials*') && !request()->routeIs('mahasiswa.materials.questions*') ? 'active' : '' }}">
@@ -389,11 +388,26 @@
                     </a>
                 </li>
             </ul>
-            @endguest
         </div>
+        @else
+        <div class="flex-grow-1 d-none d-md-flex justify-content-center px-4">
+            <form action="{{ request()->routeIs('mahasiswa.materials.questions*') ? route('mahasiswa.materials.questions.index') : route('mahasiswa.materials.index') }}" method="GET" class="search-wrapper m-0" style="position: relative;">
+                <input type="text" name="search" id="navbarSearchInput" class="search-input" placeholder="Cari materi atau latihan soal..." value="{{ request('search') }}" autocomplete="off">
+                <i class="fas fa-search search-icon"></i>
+                <button type="submit" class="d-none"></button>
+                
+                <!-- Suggestions Dropdown UI -->
+                <div id="searchSuggestionsContainer" style="display: none; position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); overflow: hidden; z-index: 1000;">
+                    <ul id="searchSuggestionsList" class="list-unstyled mb-0" style="max-height: 300px; overflow-y: auto; text-align: left;">
+                        <!-- populated by JS -->
+                    </ul>
+                </div>
+            </form>
+        </div>
+        @endif
 
         {{-- ─── RIGHT: NOTIFICATIONS & PROFILE ─── --}}
-        <div class="d-flex align-items-center justify-content-end gap-2 gap-md-3" style="width: 250px;">
+        <div class="d-flex align-items-center justify-content-end gap-2 gap-md-3" style="{{ $isGuest ? '' : 'width: 250px;' }}">
             @guest
             <a href="{{ route('login') }}" class="btn btn-outline-primary rounded-pill px-4" style="font-weight: 500; font-size: 14px;">Masuk</a>
             <a href="{{ route('register') }}" class="btn btn-primary rounded-pill px-4" style="font-weight: 500; font-size: 14px; box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);">Daftar</a>
@@ -404,36 +418,37 @@
             <div class="dropdown">
                 <a href="#" class="notif-btn" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-bell"></i>
-                    <span class="notif-badge"></span>
+                    @if(auth()->user()->unreadNotifications->count() > 0)
+                        <span class="notif-badge"></span>
+                    @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notifDropdown" style="width: 320px; overflow: hidden;">
                     <div class="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
                         <h6 class="m-0 fw-bold text-dark" style="font-size: 14px;">Notifikasi</h6>
-                        <span class="badge bg-primary rounded-pill">2 Baru</span>
+                        @if(auth()->user()->unreadNotifications->count() > 0)
+                            <span class="badge bg-primary rounded-pill">{{ auth()->user()->unreadNotifications->count() }} Baru</span>
+                        @endif
                     </div>
                     <div class="notif-list p-2">
-                        <!-- Dummy Notifications -->
-                        <a href="#" class="notif-item">
-                            <div class="notif-icon bg-success text-white">
-                                <i class="fas fa-check"></i>
+                        @forelse(auth()->user()->unreadNotifications as $notification)
+                            <a href="#" class="notif-item">
+                                <div class="notif-icon bg-primary text-white">
+                                    <i class="fas {{ $notification->data['icon'] ?? 'fa-bell' }}"></i>
+                                </div>
+                                <div>
+                                    <p class="notif-text">{!! $notification->data['message'] ?? 'Pesan notifikasi' !!}</p>
+                                    <span class="notif-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="text-center py-4">
+                                <i class="fas fa-bell-slash text-muted mb-2" style="font-size: 24px;"></i>
+                                <p class="text-muted text-sm mb-0">Belum ada notifikasi baru</p>
                             </div>
-                            <div>
-                                <p class="notif-text">Kamu telah menyelesaikan <strong>Materi Pengenalan Objek</strong> dengan sempurna!</p>
-                                <span class="notif-time">2 jam yang lalu</span>
-                            </div>
-                        </a>
-                        <a href="#" class="notif-item">
-                            <div class="notif-icon bg-warning text-dark">
-                                <i class="fas fa-exclamation"></i>
-                            </div>
-                            <div>
-                                <p class="notif-text">Latihan soal <strong>Enkapsulasi</strong> baru saja ditambahkan.</p>
-                                <span class="notif-time">1 hari yang lalu</span>
-                            </div>
-                        </a>
+                        @endforelse
                     </div>
                     <div class="p-2 border-top text-center text-sm">
-                        <a href="#" class="text-primary fw-medium text-decoration-none" style="font-size: 13px;">Lihat semua notifikasi</a>
+                        <a href="#" class="text-primary fw-medium text-decoration-none" style="font-size: 13px;">Tandai semua dibaca</a>
                     </div>
                 </div>
             </div>
@@ -441,7 +456,7 @@
             <!-- Profile Dropdown -->
             <div class="dropdown">
                 <button class="profile-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{{ asset('images/profile.gif') }}" alt="Profile" class="profile-avatar">
+                    <img src="{{ 'https://ui-avatars.com/api/?name=' . urlencode($userName) . '&background=random' }}" alt="Profile" class="profile-avatar">
                     <div class="profile-info d-none d-sm-flex">
                         <span class="profile-name">{{ Str::limit($userName, 15) }}</span>
                         <span class="profile-role">Mahasiswa</span>
@@ -524,6 +539,62 @@
         const isDashboardPage = {{ request()->routeIs('mahasiswa.dashboard*') ? 'true' : 'false' }};
         if (isLoggedIn && !isMainTutorialCompleted && isDashboardPage && !sessionStorage.getItem('skip_tour')) {
             startTutorial();
+        }
+
+        // Search Autocomplete Logic
+        const searchInput = document.getElementById('navbarSearchInput');
+        const suggestionsContainer = document.getElementById('searchSuggestionsContainer');
+        const suggestionsList = document.getElementById('searchSuggestionsList');
+        let debounceTimer;
+
+        if (searchInput && suggestionsContainer) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const query = this.value.trim();
+                
+                if (query.length < 2) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+                
+                debounceTimer = setTimeout(function() {
+                    fetch(`{{ route('mahasiswa.materials.search-suggestions') }}?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            suggestionsList.innerHTML = '';
+                            
+                            if (data.length > 0) {
+                                data.forEach(item => {
+                                    const li = document.createElement('li');
+                                    li.innerHTML = `<a href="${item.url}" style="display: block; padding: 12px 16px; color: #334155; text-decoration: none; border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-search text-muted me-3" style="font-size: 14px;"></i>
+                                            <span style="font-size: 14px; font-weight: 500;">${item.title}</span>
+                                        </div>
+                                    </a>`;
+                                    suggestionsList.appendChild(li);
+                                });
+                                suggestionsContainer.style.display = 'block';
+                            } else {
+                                suggestionsList.innerHTML = `<li style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">Tidak ada hasil ditemukan</li>`;
+                                suggestionsContainer.style.display = 'block';
+                            }
+                        })
+                        .catch(error => console.error('Error fetching suggestions:', error));
+                }, 300);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+            
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 2 && suggestionsList.children.length > 0) {
+                    suggestionsContainer.style.display = 'block';
+                }
+            });
         }
     });
 

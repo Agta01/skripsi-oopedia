@@ -46,6 +46,7 @@ class VirtualLabTaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'template_code' => 'required|string',
+            'expected_output' => 'nullable|string',
             'difficulty' => 'required|in:beginner,intermediate,advanced',
             'test_cases' => 'nullable|string' // JSON string from form
         ]);
@@ -91,6 +92,7 @@ class VirtualLabTaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'template_code' => 'required|string',
+            'expected_output' => 'nullable|string',
             'difficulty' => 'required|in:beginner,intermediate,advanced',
             'test_cases' => 'nullable|string'
         ]);

@@ -90,7 +90,17 @@ class MaterialController extends Controller
             ->get();
 
         // Get all materials first
-        $allMaterials = Material::with(['questions'])->orderBy('created_at', 'asc')->get();
+        $query = Material::with(['questions'])->orderBy('created_at', 'asc');
+        
+        if (request()->has('search') && request('search') != '') {
+            $searchTerm = request('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('content', 'like', '%' . $searchTerm . '%');
+            });
+        }
+        
+        $allMaterials = $query->get();
         
         // If user is guest, only show half of the materials
         if ($isGuest) {
@@ -172,5 +182,32 @@ class MaterialController extends Controller
         });
 
         return view('mahasiswa.dashboard.dashboard', compact('dashboardMaterials'));
+    }
+
+    public function searchSuggestions(Request $request)
+    {
+        $search = $request->get('q', '');
+        
+        if (strlen($search) < 2) {
+            return response()->json([]);
+        }
+
+        $suggestions = Material::where('title', 'like', "%{$search}%")
+            ->orderBy('created_at', 'asc')
+            ->select('id', 'title')
+            ->limit(5)
+            ->get()
+            ->map(function($material) {
+                return [
+                    'id' => $material->id,
+                    'title' => $material->title,
+                    // Return the URL to redirect when clicked
+                    'url' => request()->routeIs('mahasiswa.materials.questions*') 
+                            ? route('mahasiswa.materials.questions.show', $material->id) 
+                            : route('mahasiswa.materials.show', $material->id)
+                ];
+            });
+
+        return response()->json($suggestions);
     }
 } 
