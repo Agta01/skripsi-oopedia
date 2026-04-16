@@ -7,6 +7,7 @@ use App\Models\Material;
 use App\Models\VirtualLabTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class VirtualLabTaskController extends Controller
 {
@@ -42,21 +43,29 @@ class VirtualLabTaskController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'material_id' => 'required|exists:materials,id',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'template_code' => 'required|string',
-            'expected_output' => 'nullable|string',
-            'difficulty' => 'required|in:beginner,intermediate,advanced',
-            'test_cases' => 'nullable|string' // JSON string from form
+            'material_id'           => 'required|exists:materials,id',
+            'title'                 => 'required|string|max:255',
+            'description'           => 'required|string',
+            'template_code'         => 'required|string',
+            'expected_output'       => 'nullable|string',
+            'expected_result_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'deadline_minutes'      => 'nullable|integer|min:1|max:480',
+            'difficulty'            => 'required|in:beginner,intermediate,advanced',
+            'test_cases'            => 'nullable|string',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
         $validated['created_by'] = auth()->id();
-        
+
         // Handle test_cases if provided as JSON string
         if (!empty($validated['test_cases'])) {
             $validated['test_cases'] = json_decode($validated['test_cases'], true);
+        }
+
+        // Handle expected result image upload
+        if ($request->hasFile('expected_result_image')) {
+            $validated['expected_result_image'] = $request->file('expected_result_image')
+                ->store('expected-results', 'public');
         }
 
         VirtualLabTask::create($validated);
@@ -88,13 +97,15 @@ class VirtualLabTaskController extends Controller
     public function update(Request $request, VirtualLabTask $virtualLabTask)
     {
         $validated = $request->validate([
-            'material_id' => 'required|exists:materials,id',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'template_code' => 'required|string',
-            'expected_output' => 'nullable|string',
-            'difficulty' => 'required|in:beginner,intermediate,advanced',
-            'test_cases' => 'nullable|string'
+            'material_id'           => 'required|exists:materials,id',
+            'title'                 => 'required|string|max:255',
+            'description'           => 'required|string',
+            'template_code'         => 'required|string',
+            'expected_output'       => 'nullable|string',
+            'expected_result_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'deadline_minutes'      => 'nullable|integer|min:1|max:480',
+            'difficulty'            => 'required|in:beginner,intermediate,advanced',
+            'test_cases'            => 'nullable|string',
         ]);
 
         if ($request->title !== $virtualLabTask->title) {
@@ -103,6 +114,24 @@ class VirtualLabTaskController extends Controller
 
         if (!empty($validated['test_cases'])) {
             $validated['test_cases'] = json_decode($validated['test_cases'], true);
+        }
+
+        // Handle expected result image upload
+        if ($request->hasFile('expected_result_image')) {
+            // Delete old image if exists
+            if ($virtualLabTask->expected_result_image) {
+                Storage::disk('public')->delete($virtualLabTask->expected_result_image);
+            }
+            $validated['expected_result_image'] = $request->file('expected_result_image')
+                ->store('expected-results', 'public');
+        }
+
+        // Handle image removal
+        if ($request->has('remove_expected_image') && $request->remove_expected_image == '1') {
+            if ($virtualLabTask->expected_result_image) {
+                Storage::disk('public')->delete($virtualLabTask->expected_result_image);
+            }
+            $validated['expected_result_image'] = null;
         }
 
         $virtualLabTask->update($validated);
@@ -116,6 +145,11 @@ class VirtualLabTaskController extends Controller
      */
     public function destroy(VirtualLabTask $virtualLabTask)
     {
+        // Delete image file if exists
+        if ($virtualLabTask->expected_result_image) {
+            Storage::disk('public')->delete($virtualLabTask->expected_result_image);
+        }
+
         $virtualLabTask->delete();
         return redirect()->route('admin.virtual-lab-tasks.index')
             ->with('success', 'Tugas Virtual Lab berhasil dihapus.');

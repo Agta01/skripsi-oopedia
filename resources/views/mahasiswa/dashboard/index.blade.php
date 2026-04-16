@@ -593,7 +593,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── 5. INTRO.JS TOUR ── */
     @if(!auth()->user()->has_seen_tour)
-    setTimeout(startDashboardTour, 900);
+    // Double-guard: localStorage prevents re-show even if DB flag not yet saved
+    if (!localStorage.getItem('oopedia_tour_done_{{ auth()->id() }}')) {
+        setTimeout(startDashboardTour, 900);
+    }
     @endif
 });
 
@@ -696,6 +699,9 @@ function startDashboardTour() {
 }
 
 function markTourComplete() {
+    // Set localStorage immediately so refresh can't re-trigger the tour
+    localStorage.setItem('oopedia_tour_done_{{ auth()->id() }}', '1');
+    // Also persist to DB
     fetch("{{ route('mahasiswa.tour.complete') }}", {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
