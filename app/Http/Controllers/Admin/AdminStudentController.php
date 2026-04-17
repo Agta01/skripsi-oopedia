@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Material;
 use App\Models\Progress;
 use App\Models\Question;
+use App\Models\TbutSession;
+use App\Models\VirtualLabTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -55,6 +57,9 @@ class AdminStudentController extends Controller
             }
         }
         
+        // Total tugas virtual lab
+        $totalVlTasks = VirtualLabTask::count();
+
         // Calculate progress for each student
         foreach ($students as $student) {
             // Get correct answers count
@@ -62,19 +67,26 @@ class AdminStudentController extends Controller
                 ->where('user_id', $student->id)
                 ->where('is_correct', true)
                 ->count();
-            
+
             // Calculate progress percentage based on configured questions
-            $student->overall_progress = $totalConfiguredQuestions > 0 
+            $student->overall_progress = $totalConfiguredQuestions > 0
                 ? min(100, round(($correctAnswers / $totalConfiguredQuestions) * 100))
                 : 0;
-            
+
             // Set total answered questions
             $student->total_answered_questions = DB::table('progress')
                 ->where('user_id', $student->id)
                 ->count();
+
+            // ── Virtual Lab Stats ──
+            $vlSessions = TbutSession::where('user_id', $student->id)->get();
+            $student->vl_total       = $vlSessions->count();
+            $student->vl_completed   = $vlSessions->where('is_completed', true)->count();
+            $student->vl_success     = $vlSessions->where('is_success', true)->count();
+            $student->vl_total_tasks = $totalVlTasks;
         }
-        
-        return view('admin.students.index', compact('students'));
+
+        return view('admin.students.index', compact('students', 'totalVlTasks'));
     }
 
     public function progress(User $student)
@@ -166,11 +178,27 @@ class AdminStudentController extends Controller
             ->limit(10)
             ->get();
 
+        // ── Virtual Lab Sessions ──
+        $vlSessions = TbutSession::with('task.material')
+            ->where('user_id', $student->id)
+            ->orderByDesc('started_at')
+            ->get();
+
+        $vlStats = [
+            'total'     => $vlSessions->count(),
+            'completed' => $vlSessions->where('is_completed', true)->count(),
+            'success'   => $vlSessions->where('is_success', true)->count(),
+            'avg_secs'  => $vlSessions->where('is_completed', true)->avg('duration_seconds') ?? 0,
+            'avg_runs'  => $vlSessions->avg('run_count') ?? 0,
+        ];
+
         return view('admin.students.progress', [
-            'student' => $student,
-            'materials' => $materialsWithProgress,
-            'recent_activities' => $recent_activities,
-            'missingQuestionsByMaterial' => $missingQuestionsByMaterial
+            'student'                    => $student,
+            'materials'                  => $materialsWithProgress,
+            'recent_activities'          => $recent_activities,
+            'missingQuestionsByMaterial' => $missingQuestionsByMaterial,
+            'vlSessions'                 => $vlSessions,
+            'vlStats'                    => $vlStats,
         ]);
     }
 
