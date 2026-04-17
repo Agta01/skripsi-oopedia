@@ -263,56 +263,65 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const loadingOverlay = document.getElementById('loading-overlay');
-        
-        // Safety timeout to prevent infinite loading
         let loadingTimeout;
-        
-        // Define helper functions FIRST before using them
+
         window.showLoading = function() {
-            if (!loadingOverlay) return; // Guard clause
+            if (!loadingOverlay) return;
             loadingOverlay.classList.add('show');
-            
-            // Set safety timeout
             clearTimeout(loadingTimeout);
-            loadingTimeout = setTimeout(() => {
-                hideLoading();
-            }, 10000); // 10 seconds max
+            // Safety: auto-hide after 15 seconds max
+            loadingTimeout = setTimeout(() => hideLoading(), 15000);
         };
-        
+
         window.hideLoading = function() {
-            if (!loadingOverlay) return; // Guard clause
+            if (!loadingOverlay) return;
             clearTimeout(loadingTimeout);
             loadingOverlay.classList.remove('show');
         };
-        
-        // Now use the functions
-        // Show loading on page load
+
+        // ── FIX 1: Halaman baru — show loading lalu hide saat load selesai ──
         showLoading();
-        
-        // Hide when page is fully loaded
-        window.addEventListener('load', function() {
-            hideLoading();
+        window.addEventListener('load', () => hideLoading());
+
+        // ── FIX 2: Tombol Back/Forward (bfcache) — event 'load' TIDAK fired ──
+        // pageshow.persisted = true artinya halaman dari cache browser
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                hideLoading(); // Paksa sembunyikan karena load tidak akan terpanggil
+            }
         });
-        
-        // Show loading on navigation
+
+        // ── FIX 3: Sembunyikan juga saat DOM siap (double safety) ──
+        // Ini mengatasi edge-case dimana 'load' sudah lewat sebelum listener terpasang
+        if (document.readyState === 'complete') {
+            hideLoading();
+        }
+
+        // Show loading saat klik link navigasi (bukan anchor, toggle, download, dll)
         document.addEventListener('click', function(event) {
             const link = event.target.closest('a');
-            if (link && 
-                link.href && 
-                !link.target && 
-                link.hostname === window.location.hostname && 
-                !link.hasAttribute('data-bs-toggle') && 
-                !link.classList.contains('no-loading')) {
+            if (link &&
+                link.href &&
+                !link.target &&
+                link.hostname === window.location.hostname &&
+                !link.hasAttribute('data-bs-toggle') &&
+                !link.hasAttribute('download') &&
+                !link.classList.contains('no-loading') &&
+                !link.href.startsWith('javascript:') &&
+                !link.href.startsWith('#')) {
                 showLoading();
             }
         });
-        
-        // Show loading on form submissions
+
+        // Show loading saat submit form (bukan AJAX)
         document.addEventListener('submit', function(event) {
             if (!event.target.classList.contains('ajax-form')) {
                 showLoading();
             }
         });
+
+        // ── FIX 4: popstate (browser back/forward tanpa reload penuh) ──
+        window.addEventListener('popstate', () => hideLoading());
     });
     </script>
 
