@@ -32,10 +32,10 @@ jobs:
           npm ci
 
       - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+        run: cp .env.example .env
 
       - name: Generate key
-        run: php artisan key:generate
+        run: php artisan key:generate --force
 
       - name: Build Assets
         run: npm run build
