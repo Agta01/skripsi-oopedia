@@ -105,15 +105,18 @@
                     </div>
                 @elseif($level['status'] === 'completed')
                     <!-- COMPLETED CARD -->
-                    <div class="card h-100 level-card completed-card rounded-4 shadow-sm position-relative">
-                        <span class="badge bg-success rounded-pill level-badge px-2 py-1 text-uppercase fw-semibold"><i class="fas fa-check-double me-1"></i>{{ $level['difficulty'] }}</span>
-                        <div class="card-body text-center p-4 d-flex flex-column align-items-center justify-content-center pt-5">
-                            <div class="tw-w-16 tw-h-16 tw-bg-green-500 tw-text-white shadow-sm rounded-circle d-flex align-items-center justify-content-center mb-3">
-                                <i class="fas fa-check fs-3"></i>
+                    <a href="{{ route('mahasiswa.materials.questions.show', ['material' => $material->id, 'question' => $level['question_id'], 'difficulty' => $difficulty]) }}" class="text-decoration-none d-block h-100">
+                        <div class="card h-100 level-card completed-card rounded-4 shadow-sm position-relative hover:tw-shadow-md">
+                            <span class="badge bg-success rounded-pill level-badge px-2 py-1 text-uppercase fw-semibold"><i class="fas fa-check-double me-1"></i>{{ $level['difficulty'] }}</span>
+                            <div class="card-body text-center p-4 d-flex flex-column align-items-center justify-content-center pt-5">
+                                <div class="tw-w-16 tw-h-16 tw-bg-green-500 tw-text-white shadow-sm rounded-circle d-flex align-items-center justify-content-center mb-3 transition-transform hover:tw-scale-110">
+                                    <i class="fas fa-check fs-3"></i>
+                                </div>
+                                <h5 class="fw-bold text-green-700 mb-1">Level {{ $level['level'] }}</h5>
+                                <p class="text-xs text-green-600 mb-0 fw-medium">Klik untuk review</p>
                             </div>
-                            <h5 class="fw-bold text-green-700 mb-0">Level {{ $level['level'] }}</h5>
                         </div>
-                    </div>
+                    </a>
                 @else
                     <!-- UNLOCKED CARD -->
                     <a href="{{ route('mahasiswa.materials.questions.show', ['material' => $material->id, 'question' => $level['question_id'], 'difficulty' => $difficulty]) }}" class="text-decoration-none d-block h-100">
