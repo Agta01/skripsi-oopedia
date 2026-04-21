@@ -102,6 +102,9 @@ jobs:
             chmod -R 775 storage bootstrap/cache
             chown -R root:www-data storage bootstrap/cache
             
+            # Buat symlink storage jika belum ada
+            php artisan storage:link
+            
             # Manage process with PM2 (Sesuaikan dengan nama oopedia-agta)
             pm2 describe oopedia-agta > /dev/null 2>&1
             if [ $? -eq 0 ]; then
