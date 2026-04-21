@@ -40,10 +40,23 @@
                         </div>
                         @endif
 
+                        @if ($errors->any() || Session::has('error'))
+                        <div class="alert alert-danger alert-dismissible text-white border-0 shadow-sm rounded-3 mb-4" role="alert" style="background: #ef4444;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle fs-4 me-3"></i>
+                                <div>
+                                    <span class="text-sm fw-bold d-block">Gagal Masuk!</span>
+                                    <span class="text-xs">Email atau kata sandi yang Anda masukkan salah.</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close text-white opacity-50" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
+
                         <!-- Input Email -->
                         <div class="mb-4">
                             <label for="email" class="form-label ms-1 fw-bold text-dark text-sm">Alamat Email</label>
-                            <div class="custom-input-group mt-1">
+                            <div class="custom-input-group mt-1 @error('email') border-danger @enderror">
                                 <span class="input-icon"><i class="fas fa-envelope"></i></span>
                                 <input type="email" id="email" class="form-control" name="email" placeholder="contoh@kampus.ac.id" required autofocus>
                             </div>
@@ -55,7 +68,7 @@
                         <!-- Input Password -->
                         <div class="mb-4">
                             <label for="password" class="form-label ms-1 fw-bold text-dark text-sm">Kata Sandi</label>
-                            <div class="custom-input-group mt-1">
+                            <div class="custom-input-group mt-1 @error('password') border-danger @enderror">
                                 <span class="input-icon"><i class="fas fa-lock"></i></span>
                                 <input type="password" id="password" class="form-control" name="password" placeholder="Masukkan kata sandi Anda" required>
                             </div>
@@ -150,6 +163,19 @@
         .custom-input-group .form-control::placeholder {
             color: #cbd5e1;
             font-weight: 400;
+        }
+
+        .custom-input-group.border-danger {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+        }
+        
+        .custom-input-group.border-danger .input-icon {
+            color: #ef4444 !important;
+        }
+        
+        .custom-input-group.border-danger.is-focused {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
         }
         
         /* Modern Bold Button */
