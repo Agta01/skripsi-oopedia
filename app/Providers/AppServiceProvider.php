@@ -21,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') !== 'local' || !in_array(request()->getHost(), ['localhost', '127.0.0.1', '::1'])) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+            request()->server->set('HTTPS', 'on');
+        }
+
         \Illuminate\Pagination\Paginator::useBootstrapFive();
         
         View::composer('components.navbars.sidebar', function ($view) {
