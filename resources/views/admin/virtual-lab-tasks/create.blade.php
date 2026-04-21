@@ -176,6 +176,14 @@
 function previewImage(event) {
     const file = event.target.files[0];
     if (!file) return;
+    
+    // Validasi ukuran max 2MB (2 * 1024 * 1024 bytes)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Peringatan: Ukuran gambar melebihi batas 2MB. Silakan pilih gambar yang lebih kecil agar tidak terjadi error saat diupload.');
+        event.target.value = ''; // Reset file input
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = e => {
         document.getElementById('uploadPlaceholder').style.display = 'none';
