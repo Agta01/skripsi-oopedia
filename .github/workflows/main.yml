@@ -3,21 +3,21 @@ name: CI/CD Pipeline Agta-Oopedia
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   tests:
     name: Tests & Build
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, redis # Tambahkan redis
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, redis
           coverage: none
 
       - name: Setup Node.js
@@ -49,21 +49,17 @@ jobs:
   deploy:
     name: Deploy to VPS
     needs: tests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
           name: public-build
           path: public/build
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
 
       - name: Install production dependencies
         run: composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
@@ -77,8 +73,9 @@ jobs:
           REMOTE_HOST: ${{ secrets.SERVER_HOST }}
           REMOTE_USER: ${{ secrets.SERVER_USER }}
           TARGET: '/root/skripsi/agta/oopedia'
-          # Pastikan .env dan storage tidak didelete/di-overwrite oleh rsync jika sudah ada di server
-          EXCLUDE: '/node_modules/, /tests/, /storage/logs/, /.git/, /.github/, /storage/*.key, .env'
+
+          #JANGAN HAPUS STORAGE
+          EXCLUDE: '/node_modules/, /tests/, /.git/, /.github/, .env, /storage/'
 
       - name: Post-deployment commands
         uses: appleboy/ssh-action@v1.0.3
@@ -88,33 +85,46 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /root/skripsi/agta/oopedia
-            
-            # Maintenance mode on
+
+            echo "🚧 Maintenance Mode ON"
             php artisan down || true
-            
-            # Update Database & Cache
-            php artisan migrate --force
+
+            echo "🔓 Fix akses root"
+            chmod 755 /root
+            chmod 755 /root/skripsi
+            chmod 755 /root/skripsi/agta
+            chmod 755 /root/skripsi/agta/oopedia
+
+            echo "📁 Fix Laravel Storage"
+            mkdir -p storage/framework/sessions
+            mkdir -p storage/framework/views
+            mkdir -p storage/framework/cache
+
+            echo "🔐 Set Permission"
+            chown -R www-data:www-data storage bootstrap/cache
+            chmod -R 775 storage bootstrap/cache
+
+            echo "⚙️ Laravel Optimization"
+            php artisan optimize:clear
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            
-            # Perbaiki Permission Folder
-            chmod -R 775 storage bootstrap/cache
-            chown -R root:www-data storage bootstrap/cache
-            
-            # Buat symlink storage jika belum ada
-            php artisan storage:link
-            
-            # Manage process with PM2 (Sesuaikan dengan nama oopedia-agta)
+
+            echo "🗄️ Run Migration"
+            php artisan migrate --force
+
+            echo "🔗 Storage Link"
+            php artisan storage:link || true
+
+            echo "🚀 Restart App (PM2)"
             pm2 describe oopedia-agta > /dev/null 2>&1
             if [ $? -eq 0 ]; then
               pm2 restart oopedia-agta --update-env
             else
-              # Gunakan artisan serve jika belum pakai Octane
-              pm2 start "php artisan serve --port=8000" --name oopedia-agta
+              pm2 start "php artisan serve --host=0.0.0.0 --port=8000" --name oopedia-agta
             fi
-            
+
             pm2 save
-            
-            # Maintenance mode off
+
+            echo "✅ Maintenance Mode OFF"
             php artisan up
