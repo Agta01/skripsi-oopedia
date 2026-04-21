@@ -858,7 +858,15 @@
 
     // ── Deadline countdown (counts DOWN, auto-submit when 0) ───────────────
     @if($activeTask->deadline_minutes)
-    let deadlineSecs = ({{ $activeTask->deadline_minutes }} * 60) - elapsed;
+    @php
+        $deadlineSecs = $activeTask->deadline_minutes * 60;
+        if (isset($tbutSession) && $tbutSession && $tbutSession->created_at) {
+            $targetTime = $tbutSession->created_at->timestamp + ($activeTask->deadline_minutes * 60);
+            $currentTime = now()->timestamp;
+            $deadlineSecs = max(0, $targetTime - $currentTime);
+        }
+    @endphp
+    let deadlineSecs = {{ $deadlineSecs }};
     const deadlineDisplay = document.getElementById('deadline-display');
     const deadlineBadge   = document.getElementById('deadline-badge');
     const deadlineIcon    = document.getElementById('deadline-icon');
