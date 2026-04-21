@@ -230,7 +230,6 @@
             </form>
         </div>
     </main>
-</x-layout>
 
 @push('js')
 <script>
@@ -425,3 +424,4 @@ function toggleRemoveImg(cb) {
     .vlt-stats-chip-row { flex-wrap: wrap; }
 }
 </style>
+</x-layout>

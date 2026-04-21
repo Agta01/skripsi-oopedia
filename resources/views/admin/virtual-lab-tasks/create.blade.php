@@ -170,7 +170,6 @@
             </form>
         </div>
     </main>
-</x-layout>
 
 @push('js')
 <script>
@@ -338,3 +337,4 @@ function toggleTestCases() {
     .vlt-form-grid { grid-template-columns: 1fr; }
 }
 </style>
+</x-layout>
