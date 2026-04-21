@@ -179,23 +179,17 @@
                                     {!! $currentQuestion->question_text !!}
                                 </div>
                             </div>
-                            <!-- Tampilkan radio button bergaya SaaS Card Vibrant -->
-                            @foreach ($currentQuestion->answers as $index => $answer)
-                                @php
-                                    $bgColors = ['tw-bg-blue-50/80', 'tw-bg-green-50/80', 'tw-bg-purple-50/80', 'tw-bg-rose-50/80'];
-                                    $borderColors = ['tw-border-blue-200', 'tw-border-green-200', 'tw-border-purple-200', 'tw-border-rose-200'];
-                                    $hoverColors = ['hover:tw-bg-blue-100 hover:tw-border-blue-400', 'hover:tw-bg-green-100 hover:tw-border-green-400', 'hover:tw-bg-purple-100 hover:tw-border-purple-400', 'hover:tw-bg-rose-100 hover:tw-border-rose-400'];
-                                    $idx = $loop->index % 4;
-                                @endphp
-                                <label for="answer{{ $answer->id }}" class="tw-block tw-cursor-pointer tw-mb-3 answer-label-wrapper">
-                                    <div class="tw-p-4 tw-rounded-2xl tw-border {{ $borderColors[$idx] }} {{ $bgColors[$idx] }} {{ $hoverColors[$idx] }} hover:tw-shadow-md tw-transition-all d-flex align-items-center" data-base-classes="{{ $borderColors[$idx] }} {{ $bgColors[$idx] }}">
-                                        <input type="radio" name="answer" id="answer{{ $answer->id }}"
-                                            value="{{ $answer->id }}" class="tw-w-5 tw-h-5 tw-text-indigo-600 focus:tw-ring-indigo-500 tw-border-gray-300 me-3" required
-                                            onclick="document.querySelectorAll('.answer-label-wrapper div').forEach(div => { div.className = 'tw-p-4 tw-rounded-2xl tw-border hover:tw-shadow-md tw-transition-all d-flex align-items-center ' + div.getAttribute('data-base-classes'); }); this.parentElement.className = 'tw-p-4 tw-rounded-2xl tw-border tw-transition-all d-flex align-items-center tw-bg-indigo-100 tw-border-indigo-500 tw-shadow-md tw-ring-2 tw-ring-indigo-300';">
-                                        <div class="mb-0 w-100 tw-text-gray-800 fw-medium tw-leading-relaxed" style="font-size: 15px;">{!! $answer->answer_text !!}</div>
-                                    </div>
-                                </label>
-                            @endforeach
+                            <div class="question-options">
+                                @foreach ($currentQuestion->answers as $index => $answer)
+                                    <label class="option-card" for="answer{{ $answer->id }}">
+                                        <input type="radio" name="answer" id="answer{{ $answer->id }}" value="{{ $answer->id }}" required>
+                                        <div class="option-content">
+                                            <span class="option-letter">{{ chr(65 + $index) }}</span>
+                                            <div class="option-text">{!! $answer->answer_text !!}</div>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
                         @endif
                     @endif
                 </div>
@@ -265,6 +259,77 @@
         background-color: #d1e7dd;
         border-color: #0f5132;
         color: #0f5132;
+    }
+
+    /* Option Cards */
+    .question-options {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .option-card {
+        display: block;
+        cursor: pointer;
+        margin: 0;
+    }
+    .option-card input[type="radio"] {
+        display: none;
+    }
+    .option-content {
+        display: flex;
+        align-items: center;
+        padding: 18px 22px;
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .option-card:hover .option-content {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.04);
+    }
+    .option-card input[type="radio"]:checked + .option-content {
+        border-color: #4f46e5;
+        background: #eef2ff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(79, 70, 229, 0.12);
+    }
+    .option-letter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        background: #f1f5f9;
+        color: #475569;
+        font-weight: 700;
+        border-radius: 50%;
+        margin-right: 18px;
+        flex-shrink: 0;
+        transition: all 0.25s ease;
+        font-size: 16px;
+    }
+    .option-card input[type="radio"]:checked + .option-content .option-letter {
+        background: #4f46e5;
+        color: #ffffff;
+        box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+    }
+    .option-text {
+        flex: 1;
+        color: #334155;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+    .option-text p {
+        margin: 0;
+    }
+    .option-text p:last-child {
+        margin-bottom: 0;
     }
 </style>
 
