@@ -411,7 +411,6 @@
         </div>
     </div>
 </div>
-@endsection
 
 @push('styles')
 <link href="{{ asset('css/mahasiswa.css') }}" rel="stylesheet">
