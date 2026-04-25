@@ -172,94 +172,72 @@ class VirtualLabController extends Controller
                     $tbutSession->update($upd);
                 $tbutSession->refresh();
             }
-        }
-
-        // Cast stdin to string to prevent ConvertEmptyStringsToNull from sending null
-        // Wandbox API explicitly returns 422 if stdin is null instead of string.
+        }        // Cast stdin to string
         $stdin = (string) $request->input('stdin', '');
         $output = '';
         $error = false;
 
         try {
-            // Strip "public" from class/interface/enum — Wandbox stores code as prog.java
-            // so public class X {} would fail with "should be declared in file named X.java"
-            $stripPublic = fn(string $code): string =>
-                preg_replace('/\bpublic\s+(?=class\s|interface\s|enum\s)/', '', $code);
+            // TIO allows a single file execution for java-openjdk.
+            // We combine all classes into one.
+            $mainCode = trim($filesData[0]['content'] ?? '');
 
-            $mainCode = $stripPublic($filesData[0]['content'] ?? '');
-
-            if (empty(trim($mainCode))) {
+            if (empty($mainCode)) {
                 throw new \Exception("Kode kosong! Silakan tulis kode Java terlebih dahulu.");
             }
 
-            $additionalFiles = [];
-
+            $combinedCode = $mainCode;
             foreach ($filesData as $i => $fd) {
-                if ($i === 0)
-                    continue;
-                $content = $stripPublic($fd['content'] ?? '');
-                $baseName = preg_replace('/(\\.java)+$/i', '', trim($fd['filename']));
-                if (preg_match('/class\s+([a-zA-Z0-9_]+)/', $content, $m)) {
-                    $baseName = $m[1];
-                }
-                $additionalFiles[] = ['file' => $baseName . '.java', 'code' => $content];
+                if ($i === 0) continue;
+                $combinedCode .= "\n\n" . trim($fd['content'] ?? '');
             }
 
-            $payload = [
-                'compiler' => 'openjdk-jdk-21+35',
-                'code' => $mainCode,
-            ];
-            if ($stdin !== "") {
-                $payload['stdin'] = $stdin;
-            }
-            if (!empty($additionalFiles)) {
-                $payload['codes'] = $additionalFiles;
-            }
+            // Membangun payload TIO API
+            $lang = "java-openjdk";
+            $payloadStr = "Vlang\0" . "1\0" . "$lang\0";
+            $payloadStr .= "F.code.tio\0" . strlen($combinedCode) . "\0" . $combinedCode;
+            $payloadStr .= "F.input.tio\0" . strlen($stdin) . "\0" . $stdin;
+            $payloadStr .= "Vargs\0" . "0\0";
+            $payloadStr .= "R";
+            $gzPayload = gzdeflate($payloadStr, 9);
 
-            // ── Kirim ke Wandbox (timeout 25s, retry 2x) ──
-            $response = \Illuminate\Support\Facades\Http::timeout(25)
-                ->retry(2, 500, fn($e) => $e instanceof \Illuminate\Http\Client\ConnectionException)
-                ->withHeaders([
-                    'Accept' => 'application/json',
-                    'User-Agent' => 'Laravel/OOPedia-VirtualLab',
-                ])
-                ->asJson()
-                ->post('https://wandbox.org/api/compile.json', $payload);
+            // ── Kirim ke TIO (timeout 30s) ──
+            $response = \Illuminate\Support\Facades\Http::timeout(30)
+                ->withBody($gzPayload, 'application/octet-stream')
+                ->post('https://tio.run/cgi-bin/run/api/');
 
             $httpCode = $response->status();
-            \Illuminate\Support\Facades\Log::info('Wandbox Response', ['status' => $httpCode]);
+            \Illuminate\Support\Facades\Log::info('TIO Response', ['status' => $httpCode]);
 
             if ($response->successful()) {
-                $result = $response->json() ?? [];
-                $programOut = $result['program_output'] ?? '';
-                $compilerErr = $result['compiler_error'] ?? '';  // Wandbox: actual compile errors
-                $compilerWrn = $result['compiler_output'] ?? '';  // Wandbox: compile warnings
-                $programErr = $result['program_error'] ?? '';  // Wandbox: runtime stderr
-                $exitStatus = intval($result['status'] ?? 0);
+                $rawOutput = $response->body();
+                
+                // Parse TIO Response format (token separated)
+                $token = substr($rawOutput, 0, 16);
+                $parts = explode($token, $rawOutput);
+                
+                $programOut = trim($parts[1] ?? '');
+                $debugOut   = trim($parts[2] ?? '');
 
-                if ($exitStatus !== 0) {
-                    $parts = [];
-                    if (!empty($compilerErr))
-                        $parts[] = "Compile Error:\n" . $compilerErr;
-                    if (!empty($programErr))
-                        $parts[] = "Runtime Error:\n" . $programErr;
-                    if (!empty($programOut))
-                        $parts[] = $programOut;
-                    $output = implode("\n", $parts) ?: "Program exited with status: $exitStatus";
+                // Deteksi error jika debug output mengandung error message
+                if (preg_match('/error:|Exception in thread|Could not find or load/i', $debugOut)) {
+                    // Ekstrak pesan error sebelum bagian statistik TIO (Real time: ...)
+                    $errParts = explode('Real time:', $debugOut);
+                    $errMsg = trim($errParts[0]);
+                    
+                    $output = $errMsg;
+                    if (!empty($programOut)) {
+                        $output = $programOut . "\n\n[Compile/Runtime Error]\n" . $errMsg;
+                    }
                     $error = true;
                 } else {
                     $output = $programOut;
-                    if (!empty($compilerWrn)) {
-                        $output .= (empty($output) ? '' : "\n") . "[Compiler Warning]\n" . $compilerWrn;
-                    }
-                    if (empty(trim($output))) {
+                    if (empty($output)) {
                         $output = 'Program executed successfully (no output)';
                     }
                 }
             } else {
-                $rawBody = $response->body();
-                $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-                $output = "Gagal menjalankan kode. Server error (HTTP $httpCode). Coba beberapa saat lagi.\nWandbox Response: " . ($rawBody ?: 'None');
+                $output = "Gagal menjalankan kode. Server TIO error (HTTP $httpCode). Coba beberapa saat lagi.";
                 $error = true;
             }
         } catch (\Exception $e) {
