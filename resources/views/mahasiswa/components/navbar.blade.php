@@ -534,12 +534,9 @@
             if (sidebar?.classList.contains('show')) toggleSidebar();
         });
 
-        // Intro.js tutorial (dashboard only, logged in)
-        const isMainTutorialCompleted = sessionStorage.getItem('main_tutorial_complete');
+        // Intro.js tutorial - handled by DB flag in dashboard view directly
+        // (sessionStorage approach removed: it reset on every login causing repeated tours)
         const isDashboardPage = {{ request()->routeIs('mahasiswa.dashboard*') ? 'true' : 'false' }};
-        if (isLoggedIn && !isMainTutorialCompleted && isDashboardPage && !sessionStorage.getItem('skip_tour')) {
-            startTutorial();
-        }
 
         // Search Autocomplete Logic
         const searchInput = document.getElementById('navbarSearchInput');

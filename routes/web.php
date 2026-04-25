@@ -203,8 +203,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/questions/check-answer', [MahasiswaQuestionController::class, 'checkAnswer'])
             ->name('questions.check-answer');
 
-        // Mahasiswa-specific routes
-        Route::get('/leaderboard', [MahasiswaController::class, 'leaderboard'])->name('leaderboard');
+        // Mahasiswa-specific routes (leaderboard accessible by all, but shows login-gate for guests)
+        Route::get('/leaderboard', [MahasiswaController::class, 'leaderboard'])->name('leaderboard')->withoutMiddleware(['auth', 'role:3|4']);
 
         // Questions routes
         Route::prefix('materials/{material}/questions')->name('materials.questions.')->group(function () {

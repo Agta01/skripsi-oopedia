@@ -18,7 +18,7 @@
                             </h5>
                         </div>
                         <p class="text-white mb-0" style="font-size:12.5px;opacity:.8;padding-left:44px;">
-                            Efisiensi &amp; Efektivitas pengerjaan tugas Virtual Lab (ISO&nbsp;9241‑11) — Difficulty Score Framework
+                            Efisiensi &amp; Efektivitas Virtual Lab — Difficulty Score Framework
                         </p>
                     </div>
                     <form method="GET" class="d-flex align-items-center gap-2 flex-shrink-0">
@@ -32,40 +32,6 @@
                             @endforeach
                         </select>
                     </form>
-                </div>
-            </div>
-
-            {{-- ═══ ISO 9241-11 FORMULA BAR ═══ --}}
-            <div class="tbut-formula-bar mb-4">
-                <div class="tbut-formula-title">
-                    <i class="material-icons" style="font-size:16px;color:#4f46e5;">functions</i>
-                    Framework Formula TBUT (ISO 9241-11)
-                </div>
-                <div class="tbut-formula-steps">
-                    <div class="tbut-formula-step">
-                        <span class="step-num">1</span>
-                        <span class="step-body"><strong>T_norm</strong> = t_aktual / t_ideal</span>
-                    </div>
-                    <i class="material-icons tbut-formula-arrow">arrow_forward</i>
-                    <div class="tbut-formula-step">
-                        <span class="step-num">2</span>
-                        <span class="step-body"><strong>R_norm</strong> = run_aktual / run_ideal</span>
-                    </div>
-                    <i class="material-icons tbut-formula-arrow">arrow_forward</i>
-                    <div class="tbut-formula-step">
-                        <span class="step-num">3</span>
-                        <span class="step-body"><strong>E</strong> = 0.5×T_norm + 0.5×R_norm</span>
-                    </div>
-                    <i class="material-icons tbut-formula-arrow">arrow_forward</i>
-                    <div class="tbut-formula-step">
-                        <span class="step-num">4</span>
-                        <span class="step-body"><strong>D</strong> = rata-rata E semua responden</span>
-                    </div>
-                    <i class="material-icons tbut-formula-arrow">arrow_forward</i>
-                    <div class="tbut-formula-step">
-                        <span class="step-num">5</span>
-                        <span class="step-body"><strong>SR</strong> = (selesai / total) × 100%</span>
-                    </div>
                 </div>
             </div>
 
@@ -241,9 +207,9 @@
                                     <th class="text-center" style="min-width:130px;">Success Rate</th>
                                     <th class="text-center">Avg Waktu</th>
                                     <th class="text-center">Avg Run</th>
-                                    <th class="text-center">t_ideal</th>
-                                    <th class="text-center">r_ideal</th>
-                                    <th class="text-center" style="min-width:80px;">D</th>
+                                    <th class="text-center">Waktu Ideal</th>
+                                    <th class="text-center">Run Ideal</th>
+                                    <th class="text-center" style="min-width:80px;">Difficulty</th>
                                     <th class="text-center" style="min-width:110px;">Klasifikasi</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>

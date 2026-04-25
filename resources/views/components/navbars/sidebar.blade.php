@@ -277,7 +277,6 @@
 .oopsidebar__logo img {
     max-height: 56px;
     width: auto;
-    filter: brightness(0) invert(1);
     opacity: .9;
     transition: var(--sidebar-transition);
 }

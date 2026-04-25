@@ -67,6 +67,13 @@ class MahasiswaController extends Controller
 
     public function leaderboard()
     {
+        // Guests (not logged in) see the locked leaderboard page without running DB queries
+        if (!auth()->check()) {
+            $leaderboardData = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10, 1);
+            $currentUserRank = null;
+            return view('mahasiswa.leaderboard', compact('leaderboardData', 'currentUserRank'));
+        }
+
         // 1. Caching Strategy: Cache leaderboard data for 5 minutes (300 seconds)
         $leaderboardData = \Illuminate\Support\Facades\Cache::remember('leaderboard_data', 300, function () {
             

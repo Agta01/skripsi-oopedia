@@ -1,8 +1,261 @@
 @extends('mahasiswa.layouts.app')
 
-@section('title', 'Leaderboard')
+@section('title', auth()->check() ? 'Leaderboard' : 'Peringkat - Login Diperlukan')
 
 @section('content')
+
+{{-- ═══ GUEST LOCK SCREEN ═══ --}}
+@guest
+<div class="lb-lock-wrap">
+    <div class="lb-lock-card">
+        {{-- Blurred leaderboard preview --}}
+        <div class="lb-blur-preview">
+            <div class="lb-blur-row">
+                <span class="lb-blur-rank lb-blur-rank--gold">🥇</span>
+                <div class="lb-blur-bar" style="width:80%;"></div>
+                <div class="lb-blur-score"></div>
+            </div>
+            <div class="lb-blur-row">
+                <span class="lb-blur-rank lb-blur-rank--silver">🥈</span>
+                <div class="lb-blur-bar" style="width:65%;"></div>
+                <div class="lb-blur-score"></div>
+            </div>
+            <div class="lb-blur-row">
+                <span class="lb-blur-rank lb-blur-rank--bronze">🥉</span>
+                <div class="lb-blur-bar" style="width:50%;"></div>
+                <div class="lb-blur-score"></div>
+            </div>
+            <div class="lb-blur-row" style="opacity:.6;">
+                <span class="lb-blur-rank">4</span>
+                <div class="lb-blur-bar" style="width:40%;"></div>
+                <div class="lb-blur-score"></div>
+            </div>
+            <div class="lb-blur-row" style="opacity:.4;">
+                <span class="lb-blur-rank">5</span>
+                <div class="lb-blur-bar" style="width:30%;"></div>
+                <div class="lb-blur-score"></div>
+            </div>
+        </div>
+
+        {{-- Lock overlay content --}}
+        <div class="lb-lock-overlay">
+            <div class="lb-lock-icon-wrap">
+                <div class="lb-lock-icon">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="lb-lock-svg">
+                        <rect x="10" y="22" width="28" height="22" rx="5" fill="#004E98"/>
+                        <path d="M16 22V16a8 8 0 0 1 16 0v6" stroke="#004E98" stroke-width="3.5" stroke-linecap="round"/>
+                        <circle cx="24" cy="33" r="3" fill="white"/>
+                        <rect x="22.5" y="33" width="3" height="5" rx="1.5" fill="white"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="lb-lock-title">Fitur Peringkat Terkunci</h2>
+            <p class="lb-lock-desc">
+                Halaman <strong>Peringkat</strong> hanya dapat diakses oleh pengguna yang sudah login.<br>
+                Masuk atau daftar untuk melihat papan peringkat dan posisi Anda!
+            </p>
+            <div class="lb-lock-benefits">
+                <div class="lb-benefit-item">
+                    <i class="fas fa-trophy lb-benefit-icon" style="color:#F59E0B;"></i>
+                    <span>Lihat peringkat semua mahasiswa</span>
+                </div>
+                <div class="lb-benefit-item">
+                    <i class="fas fa-chart-line lb-benefit-icon" style="color:#10B981;"></i>
+                    <span>Pantau progress & skor Anda</span>
+                </div>
+                <div class="lb-benefit-item">
+                    <i class="fas fa-medal lb-benefit-icon" style="color:#3B82F6;"></i>
+                    <span>Dapatkan badge berdasarkan pencapaian</span>
+                </div>
+            </div>
+            <div class="lb-lock-actions">
+                <a href="{{ route('login') }}" class="lb-btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Masuk Sekarang
+                </a>
+                <a href="{{ route('register') }}" class="lb-btn-register">
+                    <i class="fas fa-user-plus"></i> Daftar Gratis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endguest
+
+@push('css')
+<style>
+/* ── Guest lock screen styles ── */
+.lb-lock-wrap {
+    min-height: calc(100vh - 80px);
+    background: #F8FAFC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+.lb-lock-card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0,78,152,.12);
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+}
+/* Blurred preview */
+.lb-blur-preview {
+    padding: 24px 28px 20px;
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+    opacity: .65;
+    border-bottom: 1px solid #E2E8F0;
+}
+.lb-blur-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid #F1F5F9;
+}
+.lb-blur-row:last-child { border-bottom: none; }
+.lb-blur-rank {
+    font-size: 20px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+    font-weight: 800;
+    color: #94A3B8;
+}
+.lb-blur-bar {
+    height: 14px;
+    background: linear-gradient(90deg, #CBD5E1, #E2E8F0);
+    border-radius: 99px;
+    flex: 1;
+}
+.lb-blur-score {
+    width: 70px;
+    height: 14px;
+    background: linear-gradient(90deg, #BFDBFE, #DBEAFE);
+    border-radius: 99px;
+    flex-shrink: 0;
+}
+/* Lock overlay */
+.lb-lock-overlay {
+    padding: 32px 36px 36px;
+    text-align: center;
+}
+.lb-lock-icon-wrap {
+    margin-bottom: 20px;
+}
+.lb-lock-icon {
+    width: 88px;
+    height: 88px;
+    background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+    border-radius: 50%;
+    border: 3px solid #BFDBFE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    animation: lb-pulse 2.4s ease-in-out infinite;
+}
+@keyframes lb-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,78,152,.15); }
+    50%       { box-shadow: 0 0 0 12px rgba(0,78,152,0); }
+}
+.lb-lock-svg { width: 44px; height: 44px; }
+.lb-lock-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1E293B;
+    margin-bottom: 12px;
+}
+.lb-lock-desc {
+    font-size: 14px;
+    color: #64748B;
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+.lb-lock-benefits {
+    background: #F8FAFC;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.lb-benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13.5px;
+    color: #334155;
+    font-weight: 500;
+}
+.lb-benefit-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.lb-lock-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.lb-btn-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #004E98, #0074D9);
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(0,78,152,.3);
+    transition: all .2s;
+}
+.lb-btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,78,152,.4);
+    color: #fff;
+}
+.lb-btn-register {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: #004E98;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 2px solid #BFDBFE;
+    transition: all .2s;
+}
+.lb-btn-register:hover {
+    background: #EFF6FF;
+    border-color: #93C5FD;
+    color: #004E98;
+    transform: translateY(-2px);
+}
+@media (max-width: 480px) {
+    .lb-lock-overlay { padding: 24px 20px 28px; }
+    .lb-lock-actions { flex-direction: column; }
+    .lb-btn-login, .lb-btn-register { justify-content: center; }
+}
+</style>
+@endpush
+
+{{-- ═══ AUTHENTICATED LEADERBOARD ═══ --}}
+@auth
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
@@ -263,4 +516,7 @@
         // Kode yang sudah dimodifikasi di atas
     }
 </script>
-@endpush 
+@endpush
+@endauth
+
+@endsection

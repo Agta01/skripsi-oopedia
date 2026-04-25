@@ -152,13 +152,14 @@ class VirtualLabController extends Controller
             }
         ])->get();
 
-        // TBUT: Increment run_count
+        // TBUT: Increment run_count (only if session is NOT yet completed)
         $tbutSession = null;
         if ($activeTask && auth()->check() && auth()->user()->role_id == 3) {
             $tbutSession = TbutSession::where('user_id', auth()->id())
                 ->where('task_id', $activeTask->id)->first();
 
-            if ($tbutSession) {
+            if ($tbutSession && !$tbutSession->is_completed) {
+                // Only update metrics when task is still active (not in review mode)
                 $tbutSession->increment('run_count');
                 $elapsed = $request->input('elapsed');
                 $mainCode = $filesData[0]['content'] ?? null;
