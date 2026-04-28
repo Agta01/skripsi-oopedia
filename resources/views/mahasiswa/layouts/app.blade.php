@@ -20,9 +20,9 @@
     
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo2.svg') }}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('images/logo2.svg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo2.png') }}">
 
     <style>
         /* TinyMCE Editor Improvements */

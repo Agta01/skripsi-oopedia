@@ -20,8 +20,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('images/logo.png') }}">
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('images/logo2.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo2.svg') }}">
     <title>
         Media Pembelajaran OOPedia
     </title>
