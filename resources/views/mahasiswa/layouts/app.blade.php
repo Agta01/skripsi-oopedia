@@ -20,8 +20,8 @@
     
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo2.svg') }}">
-    <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('images/logo2.svg') }}">
+    <link rel="icon" type="image/svg" href="{{ asset('images/logo2.svg') }}">
+    <link rel="shortcut icon" type="image/svg" href="{{ asset('images/logo2.svg') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo2.png') }}">
 
     <style>
