@@ -100,10 +100,10 @@ class MaterialController extends Controller
             ]);
 
             $material->update([
-                'title' => $request->title,
-                'content' => $request->content,
-                'video_url' => $request->video_url,
-                'video_description' => $request->video_description,
+                'title'             => $request->input('title'),
+                'content'           => $request->input('content'),
+                'video_url'         => $request->input('video_url'),
+                'video_description' => $request->input('video_description'),
             ]);
 
             // Handle cover image replacement
