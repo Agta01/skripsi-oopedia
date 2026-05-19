@@ -116,15 +116,9 @@ jobs:
             echo "🔗 Storage Link"
             php artisan storage:link || true
 
-            echo "🚀 Restart App (PM2)"
-            pm2 describe oopedia-agta > /dev/null 2>&1
-            if [ $? -eq 0 ]; then
-              pm2 restart oopedia-agta --update-env
-            else
-              pm2 start "php artisan serve --host=0.0.0.0 --port=8000" --name oopedia-agta
-            fi
-
-            pm2 save
+            echo "🚀 Restarting PHP-FPM & Nginx"
+            systemctl restart php8.4-fpm
+            systemctl reload nginx
 
             echo "✅ Maintenance Mode OFF"
             php artisan up
