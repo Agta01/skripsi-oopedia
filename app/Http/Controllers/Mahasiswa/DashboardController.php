@@ -51,13 +51,13 @@ class DashboardController extends Controller
         // Get all materials
         $allMaterials = Material::with(['questions'])->get();
         $totalMaterials = $allMaterials->count();
-        
+
         // Variables to store configured question counts
         $configuredTotalQuestions = 0;
         $configuredEasyQuestions = 0;
         $configuredMediumQuestions = 0;
         $configuredHardQuestions = 0;
-        
+
         // Calculate configured question counts
         foreach ($allMaterials as $material) {
             if ($isGuest) {
@@ -70,7 +70,7 @@ class DashboardController extends Controller
                 $config = QuestionBankConfig::where('material_id', $material->id)
                     ->where('is_active', true)
                     ->first();
-                    
+
                 if ($config) {
                     $configuredEasyQuestions += $config->beginner_count;
                     $configuredMediumQuestions += $config->medium_count;
@@ -83,15 +83,15 @@ class DashboardController extends Controller
                 }
             }
         }
-        
+
         $configuredTotalQuestions = $configuredEasyQuestions + $configuredMediumQuestions + $configuredHardQuestions;
-        
+
         // Get progress statistics
         $progressStats = DB::table('progress')
             ->select(
                 'material_id',
                 DB::raw('COUNT(DISTINCT question_id) as answered_questions'),
-                DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct_answers')
+                DB::raw('COUNT(DISTINCT CASE WHEN is_correct = 1 THEN question_id ELSE NULL END) as correct_answers')
             )
             ->where('user_id', $userId)
             ->groupBy('material_id')
@@ -107,33 +107,41 @@ class DashboardController extends Controller
         $totalCorrectQuestions = 0;
 
         $materials = Material::with(['questions', 'questionBankConfigs'])->get()
-            ->map(function($material) use ($progressStats) {
+            ->map(function ($material) use ($progressStats) {
                 // Get active configuration
                 $config = $material->questionBankConfigs()->where('is_active', true)->first();
-                
+
                 // Calculate total configured questions
                 if ($config) {
                     $totalQuestions = $config->beginner_count + $config->medium_count + $config->hard_count;
                 } else {
                     $totalQuestions = $material->questions->count();
                 }
-                
+
                 $materialProgress = $progressStats->firstWhere('material_id', $material->id);
                 $correctAnswers = $materialProgress ? $materialProgress->correct_answers : 0;
-                
-                $progressPercentage = $totalQuestions > 0 
+
+                $progressPercentage = $totalQuestions > 0
                     ? min(100, round(($correctAnswers / $totalQuestions) * 100))
                     : 0;
 
-                return (object)[
+                return (object) [
                     'id' => $material->id,
                     'title' => $material->title,
                     'description' => $material->description,
                     'progress_percentage' => $progressPercentage,
                     'total_questions' => $totalQuestions,
-                    'completed_questions' => $correctAnswers
+                    'completed_questions' => $correctAnswers,
+                    'answered_questions' => $materialProgress ? $materialProgress->answered_questions : 0
                 ];
             });
+
+        // Calculate global statistics based on enriched materials
+        $totalCorrectQuestions = $materials->sum('completed_questions');
+        $totalAnsweredQuestions = $materials->sum('answered_questions');
+        $completedMaterials = $materials->filter(fn($m) => $m->progress_percentage >= 100)->count();
+        $inProgressMaterials = $materials->filter(fn($m) => $m->progress_percentage > 0 && $m->progress_percentage < 100)->count();
+        $totalMaterialProgress = $materials->sum('progress_percentage');
 
         // Calculate overall progress percentages
         $materialProgressPercentage = $totalMaterials > 0 ? round(($completedMaterials / $totalMaterials) * 100) : 0;
@@ -190,14 +198,14 @@ class DashboardController extends Controller
     {
         $userId = auth()->id();
         $isGuest = !auth()->check() || (auth()->check() && auth()->user()->role_id === 4);
-        
+
         // Get progress statistics grouped by material and difficulty
         $progressStats = DB::table('progress')
             ->select(
                 'progress.material_id',
                 'questions.difficulty',
                 DB::raw('COUNT(DISTINCT progress.question_id) as total_answered'),
-                DB::raw('SUM(CASE WHEN progress.is_correct = 1 THEN 1 ELSE 0 END) as correct_answers')
+                DB::raw('COUNT(DISTINCT CASE WHEN progress.is_correct = 1 THEN progress.question_id ELSE NULL END) as correct_answers')
             )
             ->join('questions', 'progress.question_id', '=', 'questions.id')
             ->where('progress.user_id', $userId)
@@ -209,7 +217,7 @@ class DashboardController extends Controller
             ->select(
                 'material_id',
                 DB::raw('COUNT(DISTINCT question_id) as total_answered'),
-                DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct_answers')
+                DB::raw('COUNT(DISTINCT CASE WHEN is_correct = 1 THEN question_id ELSE NULL END) as correct_answers')
             )
             ->where('user_id', $userId)
             ->groupBy('material_id')
@@ -217,25 +225,25 @@ class DashboardController extends Controller
 
         $materials = Material::with(['questions'])
             ->get()
-            ->filter(function($material) use ($materialProgress) {
+            ->filter(function ($material) use ($materialProgress) {
                 $progress = $materialProgress->firstWhere('material_id', $material->id);
                 $totalQuestions = $material->questions->count();
-                
+
                 if ($progress && $totalQuestions > 0) {
                     $correctAnswers = $progress->correct_answers;
                     return $correctAnswers > 0 && $correctAnswers < $totalQuestions;
                 }
-                
+
                 return false;
             });
 
         // Calculate stats for each difficulty level
-        $materialsWithStats = $materials->map(function($material) use ($progressStats, $isGuest) {
+        $materialsWithStats = $materials->map(function ($material) use ($progressStats, $isGuest) {
             // Get questions by difficulty
             $beginnerQuestions = $material->questions->where('difficulty', 'beginner');
             $mediumQuestions = $material->questions->where('difficulty', 'medium');
             $hardQuestions = $material->questions->where('difficulty', 'hard');
-            
+
             // Get configured question counts based on user type
             if ($isGuest) {
                 // For guests, use fixed values (3 per difficulty)
@@ -247,7 +255,7 @@ class DashboardController extends Controller
                 $config = QuestionBankConfig::where('material_id', $material->id)
                     ->where('is_active', true)
                     ->first();
-                    
+
                 if ($config) {
                     $configuredBeginnerTotal = $config->beginner_count;
                     $configuredMediumTotal = $config->medium_count;
@@ -259,7 +267,7 @@ class DashboardController extends Controller
                     $configuredHardTotal = $hardQuestions->count();
                 }
             }
-            
+
             // Calculate stats for beginner questions
             $beginnerStats = $progressStats->where('material_id', $material->id)
                 ->where('difficulty', 'beginner')
@@ -267,7 +275,7 @@ class DashboardController extends Controller
             $beginnerCorrect = $beginnerStats ? $beginnerStats->correct_answers : 0;
             $beginnerTotal = $beginnerQuestions->count();
             $beginnerPercentage = $configuredBeginnerTotal > 0 ? round(($beginnerCorrect / $configuredBeginnerTotal) * 100) : 0;
-            
+
             // Calculate stats for medium questions
             $mediumStats = $progressStats->where('material_id', $material->id)
                 ->where('difficulty', 'medium')
@@ -275,7 +283,7 @@ class DashboardController extends Controller
             $mediumCorrect = $mediumStats ? $mediumStats->correct_answers : 0;
             $mediumTotal = $mediumQuestions->count();
             $mediumPercentage = $configuredMediumTotal > 0 ? round(($mediumCorrect / $configuredMediumTotal) * 100) : 0;
-            
+
             // Calculate stats for hard questions
             $hardStats = $progressStats->where('material_id', $material->id)
                 ->where('difficulty', 'hard')
@@ -283,12 +291,12 @@ class DashboardController extends Controller
             $hardCorrect = $hardStats ? $hardStats->correct_answers : 0;
             $hardTotal = $hardQuestions->count();
             $hardPercentage = $configuredHardTotal > 0 ? round(($hardCorrect / $configuredHardTotal) * 100) : 0;
-            
+
             // Overall stats
             $totalCorrect = $beginnerCorrect + $mediumCorrect + $hardCorrect;
             $configuredTotalQuestions = $configuredBeginnerTotal + $configuredMediumTotal + $configuredHardTotal;
             $overallPercentage = $configuredTotalQuestions > 0 ? round(($totalCorrect / $configuredTotalQuestions) * 100) : 0;
-            
+
             return [
                 'material' => $material,
                 'stats' => [
@@ -328,14 +336,14 @@ class DashboardController extends Controller
     {
         $userId = auth()->id();
         $isGuest = !auth()->check() || (auth()->check() && auth()->user()->role_id === 4);
-        
+
         // Get progress statistics grouped by material and difficulty
         $progressStats = DB::table('progress')
             ->select(
                 'progress.material_id',
                 'questions.difficulty',
                 DB::raw('COUNT(DISTINCT progress.question_id) as total_answered'),
-                DB::raw('SUM(CASE WHEN progress.is_correct = 1 THEN 1 ELSE 0 END) as correct_answers')
+                DB::raw('COUNT(DISTINCT CASE WHEN progress.is_correct = 1 THEN progress.question_id ELSE NULL END) as correct_answers')
             )
             ->join('questions', 'progress.question_id', '=', 'questions.id')
             ->where('progress.user_id', $userId)
@@ -347,7 +355,7 @@ class DashboardController extends Controller
             ->select(
                 'material_id',
                 DB::raw('COUNT(DISTINCT question_id) as total_answered'),
-                DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct_answers')
+                DB::raw('COUNT(DISTINCT CASE WHEN is_correct = 1 THEN question_id ELSE NULL END) as correct_answers')
             )
             ->where('user_id', $userId)
             ->groupBy('material_id')
@@ -355,12 +363,12 @@ class DashboardController extends Controller
 
         $materials = Material::with(['questions'])
             ->get()
-            ->filter(function($material) use ($materialProgress, $isGuest) {
+            ->filter(function ($material) use ($materialProgress, $isGuest) {
                 $progress = $materialProgress->firstWhere('material_id', $material->id);
-                
+
                 if ($progress) {
                     $correctAnswers = $progress->correct_answers;
-                    
+
                     // Get configured question count
                     if ($isGuest) {
                         // For guests, calculate max 9 questions (3 per difficulty)
@@ -373,7 +381,7 @@ class DashboardController extends Controller
                         $config = QuestionBankConfig::where('material_id', $material->id)
                             ->where('is_active', true)
                             ->first();
-                            
+
                         if ($config) {
                             $configuredTotalQuestions = $config->beginner_count + $config->medium_count + $config->hard_count;
                         } else {
@@ -381,20 +389,20 @@ class DashboardController extends Controller
                             $configuredTotalQuestions = $material->questions->count();
                         }
                     }
-                    
+
                     return $correctAnswers >= $configuredTotalQuestions; // Only completed materials
                 }
-                
+
                 return false;
             });
 
         // Calculate stats for each difficulty level
-        $materialsWithStats = $materials->map(function($material) use ($progressStats, $isGuest) {
+        $materialsWithStats = $materials->map(function ($material) use ($progressStats, $isGuest) {
             // Get questions by difficulty
             $beginnerQuestions = $material->questions->where('difficulty', 'beginner');
             $mediumQuestions = $material->questions->where('difficulty', 'medium');
             $hardQuestions = $material->questions->where('difficulty', 'hard');
-            
+
             // Get configured question counts based on user type
             if ($isGuest) {
                 // For guests, use fixed values (3 per difficulty)
@@ -406,7 +414,7 @@ class DashboardController extends Controller
                 $config = QuestionBankConfig::where('material_id', $material->id)
                     ->where('is_active', true)
                     ->first();
-                    
+
                 if ($config) {
                     $configuredBeginnerTotal = $config->beginner_count;
                     $configuredMediumTotal = $config->medium_count;
@@ -418,25 +426,25 @@ class DashboardController extends Controller
                     $configuredHardTotal = $hardQuestions->count();
                 }
             }
-            
+
             // Calculate stats for beginner questions
             $beginnerStats = $progressStats->where('material_id', $material->id)
                 ->where('difficulty', 'beginner')
                 ->first();
             $beginnerCorrect = $beginnerStats ? $beginnerStats->correct_answers : 0;
-            
+
             // Calculate stats for medium questions
             $mediumStats = $progressStats->where('material_id', $material->id)
                 ->where('difficulty', 'medium')
                 ->first();
             $mediumCorrect = $mediumStats ? $mediumStats->correct_answers : 0;
-            
+
             // Calculate stats for hard questions
             $hardStats = $progressStats->where('material_id', $material->id)
                 ->where('difficulty', 'hard')
                 ->first();
             $hardCorrect = $hardStats ? $hardStats->correct_answers : 0;
-            
+
             // For completed materials we show 100% for all stats
             return [
                 'material' => $material,
@@ -534,7 +542,7 @@ class DashboardController extends Controller
             ->orderBy('p1.created_at', 'desc')
             ->take(5)
             ->get()
-            ->map(function($activity) {
+            ->map(function ($activity) {
                 $activity->type = $this->determineActivityType($activity);
                 return $activity;
             });

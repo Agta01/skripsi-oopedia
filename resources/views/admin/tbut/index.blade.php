@@ -1,7 +1,7 @@
 <x-layout bodyClass="g-sidenav-show bg-gray-200">
     <x-navbars.sidebar activePage="tbut" :userName="auth()->user()->name" :userRole="auth()->user()->role->name ?? 'Admin'" />
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <x-navbars.navs.auth titlePage="Analisis TBUT" />
+        <x-navbars.navs.auth titlePage="Analisa Virtual Code" />
 
         <div class="container-fluid py-4">
 
@@ -14,11 +14,11 @@
                                 <i class="material-icons" style="font-size:20px;color:#fff;">assignment_turned_in</i>
                             </div>
                             <h5 class="text-white fw-bold mb-0" style="font-size:1.15rem;">
-                                Analisis TBUT — Task-Based Usability Testing
+                                Analisis Virtual Lab Coding
                             </h5>
                         </div>
                         <p class="text-white mb-0" style="font-size:12.5px;opacity:.8;padding-left:44px;">
-                            Efisiensi &amp; Efektivitas Virtual Lab — Difficulty Score Framework
+                            Efisiensi &amp; Efektivitas Virtual Lab Coding
                         </p>
                     </div>
                     <form method="GET" class="d-flex align-items-center gap-2 flex-shrink-0">
@@ -77,8 +77,8 @@
                             $dClass = $avgDScore !== null
                                 ? ($avgDScore < 1.5 ? ['c'=>'#16a34a','l'=>'Mudah']
                                    : ($avgDScore < 2.5 ? ['c'=>'#b45309','l'=>'Sedang']
-                                      : ($avgDScore <= 4.0 ? ['c'=>'#dc2626','l'=>'Sulit']
-                                         : ['c'=>'#7c3aed','l'=>'Sangat Sulit'])))
+                                      : ($avgDScore <= 4.0 ? ['c'=>'#ea580c','l'=>'Sulit']
+                                         : ['c'=>'#dc2626','l'=>'Sangat Sulit'])))
                                 : null;
                         @endphp
                         <div class="tbut-stat-icon" style="background:linear-gradient(135deg,{{ $dClass ? $dClass['c'] : '#94a3b8' }},{{ $dClass ? $dClass['c'] : '#94a3b8' }}cc)">
@@ -162,8 +162,8 @@
                     @foreach([
                         ['label'=>'Mudah',       'D'=>'< 1.5',      'SR'=>'≥ 80%',   'color'=>'#16a34a','bg'=>'#dcfce7','interp'=>'Materi dipahami dengan baik, perlu pengayaan'],
                         ['label'=>'Sedang',      'D'=>'1.5 – 2.5',  'SR'=>'60–79%',  'color'=>'#b45309','bg'=>'#fef9c3','interp'=>'Materi cukup menantang, perlu latihan tambahan'],
-                        ['label'=>'Sulit',       'D'=>'2.5 – 4.0',  'SR'=>'40–59%',  'color'=>'#dc2626','bg'=>'#fee2e2','interp'=>'Materi perlu penjelasan ulang / scaffolding'],
-                        ['label'=>'Sangat Sulit','D'=>'> 4.0',       'SR'=>'< 40%',   'color'=>'#7c3aed','bg'=>'#ede9fe','interp'=>'Materi terlalu kompleks, perlu redesign konten'],
+                        ['label'=>'Sulit',       'D'=>'2.5 – 4.0',  'SR'=>'40–59%',  'color'=>'#ea580c','bg'=>'#ffedd5','interp'=>'Materi perlu penjelasan ulang / scaffolding'],
+                        ['label'=>'Sangat Sulit','D'=>'> 4.0',       'SR'=>'< 40%',   'color'=>'#dc2626','bg'=>'#fee2e2','interp'=>'Materi terlalu kompleks, perlu redesign konten'],
                     ] as $cat)
                     <div class="col-6 col-lg-3">
                         <div class="tbut-cat-card" style="border-left:4px solid {{ $cat['color'] }};background:{{ $cat['bg'] }};">
@@ -202,13 +202,13 @@
                             <thead>
                                 <tr>
                                     <th>Tugas / Materi</th>
-                                    <th class="text-center">Peserta</th>
-                                    <th class="text-center" style="min-width:130px;">Completion Rate</th>
+                                    <!-- <th class="text-center">Peserta</th> -->
+                                    <!-- <th class="text-center" style="min-width:130px;">Completion Rate</th>
                                     <th class="text-center" style="min-width:130px;">Success Rate</th>
                                     <th class="text-center">Avg Waktu</th>
                                     <th class="text-center">Avg Run</th>
                                     <th class="text-center">Waktu Ideal</th>
-                                    <th class="text-center">Run Ideal</th>
+                                    <th class="text-center">Run Ideal</th> -->
                                     <th class="text-center" style="min-width:80px;">Difficulty</th>
                                     <th class="text-center" style="min-width:110px;">Klasifikasi</th>
                                     <th class="text-center">Aksi</th>
@@ -221,10 +221,10 @@
                                         <p class="tbut-task-title">{{ $task->title }}</p>
                                         <p class="tbut-task-material">{{ $task->material->title ?? '—' }}</p>
                                     </td>
-                                    <td class="text-center">
+                                    <!-- <td class="text-center">
                                         <span class="tbut-count-pill">{{ $task->total_attempts }}</span>
-                                    </td>
-                                    <td class="text-center">
+                                    </td> -->
+                                    <!-- <td class="text-center">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="tbut-prog-bar">
                                                 <div class="tbut-prog-fill" style="width:{{ $task->completion_rate }}%;background:#059669;"></div>
@@ -243,7 +243,7 @@
                                     <td class="text-center">
                                         <span class="tbut-chip-time">
                                             <i class="material-icons" style="font-size:12px;">schedule</i>
-                                            {{ $task->avg_duration ? gmdate('i:s', intval($task->avg_duration)) : '—' }}
+                                            {{ $task->avg_duration ? gmdate('H:i:s', intval($task->avg_duration)) : '—' }}
                                         </span>
                                     </td>
                                     <td class="text-center">
@@ -258,7 +258,7 @@
                                         <span class="tbut-chip-ideal">
                                             {{ $task->r_ideal !== null ? $task->r_ideal . 'x' : '—' }}
                                         </span>
-                                    </td>
+                                    </td> -->
                                     <td class="text-center">
                                         @if($task->difficulty_score !== null)
                                         <span class="tbut-d-val" style="color:{{ $task->d_class['color'] }};background:{{ $task->d_class['bg'] }};">
@@ -348,8 +348,8 @@
                 if ($t->difficulty_score === null) return 'rgba(148,163,184,0.6)';
                 if ($t->difficulty_score < 1.5)   return 'rgba(22,163,74,0.85)';
                 if ($t->difficulty_score < 2.5)   return 'rgba(180,83,9,0.85)';
-                if ($t->difficulty_score <= 4.0)  return 'rgba(220,38,38,0.85)';
-                return 'rgba(124,58,237,0.85)';
+                if ($t->difficulty_score <= 4.0)  return 'rgba(234,88,12,0.85)';
+                return 'rgba(220,38,38,0.85)';
             })->values()->toArray();
         @endphp
         const dCtx = document.getElementById('tbutDChart');
@@ -375,7 +375,7 @@
                             ticks: { color: '#94a3b8', font: { size: 10 } },
                             afterDraw(chart) {
                                 // threshold lines
-                                const thresholds = [{v:1.5,l:'Mudah',c:'#16a34a'},{v:2.5,l:'Sedang',c:'#b45309'},{v:4.0,l:'Sulit',c:'#dc2626'}];
+                                const thresholds = [{v:1.5,l:'Mudah',c:'#16a34a'},{v:2.5,l:'Sedang',c:'#b45309'},{v:4.0,l:'Sulit',c:'#ea580c'}];
                                 const ctx2 = chart.ctx;
                                 const xAxis = chart.scales.x;
                                 thresholds.forEach(t => {
@@ -583,8 +583,8 @@
     .tbut-table tbody td { vertical-align: middle; border-bottom: 1px solid #f8fafc; padding: 11px 12px; }
     .tbut-row { transition: background .15s; }
     .tbut-row:hover { background: #f8faff; }
-    .tbut-task-title    { font-size: 13px; font-weight: 600; color: #334155; margin: 0; max-width: 200px; }
-    .tbut-task-material { font-size: 11px; color: #94a3b8; margin: 2px 0 0; }
+    .tbut-task-title    { font-size: 13px; font-weight: 600; color: #334155; margin: 0; max-width: 250px; white-space: normal !important; word-wrap: break-word; }
+    .tbut-task-material { font-size: 11px; color: #94a3b8; margin: 2px 0 0; max-width: 250px; white-space: normal !important; word-wrap: break-word; }
     .tbut-count-pill {
         display: inline-block; background: #f1f5f9; border-radius: 6px;
         font-size: 12px; font-weight: 700; color: #475569; padding: 2px 10px;
