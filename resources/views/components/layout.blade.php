@@ -924,56 +924,81 @@
     @push('head')
         <style>
             /* Custom styling untuk tooltip tutorial */
-            .customTooltip {
-                max-width: 350px;
-                background-color: #fff;
+            .introjs-tooltip {
+                max-width: min(350px, 90vw) !important;
+                background-color: #ffffff;
                 color: #333;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-                border-left: 5px solid #7b1fa2;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+                border: none !important;
+                border-left: 5px solid #7b1fa2 !important;
+                padding: 15px !important;
+            }
+
+            .introjs-tooltipbuttons {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                margin-top: 15px !important;
+                gap: 8px !important;
+                border: none !important;
+                padding: 0 !important;
             }
 
             .introjs-button {
-                background-color: #7b1fa2;
-                color: white;
-                border: none;
-                text-shadow: none;
-                border-radius: 4px;
+                background-color: #7b1fa2 !important;
+                color: white !important;
+                border: none !important;
+                text-shadow: none !important;
+                border-radius: 6px !important;
+                padding: 8px 16px !important;
+                font-size: 13px !important;
+                font-weight: 500 !important;
+                transition: all 0.2s ease !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                flex: 1 !important; /* Membuat tombol simetris */
+                margin: 0 !important;
             }
 
             .introjs-button:hover,
             .introjs-button:focus {
-                background-color: #9c27b0;
-                color: white;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                background-color: #9c27b0 !important;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 10px rgba(123, 31, 162, 0.3) !important;
             }
 
             .introjs-skipbutton {
-                color: #666;
-                font-size: 20px;
-                font-weight: bold;
-                line-height: 1;
-                text-decoration: none;
-                text-shadow: none;
-                position: absolute;
-                right: 8px;
-                top: 8px;
-                padding: 5px 10px;
-                border-radius: 50%;
-                transition: all 0.2s ease;
+                color: #94a3b8 !important;
+                font-size: 18px !important;
+                right: 10px !important;
+                top: 10px !important;
+                padding: 5px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 24px !important;
+                height: 24px !important;
+                line-height: 1 !important;
+                text-decoration: none !important;
             }
 
             .introjs-skipbutton:hover {
-                background: rgba(0, 0, 0, 0.1);
-                color: #333;
+                background: rgba(0, 0, 0, 0.05) !important;
+                color: #333 !important;
+                border-radius: 50%;
             }
 
             .introjs-progress {
-                background-color: #e0e0e0;
+                background-color: #f1f5f9 !important;
+                border-radius: 4px !important;
+                margin-bottom: 10px !important;
             }
 
             .introjs-progressbar {
-                background-color: #7b1fa2;
+                background-color: #7b1fa2 !important;
             }
 
             .introjs-helperLayer {
@@ -981,6 +1006,14 @@
                 border: none;
                 box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
             }
+
+            .introjs-arrow {
+                border-color: transparent !important;
+            }
+            .introjs-arrow.top { border-bottom-color: #7b1fa2 !important; }
+            .introjs-arrow.right { border-left-color: #7b1fa2 !important; }
+            .introjs-arrow.bottom { border-top-color: #7b1fa2 !important; }
+            .introjs-arrow.left { border-right-color: #7b1fa2 !important; }
 
             /* Navbar & Dropdown Styling */
             .navbar-nav .dropdown-menu {
