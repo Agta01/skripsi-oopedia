@@ -1,16 +1,26 @@
 {
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build"
-    },
-    "dependencies": {
-        "lodash": "^4.17.21"
-    },
-    "devDependencies": {
-        "axios": "^1.6.4",
-        "laravel-vite-plugin": "^1.0.0",
-        "vite": "^5.0.0"
-    }
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "cy:open": "cypress open --env ELECTRON_EXTRA_LAUNCH_ARGS=--disable-gpu",
+    "cy:run": "cypress run",
+    "cy:run:auth": "cypress run --spec cypress/e2e/01_auth.cy.js",
+    "cy:run:dashboard": "cypress run --spec cypress/e2e/02_mahasiswa_dashboard.cy.js",
+    "cy:run:materials": "cypress run --spec cypress/e2e/03_materials.cy.js",
+    "cy:run:admin": "cypress run --spec cypress/e2e/05_admin_dashboard.cy.js",
+    "cy:run:admin:materials": "cypress run --spec cypress/e2e/07_admin_materials.cy.js",
+    "cy:run:admin:questions": "cypress run --spec cypress/e2e/08_admin_questions.cy.js",
+    "cy:run:admin:vlab": "cypress run --spec cypress/e2e/09_admin_virtual_lab.cy.js"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "axios": "^1.6.4",
+    "cypress": "^13.17.0",
+    "laravel-vite-plugin": "^1.0.0",
+    "vite": "^5.0.0"
+  }
 }
