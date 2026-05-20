@@ -210,28 +210,60 @@
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        {{ number_format(
-                                                            ($survey->annoying_enjoyable + $survey->good_bad + $survey->unlikable_pleasing + $survey->unpleasant_pleasant + $survey->attractive_unattractive + $survey->friendly_unfriendly) / 6, 2) }}
+                                                        {{-- Attractiveness: konversi ke -3..+3 --}}
+                                                        {{ number_format((
+                                                            ($survey->annoying_enjoyable - 4)
+                                                          + (4 - $survey->good_bad)
+                                                          + ($survey->unlikable_pleasing - 4)
+                                                          + ($survey->unpleasant_pleasant - 4)
+                                                          + (4 - $survey->attractive_unattractive)
+                                                          + (4 - $survey->friendly_unfriendly)
+                                                        ) / 6, 2) }}
                                                     </td>
                                                     <td>
-                                                        {{ number_format(
-                                                            ($survey->not_understandable_understandable + $survey->easy_difficult + $survey->complicated_easy + $survey->clear_confusing) / 4, 2) }}
+                                                        {{-- Perspicuity --}}
+                                                        {{ number_format((
+                                                            ($survey->not_understandable_understandable - 4)
+                                                          + (4 - $survey->easy_difficult)
+                                                          + ($survey->complicated_easy - 4)
+                                                          + (4 - $survey->clear_confusing)
+                                                        ) / 4, 2) }}
                                                     </td>
                                                     <td>
-                                                        {{ number_format(
-                                                            ($survey->fast_slow + $survey->inefficient_efficient + $survey->impractical_practical + $survey->organized_cluttered) / 4, 2) }}
+                                                        {{-- Efficiency --}}
+                                                        {{ number_format((
+                                                            (4 - $survey->fast_slow)
+                                                          + ($survey->inefficient_efficient - 4)
+                                                          + ($survey->impractical_practical - 4)
+                                                          + (4 - $survey->organized_cluttered)
+                                                        ) / 4, 2) }}
                                                     </td>
                                                     <td>
-                                                        {{ number_format(
-                                                            ($survey->unpredictable_predictable + $survey->obstructive_supportive + $survey->secure_not_secure + $survey->meets_expectations_does_not_meet) / 4, 2) }}
+                                                        {{-- Dependability --}}
+                                                        {{ number_format((
+                                                            ($survey->unpredictable_predictable - 4)
+                                                          + ($survey->obstructive_supportive - 4)
+                                                          + (4 - $survey->secure_not_secure)
+                                                          + (4 - $survey->meets_expectations_does_not_meet)
+                                                        ) / 4, 2) }}
                                                     </td>
                                                     <td>
-                                                        {{ number_format(
-                                                            ($survey->valuable_inferior + $survey->boring_exciting + $survey->not_interesting_interesting + $survey->motivating_demotivating) / 4, 2) }}
+                                                        {{-- Stimulation --}}
+                                                        {{ number_format((
+                                                            (4 - $survey->valuable_inferior)
+                                                          + ($survey->boring_exciting - 4)
+                                                          + ($survey->not_interesting_interesting - 4)
+                                                          + (4 - $survey->motivating_demotivating)
+                                                        ) / 4, 2) }}
                                                     </td>
                                                     <td>
-                                                        {{ number_format(
-                                                            ($survey->creative_dull + $survey->inventive_conventional + $survey->usual_leading_edge + $survey->conservative_innovative) / 4, 2) }}
+                                                        {{-- Novelty --}}
+                                                        {{ number_format((
+                                                            (4 - $survey->creative_dull)
+                                                          + (4 - $survey->inventive_conventional)
+                                                          + ($survey->usual_leading_edge - 4)
+                                                          + ($survey->conservative_innovative - 4)
+                                                        ) / 4, 2) }}
                                                     </td>
                                                 </tr>
                                             </tbody>
