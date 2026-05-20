@@ -404,60 +404,19 @@
                                                     </td>
                                                     <td><span class="badge ueq-badge-class">{{ $survey->class }}</span></td>
                                                     @php
-                                                        // Konversi nilai raw (1-7) ke skala UEQ (-3 s/d +3)
-                                                        // dir=R (kanan=positif): raw - 4
-                                                        // dir=L (kiri=positif) : 4 - raw
                                                         $sc = [
-                                                            // Attractiveness (6 item)
-                                                            'attract' => (
-                                                                ($survey->annoying_enjoyable - 4)       // R
-                                                              + (4 - $survey->good_bad)                 // L
-                                                              + ($survey->unlikable_pleasing - 4)       // R
-                                                              + ($survey->unpleasant_pleasant - 4)      // R
-                                                              + (4 - $survey->attractive_unattractive)  // L
-                                                              + (4 - $survey->friendly_unfriendly)      // L
-                                                            ) / 6,
-                                                            // Perspicuity (4 item)
-                                                            'perspic' => (
-                                                                ($survey->not_understandable_understandable - 4) // R
-                                                              + (4 - $survey->easy_difficult)                   // L
-                                                              + ($survey->complicated_easy - 4)                 // R
-                                                              + (4 - $survey->clear_confusing)                  // L
-                                                            ) / 4,
-                                                            // Efficiency (4 item)
-                                                            'effic' => (
-                                                                (4 - $survey->fast_slow)                // L
-                                                              + ($survey->inefficient_efficient - 4)    // R
-                                                              + ($survey->impractical_practical - 4)    // R
-                                                              + (4 - $survey->organized_cluttered)      // L
-                                                            ) / 4,
-                                                            // Dependability (4 item)
-                                                            'depend' => (
-                                                                ($survey->unpredictable_predictable - 4)         // R
-                                                              + ($survey->obstructive_supportive - 4)            // R
-                                                              + (4 - $survey->secure_not_secure)                 // L
-                                                              + (4 - $survey->meets_expectations_does_not_meet)  // L
-                                                            ) / 4,
-                                                            // Stimulation (4 item)
-                                                            'stimul' => (
-                                                                (4 - $survey->valuable_inferior)             // L
-                                                              + ($survey->boring_exciting - 4)               // R
-                                                              + ($survey->not_interesting_interesting - 4)   // R
-                                                              + (4 - $survey->motivating_demotivating)       // L
-                                                            ) / 4,
-                                                            // Novelty (4 item)
-                                                            'novelty' => (
-                                                                (4 - $survey->creative_dull)              // L
-                                                              + (4 - $survey->inventive_conventional)     // L
-                                                              + ($survey->usual_leading_edge - 4)         // R
-                                                              + ($survey->conservative_innovative - 4)    // R
-                                                            ) / 4,
+                                                            'attract' => ($survey->annoying_enjoyable + $survey->good_bad + $survey->unlikable_pleasing + $survey->unpleasant_pleasant + $survey->attractive_unattractive + $survey->friendly_unfriendly) / 6,
+                                                            'perspic' => ($survey->not_understandable_understandable + $survey->easy_difficult + $survey->complicated_easy + $survey->clear_confusing) / 4,
+                                                            'effic' => ($survey->fast_slow + $survey->inefficient_efficient + $survey->impractical_practical + $survey->organized_cluttered) / 4,
+                                                            'depend' => ($survey->unpredictable_predictable + $survey->obstructive_supportive + $survey->secure_not_secure + $survey->meets_expectations_does_not_meet) / 4,
+                                                            'stimul' => ($survey->valuable_inferior + $survey->boring_exciting + $survey->not_interesting_interesting + $survey->motivating_demotivating) / 4,
+                                                            'novelty' => ($survey->creative_dull + $survey->inventive_conventional + $survey->usual_leading_edge + $survey->conservative_innovative) / 4,
                                                         ];
                                                     @endphp
                                                     @foreach($sc as $val)
                                                         <td class="text-center">
                                                             <span
-                                                                class="ueq-score-chip @if($val >= 1.0) good @elseif($val >= 0) mid @else low @endif">
+                                                                class="ueq-score-chip @if($val >= 5) good @elseif($val >= 3) mid @else low @endif">
                                                                 {{ number_format($val, 2) }}
                                                             </span>
                                                         </td>

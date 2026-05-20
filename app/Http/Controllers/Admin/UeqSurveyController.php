@@ -170,31 +170,29 @@ class UeqSurveyController extends Controller
         }
 
         // ---- Scale-level stats ----
-        // Mengikuti metode resmi UEQ Data Analysis Tool (Excel):
-        // Mean  = rata-rata semua nilai item yang sudah dikonversi (semua responden × semua item dalam skala)
-        // Variance = variance dari semua nilai item individual tersebut (bukan dari per-respondent mean)
         $scales = ['attractiveness','perspicuity','efficiency','dependability','stimulation','novelty'];
         $scaleStats = [];
         foreach ($scales as $scale) {
-            // Kumpulkan SEMUA nilai item yang sudah dikonversi untuk skala ini
-            // (jumlah_item × jumlah_responden nilai)
-            $allItemVals = [];
+            // Collect all converted values for this scale across all respondents
+            $scaleVals = [];
             foreach ($items as $i => $item) {
                 if ($item['scale'] === $scale) {
                     foreach ($itemCollected[$i] as $v) {
-                        $allItemVals[] = $v;
+                        $scaleVals[] = $v;
                     }
                 }
             }
-
-            $totalCount = count($allItemVals); // = jumlah_item × n
-            $meanScale  = $totalCount > 0 ? array_sum($allItemVals) / $totalCount : 0;
-
-            // Variance menggunakan (n-1) — sample variance — sama seperti Excel UEQ tool
-            $varScale = $totalCount > 1
-                ? array_sum(array_map(fn($v) => ($v - $meanScale) ** 2, $allItemVals)) / ($totalCount - 1)
+            // Mean per respondent first (average across items for each person)
+            $perRespondent = [];
+            $scaleItemIndices = array_keys(array_filter($items, fn($it) => $it['scale'] === $scale));
+            foreach ($surveys as $si => $survey) {
+                $rowVals = array_map(fn($idx) => $itemCollected[$idx][$si], $scaleItemIndices);
+                $perRespondent[] = array_sum($rowVals) / count($rowVals);
+            }
+            $meanScale = array_sum($perRespondent) / $n;
+            $varScale  = $n > 1
+                ? array_sum(array_map(fn($v) => ($v - $meanScale) ** 2, $perRespondent)) / ($n - 1)
                 : 0;
-
             $bench = $this->classifyBenchmark($meanScale, $scale);
             $scaleStats[$scale] = [
                 'mean'      => round($meanScale, 3),
