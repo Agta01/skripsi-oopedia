@@ -212,13 +212,18 @@ class TbutAnalysisController extends Controller
     {
         $materialId = $request->get('material_id');
 
-        $materialsQuery = Material::query();
-        if ($materialId) {
-            $materialsQuery->where('id', $materialId);
-        }
-        $materials = $materialsQuery->orderBy('title')->get();
+        $tasksQuery = VirtualLabTask::with(['material', 'tbutSessions.user'])
+            ->withCount('tbutSessions as total_attempts')
+            ->withAvg('tbutSessions as avg_duration', 'duration_seconds')
+            ->withAvg('tbutSessions as avg_run_count', 'run_count');
 
-        $filename = "tbut_analysis_" . date('Ymd_His') . ".csv";
+        if ($materialId) {
+            $tasksQuery->where('material_id', $materialId);
+        }
+
+        $tasks = $tasksQuery->orderBy('material_id')->get();
+
+        $filename = "tbut_analysis_tasks_" . date('Ymd_His') . ".csv";
 
         $headers = [
             "Content-type"        => "text/csv",
@@ -229,41 +234,53 @@ class TbutAnalysisController extends Controller
         ];
 
         $columns = [
+            'Tugas',
             'Materi', 
             'Total Peserta', 
             'Selesai', 
             'Completion Rate (%)', 
             'Success Rate (%)', 
             'Avg Durasi (detik)', 
-            'Avg Run Code'
+            'Avg Run Code',
+            'Difficulty Score (D)',
+            'Klasifikasi'
         ];
 
-        $callback = function() use($materials, $columns) {
+        $callback = function() use($tasks, $columns) {
             $file = fopen('php://output', 'w');
+            // Add BOM for Excel compatibility with UTF-8
+            fputs($file, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
             fputcsv($file, $columns);
 
-            foreach ($materials as $mat) {
-                // Get all tasks for this material
-                $taskIds = VirtualLabTask::where('material_id', $mat->id)->pluck('id');
-                $sessions = TbutSession::whereIn('task_id', $taskIds)->get();
+            foreach ($tasks as $task) {
+                $sessions = $task->tbutSessions;
 
-                $totalSessions = $sessions->count();
-                $completedSess = $sessions->where('is_completed', true)->count();
-                $successSess = $sessions->where('is_success', true)->count();
-                $avgDuration = $sessions->avg('duration_seconds');
-                $avgRunCount = $sessions->avg('run_count');
-                
-                $completionRate = $totalSessions > 0 ? round(($completedSess / $totalSessions) * 100, 1) : 0;
-                $successRate = $totalSessions > 0 ? round(($successSess / $totalSessions) * 100, 1) : 0;
+                $completedCount = $sessions->where('is_completed', true)->count();
+                $successCount = $sessions->where('is_success', true)->count();
+
+                $completionRate = $task->total_attempts > 0
+                    ? round(($completedCount / $task->total_attempts) * 100, 1) : 0;
+                $successRate = $completedCount > 0
+                    ? round(($successCount / $completedCount) * 100, 1) : 0;
+
+                // Calculate Difficulty Score and Classification just like in index()
+                $dResult = $this->computeDifficultyScore($sessions);
+                $difficultyScore = $dResult['D'];
+                $combinedClass = ($difficultyScore !== null)
+                    ? $this->classifyCombined($difficultyScore, $successRate)
+                    : null;
 
                 $row = [
-                    $mat->title,
-                    $totalSessions,
-                    $completedSess,
+                    $task->title,
+                    $task->material->title ?? '-',
+                    $task->total_attempts,
+                    $completedCount,
                     $completionRate,
                     $successRate,
-                    $avgDuration ? round($avgDuration, 1) : 0,
-                    $avgRunCount ? round($avgRunCount, 1) : 0
+                    $task->avg_duration ? round($task->avg_duration, 1) : 0,
+                    $task->avg_run_count ? round($task->avg_run_count, 1) : 0,
+                    $difficultyScore !== null ? $difficultyScore : '-',
+                    $combinedClass ? $combinedClass['label'] : '-'
                 ];
 
                 fputcsv($file, $row);
