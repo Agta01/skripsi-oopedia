@@ -204,4 +204,73 @@ class TbutAnalysisController extends Controller
 
         return view('admin.tbut.show', compact('task', 'sessions', 'stats'));
     }
+
+    /**
+     * Export summary per material to CSV.
+     */
+    public function export(Request $request)
+    {
+        $materialId = $request->get('material_id');
+
+        $materialsQuery = Material::query();
+        if ($materialId) {
+            $materialsQuery->where('id', $materialId);
+        }
+        $materials = $materialsQuery->orderBy('title')->get();
+
+        $filename = "tbut_analysis_" . date('Ymd_His') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = [
+            'Materi', 
+            'Total Peserta', 
+            'Selesai', 
+            'Completion Rate (%)', 
+            'Success Rate (%)', 
+            'Avg Durasi (detik)', 
+            'Avg Run Code'
+        ];
+
+        $callback = function() use($materials, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($materials as $mat) {
+                // Get all tasks for this material
+                $taskIds = VirtualLabTask::where('material_id', $mat->id)->pluck('id');
+                $sessions = TbutSession::whereIn('task_id', $taskIds)->get();
+
+                $totalSessions = $sessions->count();
+                $completedSess = $sessions->where('is_completed', true)->count();
+                $successSess = $sessions->where('is_success', true)->count();
+                $avgDuration = $sessions->avg('duration_seconds');
+                $avgRunCount = $sessions->avg('run_count');
+                
+                $completionRate = $totalSessions > 0 ? round(($completedSess / $totalSessions) * 100, 1) : 0;
+                $successRate = $totalSessions > 0 ? round(($successSess / $totalSessions) * 100, 1) : 0;
+
+                $row = [
+                    $mat->title,
+                    $totalSessions,
+                    $completedSess,
+                    $completionRate,
+                    $successRate,
+                    $avgDuration ? round($avgDuration, 1) : 0,
+                    $avgRunCount ? round($avgRunCount, 1) : 0
+                ];
+
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

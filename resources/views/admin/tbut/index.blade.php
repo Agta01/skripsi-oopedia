@@ -31,6 +31,9 @@
                                 </option>
                             @endforeach
                         </select>
+                        <a href="{{ route('admin.tbut.export', ['material_id' => request('material_id')]) }}" class="btn btn-sm btn-success mb-0 d-flex align-items-center gap-1" style="border-radius: 10px; padding: 0.4rem 0.85rem; text-transform: none; font-size: 13px; font-weight: 600;">
+                            <i class="material-icons" style="font-size:16px;">download</i> Export (CSV)
+                        </a>
                     </form>
                 </div>
             </div>
