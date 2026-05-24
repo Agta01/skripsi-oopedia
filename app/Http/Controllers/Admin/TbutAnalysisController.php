@@ -217,7 +217,7 @@ class TbutAnalysisController extends Controller
             ->orderBy('started_at')
             ->get();
 
-        $filename = 'TBUT_Export_' . now()->format('Ymd_His') . '.xlsx';
+        $filename = 'TBUT_Export_' . now()->format('Ymd_His') . '.xls';
 
         return $this->buildXlsx($filename, $tasks, $allSessions);
     }
@@ -236,7 +236,7 @@ class TbutAnalysisController extends Controller
         // Tambahkan relasi task ke setiap sesi
         $sessions->each(fn($s) => $s->setRelation('task', $task));
 
-        $filename = 'TBUT_' . \Illuminate\Support\Str::slug($task->title) . '_' . now()->format('Ymd_His') . '.xlsx';
+        $filename = 'TBUT_' . \Illuminate\Support\Str::slug($task->title) . '_' . now()->format('Ymd_His') . '.xls';
 
         return $this->buildXlsx($filename, collect([$task]), $sessions);
     }
