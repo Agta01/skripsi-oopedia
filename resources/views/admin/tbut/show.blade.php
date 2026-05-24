@@ -8,13 +8,13 @@
             {{-- ===== HERO BANNER ===== --}}
             <div class="tbut-hero animate-fade-in-down mb-4">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <div>
+                    <div class="position-relative" style="z-index:2;">
                         <nav aria-label="breadcrumb" class="mb-1">
                             <ol class="breadcrumb bg-transparent p-0 mb-0">
                                 <li class="breadcrumb-item">
                                     <a href="{{ route('admin.tbut.index') }}"
-                                        class="text-white opacity-8 text-sm text-decoration-none">
-                                        <i class="material-icons align-middle" style="font-size:14px">arrow_back</i>
+                                        class="text-white opacity-8 text-sm text-decoration-none d-flex align-items-center">
+                                        <i class="material-icons align-middle me-1" style="font-size:16px">arrow_back</i>
                                         Analisis TBUT
                                     </a>
                                 </li>
@@ -23,21 +23,20 @@
                                 </li>
                             </ol>
                         </nav>
-                        <h5 class="text-white fw-bold mb-1" style="font-size:1.2rem">
-                            <i class="material-icons align-middle me-2" style="font-size:20px">assignment</i>
+                        <h5 class="text-white fw-bold mb-1 mt-2" style="font-size:1.3rem; letter-spacing: 0.5px;">
+                            <i class="material-icons align-middle me-2" style="font-size:24px">assignment</i>
                             {{ $task->title }}
                         </h5>
-                        <p class="text-white opacity-8 mb-0 text-sm">
+                        <p class="text-white opacity-8 mb-0 text-sm" style="padding-left:36px;">
                             Materi: <strong>{{ $task->material->title ?? '—' }}</strong>
                             &nbsp;·&nbsp;
                             @php $diffColors = ['beginner' => '#2dce89', 'intermediate' => '#fb6340', 'advanced' => '#f5365c']; @endphp
-                            <span
-                                style="color:{{ $diffColors[$task->difficulty] ?? '#fff' }}">{{ ucfirst($task->difficulty) }}</span>
+                            <span style="color:{{ $diffColors[$task->difficulty] ?? '#fff' }}; font-weight:600;">{{ ucfirst($task->difficulty) }}</span>
                         </p>
                     </div>
                     <a href="{{ route('admin.tbut.index') }}"
-                        class="btn btn-sm btn-light fw-semibold flex-shrink-0 d-flex align-items-center gap-1"
-                        style="border-radius:10px;color:#0057B8">
+                        class="btn btn-sm bg-white fw-bold flex-shrink-0 d-flex align-items-center gap-1 position-relative"
+                        style="border-radius:12px;color:#0057B8;padding:0.6rem 1.2rem;z-index:2;">
                         <i class="material-icons text-sm">arrow_back</i> Kembali
                     </a>
                 </div>
@@ -78,8 +77,10 @@
                         <div class="tbut-mini-bar">
                             <div class="tbut-mini-fill" style="width:{{ $stats['success_rate'] }}%;background:#059669"></div>
                         </div>
-                        <p class="tbut-stat-sub">
-                            {{ $stats['count_score_2'] }}✓ · {{ $stats['count_score_1'] }}△ · {{ $stats['count_score_0'] }}✗
+                        <p class="tbut-stat-sub" style="font-weight:600;">
+                            <span style="color:#16a34a">{{ $stats['count_score_2'] }}✓</span> · 
+                            <span style="color:#b45309">{{ $stats['count_score_1'] }}△</span> · 
+                            <span style="color:#dc2626">{{ $stats['count_score_0'] }}✗</span>
                         </p>
                     </div>
                 </div>
@@ -113,8 +114,8 @@
                             <i class="material-icons">download</i>
                         </div>
                         <p class="tbut-stat-label">Export Data</p>
-                        <a href="{{ route('admin.tbut.export.task', $task->id) }}" class="btn btn-sm btn-warning fw-semibold mt-1" style="border-radius:8px;font-size:11px;">
-                            <i class="material-icons" style="font-size:14px;">table_chart</i> Excel
+                        <a href="{{ route('admin.tbut.export.task', $task->id) }}" class="btn btn-sm btn-warning fw-bold mt-2" style="border-radius:10px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:4px;">
+                            <i class="material-icons" style="font-size:16px;">table_chart</i> Excel
                         </a>
                     </div>
                 </div>
@@ -123,25 +124,23 @@
             {{-- ===== SESSION TABLE ===== --}}
             <div class="row animate-fade-in-up delay-2">
                 <div class="col-12">
-                    <div class="card modern-card">
+                    <div class="card modern-card mt-5">
                         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                            <div
-                                class="border-radius-xl pt-4 pb-3 px-4 d-flex justify-content-between align-items-center modern-header">
+                            <div class="modern-header px-4 py-3 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="icon icon-shape bg-white shadow-sm d-flex align-items-center justify-content-center me-3"
-                                        style="width:42px;height:42px;border-radius:10px">
+                                        style="width:42px;height:42px;border-radius:12px">
                                         <i class="material-icons" style="font-size:22px;color:#0057B8">people</i>
                                     </div>
-                                    <h6 class="text-white mb-0 fw-semibold" style="letter-spacing:.4px">Detail Per
-                                        Mahasiswa</h6>
+                                    <h6 class="text-white mb-0 fw-semibold" style="letter-spacing:.4px;font-size:1.05rem;">Detail Per Mahasiswa</h6>
                                 </div>
                                 <span class="badge bg-white text-primary fw-bold px-3 py-2 me-2"
-                                    style="border-radius:20px;font-size:12px">
+                                    style="border-radius:20px;font-size:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
                                     {{ $sessions->count() }} Peserta
                                 </span>
                             </div>
                         </div>
-                        <div class="card-body px-0 pb-2">
+                        <div class="card-body px-0 pb-2 mt-2">
                             @if($sessions->isEmpty())
                                 <div class="text-center py-5">
                                     <i class="material-icons text-muted" style="font-size:52px">inbox</i>
@@ -167,14 +166,14 @@
                                         <tbody>
                                             @forelse($sessions as $i => $sess)
                                                 <tr class="tbut-row">
-                                                    <td><span class="text-xs text-muted">{{ $i + 1 }}</span></td>
+                                                    <td><span class="text-xs text-muted fw-bold">{{ $i + 1 }}</span></td>
                                                     <td>
-                                                        <div class="d-flex align-items-center gap-2">
+                                                        <div class="d-flex align-items-center gap-3">
                                                             <div class="tbut-avatar">
                                                                 {{ strtoupper(substr($sess->user->name ?? 'U', 0, 1)) }}
                                                             </div>
                                                             <div>
-                                                                <p class="mb-0 text-sm fw-semibold" style="color:#344767">
+                                                                <p class="mb-0 text-sm fw-bold" style="color:#344767">
                                                                     {{ $sess->user->name ?? '—' }}
                                                                 </p>
                                                                 <p class="mb-0 text-xs text-muted">
@@ -190,53 +189,47 @@
                                                             $scoreBgs = [0 => '#fee2e2', 1 => '#fef9c3', 2 => '#dcfce7'];
                                                             $scoreLabels = [0 => 'Gagal', 1 => 'Dgn Kesulitan', 2 => 'Tanpa Kesulitan'];
                                                         @endphp
-                                                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:8px;color:{{ $scoreColors[$score] }};background:{{ $scoreBgs[$score] }};">
+                                                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:4px 12px;border-radius:8px;color:{{ $scoreColors[$score] }};background:{{ $scoreBgs[$score] }};">
                                                             {{ $score }} — {{ $scoreLabels[$score] }}
                                                         </span>
                                                     </td>
                                                     <td class="text-center">
                                                         @if($sess->is_completed)
                                                             <span class="tbut-status-badge completed">
-                                                                <i class="material-icons" style="font-size:12px">check</i> Selesai
+                                                                <i class="material-icons" style="font-size:14px">check</i> Selesai
                                                             </span>
                                                         @else
                                                             <span class="tbut-status-badge pending">
-                                                                <i class="material-icons" style="font-size:12px">hourglass_empty</i>
-                                                                Proses
+                                                                <i class="material-icons" style="font-size:14px">hourglass_empty</i> Proses
                                                             </span>
                                                         @endif
                                                     </td>
                                                     <td class="text-center">
-                                                        <span
-                                                            class="text-xs text-muted">{{ $sess->started_at ? $sess->started_at->timezone('Asia/Jakarta')->format('d M Y') : '—' }}</span>
+                                                        <span class="text-xs text-muted d-block">{{ $sess->started_at ? $sess->started_at->timezone('Asia/Jakarta')->format('d M Y') : '—' }}</span>
                                                         @if($sess->started_at)
-                                                            <span
-                                                                class="tbut-time-label">{{ $sess->started_at->timezone('Asia/Jakarta')->format('H:i:s') }}</span>
+                                                            <span class="tbut-time-label mt-1">{{ $sess->started_at->timezone('Asia/Jakarta')->format('H:i:s') }}</span>
                                                         @endif
                                                     </td>
                                                     <td class="text-center">
-                                                        <span
-                                                            class="text-xs text-muted">{{ $sess->submitted_at ? $sess->submitted_at->timezone('Asia/Jakarta')->format('d M Y') : '—' }}</span>
+                                                        <span class="text-xs text-muted d-block">{{ $sess->submitted_at ? $sess->submitted_at->timezone('Asia/Jakarta')->format('d M Y') : '—' }}</span>
                                                         @if($sess->submitted_at)
-                                                            <span
-                                                                class="tbut-time-label">{{ $sess->submitted_at->timezone('Asia/Jakarta')->format('H:i:s') }}</span>
+                                                            <span class="tbut-time-label mt-1">{{ $sess->submitted_at->timezone('Asia/Jakarta')->format('H:i:s') }}</span>
                                                         @endif
                                                     </td>
                                                     <td class="text-center">
                                                         <span class="tbut-time-chip">
-                                                            <i class="material-icons" style="font-size:13px">schedule</i>
+                                                            <i class="material-icons" style="font-size:14px">schedule</i>
                                                             {{ $sess->duration_seconds > 0 ? gmdate('H:i:s', $sess->duration_seconds) : '—' }}
                                                         </span>
                                                     </td>
                                                     <td class="text-center">
                                                         @if($sess->is_success)
                                                             <span class="tbut-output-badge correct">
-                                                                <i class="material-icons" style="font-size:12px">done_all</i> Benar
+                                                                <i class="material-icons" style="font-size:14px">done_all</i> Benar
                                                             </span>
                                                         @else
                                                             <span class="tbut-output-badge wrong">
-                                                                <i class="material-icons" style="font-size:12px">close</i> Belum
-                                                                Tepat
+                                                                <i class="material-icons" style="font-size:14px">close</i> Belum Tepat
                                                             </span>
                                                         @endif
                                                     </td>
@@ -247,19 +240,19 @@
                                                         @if($sess->final_code)
                                                             <button class="tbut-code-btn" data-bs-toggle="modal"
                                                                 data-bs-target="#codeModal{{ $sess->id }}">
-                                                                <i class="material-icons" style="font-size:14px">code</i> Lihat
+                                                                <i class="material-icons" style="font-size:16px">code</i> Lihat
                                                             </button>
 
                                                             {{-- Code Modal --}}
                                                             <div class="modal fade" id="codeModal{{ $sess->id }}" tabindex="-1">
                                                                 <div class="modal-dialog modal-lg modal-dialog-centered">
                                                                     <div class="modal-content"
-                                                                        style="border-radius:16px;overflow:hidden;border:none">
+                                                                        style="border-radius:20px;overflow:hidden;border:none;box-shadow:0 20px 50px rgba(0,0,0,0.2);">
                                                                         <div class="modal-header"
-                                                                            style="background:linear-gradient(135deg,#0057B8,#003b7d);border:none">
-                                                                            <h6 class="modal-title text-white fw-semibold">
+                                                                            style="background:linear-gradient(135deg,#0057B8,#003b7d);border:none;padding:1.25rem 1.5rem;">
+                                                                            <h6 class="modal-title text-white fw-semibold d-flex align-items-center">
                                                                                 <i class="material-icons align-middle me-2"
-                                                                                    style="font-size:18px">code</i>
+                                                                                    style="font-size:20px">code</i>
                                                                                 Kode Final — {{ $sess->user->name ?? 'Mahasiswa' }}
                                                                             </h6>
                                                                             <button type="button" class="btn-close btn-close-white"
@@ -267,19 +260,19 @@
                                                                         </div>
                                                                         <div class="modal-body p-0">
                                                                             <pre class="m-0 p-4"
-                                                                                style="background:#1a1d2e;color:#c9d1d9;font-size:0.83rem;max-height:450px;overflow-y:auto;tab-size:4;font-family:'JetBrains Mono','Fira Code',monospace">{{ htmlspecialchars($sess->final_code) }}</pre>
+                                                                                style="background:#1e1e1e;color:#d4d4d4;font-size:0.9rem;max-height:450px;overflow-y:auto;tab-size:4;font-family:'JetBrains Mono','Fira Code',monospace">{{ htmlspecialchars($sess->final_code) }}</pre>
                                                                         </div>
                                                                         <div class="modal-footer"
-                                                                            style="background:#f8f9fa;border:none">
-                                                                            <button type="button" class="btn btn-sm btn-secondary"
+                                                                            style="background:#f8f9fa;border-top:1px solid #eee;padding:1rem 1.5rem;">
+                                                                            <button type="button" class="btn btn-sm btn-secondary fw-bold mb-0"
                                                                                 data-bs-dismiss="modal"
-                                                                                style="border-radius:8px">Tutup</button>
+                                                                                style="border-radius:10px;padding:0.5rem 1.25rem;">Tutup</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         @else
-                                                            <span class="text-muted text-xs">—</span>
+                                                            <span class="text-muted text-xs fw-bold">—</span>
                                                         @endif
                                                     </td>
                                                 </tr>
@@ -303,240 +296,78 @@
         </div>
     </main>
     <x-admin.tutorial />
+    @push('head')
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        .main-content { font-family: 'Inter', sans-serif; }
+
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-fade-in-down { animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+
+        /* Hero Banner */
+        .tbut-hero { 
+            background: linear-gradient(135deg, #0057B8 0%, #003b7d 100%); 
+            border-radius: 20px; 
+            padding: 1.5rem 2.5rem; 
+            box-shadow: 0 10px 30px rgba(0, 87, 184, 0.25); 
+            position: relative; 
+            overflow: hidden;
+        }
+        .tbut-hero::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;
+        }
+        .tbut-hero::after {
+            content: ''; position: absolute; bottom: -30px; left: 20%; width: 100px; height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%); border-radius: 50%;
+        }
+
+        /* Stat Cards */
+        .tbut-stat-card { background: #fff; border-radius: 18px; box-shadow: 0 10px 30px 0 rgba(0,0,0,.05); padding: 1.5rem; border: none; transition: all .3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .tbut-stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px 0 rgba(0,0,0,.08); }
+        .tbut-stat-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; box-shadow: 0 6px 15px rgba(0,0,0,.1); transition: transform 0.3s; }
+        .tbut-stat-card:hover .tbut-stat-icon { transform: scale(1.05); }
+        .tbut-stat-icon i { color: #fff; font-size: 24px; }
+        .tbut-stat-label { font-size: 11px; font-weight: 700; color: #8392ab; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px; }
+        .tbut-stat-value { font-size: 1.75rem; font-weight: 800; color: #344767; margin: 0; line-height: 1.2; }
+        .tbut-stat-sub { font-size: 12px; color: #94a3b8; margin: 6px 0 0; }
+        
+        .tbut-mini-bar { height: 6px; background: #f0f2f5; border-radius: 99px; overflow: hidden; margin-top: 10px; }
+        .tbut-mini-fill { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* Modern Card */
+        .modern-card { border: none; box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.05); border-radius: 20px; background: #fff; overflow: visible; margin-top: 2.5rem !important; }
+        .modern-header { background: linear-gradient(135deg, #0057B8 0%, #003b7d 100%); box-shadow: 0 8px 25px -8px rgba(0, 87, 184, 0.45); border-radius: 16px; transform: translateY(-20px); }
+
+        /* Table */
+        .tbut-table thead th { font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: .7rem; font-weight: 700; letter-spacing: .5px; color: #8392ab; border-bottom: 2px solid #f0f2f5; padding: 1.2rem 1rem; white-space: nowrap; }
+        .tbut-table tbody td { vertical-align: middle; border-bottom: 1px solid #f8f9fa; padding: 1rem; transition: background 0.2s; }
+        .tbut-row:hover td { background: #f8faff; }
+
+        /* Avatar */
+        .tbut-avatar { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #0057B8, #003b7d); color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,87,184,0.2); }
+
+        /* Badges */
+        .tbut-status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; padding: .4rem .8rem; border-radius: 8px; }
+        .tbut-status-badge.completed { background: rgba(45, 206, 137, .12); color: #1a9e63; }
+        .tbut-status-badge.pending { background: rgba(251, 99, 64, .12); color: #d94a28; }
+
+        .tbut-output-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; padding: .4rem .8rem; border-radius: 8px; }
+        .tbut-output-badge.correct { background: rgba(17, 205, 239, .12); color: #0a9ab8; }
+        .tbut-output-badge.wrong { background: rgba(245, 54, 92, .12); color: #b41a3a; }
+
+        .tbut-time-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #fb6340; background: rgba(251, 99, 64, .1); border-radius: 8px; padding: .4rem .8rem; }
+        .tbut-time-label { display: inline-block; font-size: 11.5px; color: #0057B8; font-weight: 600; background: rgba(0,87,184,0.05); padding: 2px 8px; border-radius: 6px; }
+
+        .tbut-run-chip { display: inline-block; font-size: 12px; font-weight: 700; color: #8655fc; background: rgba(134, 85, 252, .1); border-radius: 8px; padding: .4rem .8rem; }
+
+        .tbut-code-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #0057B8; background: rgba(0, 87, 184, .08); border: 1px solid rgba(0, 87, 184, .2); border-radius: 8px; padding: .45rem .85rem; cursor: pointer; transition: all .2s ease; }
+        .tbut-code-btn:hover { background: #0057B8; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,87,184,0.2); }
+    </style>
+    @endpush
 </x-layout>
-
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    .main-content {
-        font-family: 'Inter', sans-serif;
-    }
-
-    /* Hero */
-    .tbut-hero {
-        background: linear-gradient(135deg, #0057B8 0%, #003b7d 100%);
-        border-radius: 18px;
-        padding: 1.5rem 2rem;
-        box-shadow: 0 8px 30px rgba(0, 87, 184, 0.3);
-    }
-
-    /* Modern Card */
-    .modern-card {
-        border: none;
-        box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.05);
-        border-radius: 16px;
-        background: #fff;
-        overflow: visible;
-        margin-top: 2.5rem !important;
-    }
-
-    .modern-header {
-        background: linear-gradient(135deg, #0057B8 0%, #003b7d 100%);
-        box-shadow: 0 8px 25px -8px rgba(0, 87, 184, 0.45);
-        border-radius: 16px;
-        transform: translateY(-20px);
-    }
-
-    /* Stat Cards */
-    .tbut-stat-card {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-        padding: 1.25rem 1rem 1rem;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        transition: transform .25s ease, box-shadow .25s ease;
-    }
-
-    .tbut-stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .tbut-stat-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 11px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: .65rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .tbut-stat-icon i {
-        color: #fff;
-        font-size: 20px;
-    }
-
-    .tbut-stat-label {
-        font-size: 10px;
-        font-weight: 600;
-        color: #8392ab;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-        margin-bottom: 2px;
-    }
-
-    .tbut-stat-value {
-        font-size: 1.65rem;
-        font-weight: 700;
-        color: #344767;
-        margin: 0;
-        line-height: 1.1;
-    }
-
-    .tbut-stat-sub {
-        font-size: 10px;
-        color: #adb5bd;
-        margin: 4px 0 0;
-    }
-
-    .tbut-mini-bar {
-        height: 5px;
-        background: #f0f2f5;
-        border-radius: 99px;
-        overflow: hidden;
-        margin-top: 8px;
-    }
-
-    .tbut-mini-fill {
-        height: 100%;
-        border-radius: 99px;
-    }
-
-    /* Table */
-    .tbut-table thead th {
-        font-family: 'Inter', sans-serif;
-        text-transform: uppercase;
-        font-size: .63rem;
-        font-weight: 700;
-        letter-spacing: .5px;
-        color: #8392ab;
-        border-bottom: 2px solid #f0f2f5;
-        padding: 1rem .75rem;
-        white-space: nowrap;
-    }
-
-    .tbut-table tbody td {
-        vertical-align: middle;
-        border-bottom: 1px solid #f8f9fa;
-        padding: .85rem .75rem;
-    }
-
-    .tbut-row {
-        transition: background .15s ease;
-    }
-
-    .tbut-row:hover {
-        background: #f8faff;
-    }
-
-    /* Avatar */
-    .tbut-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #0057B8, #003b7d);
-        color: #fff;
-        font-weight: 700;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    /* Status badges */
-    .tbut-status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 11px;
-        font-weight: 700;
-        padding: .28rem .65rem;
-        border-radius: 8px;
-    }
-
-    .tbut-status-badge.completed {
-        background: rgba(45, 206, 137, .12);
-        color: #1a9e63;
-    }
-
-    .tbut-status-badge.pending {
-        background: rgba(251, 99, 64, .1);
-        color: #d94a28;
-    }
-
-    /* Output badges */
-    .tbut-output-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 11px;
-        font-weight: 700;
-        padding: .28rem .65rem;
-        border-radius: 8px;
-    }
-
-    .tbut-output-badge.correct {
-        background: rgba(17, 205, 239, .1);
-        color: #0a9ab8;
-    }
-
-    .tbut-output-badge.wrong {
-        background: rgba(245, 54, 92, .1);
-        color: #b41a3a;
-    }
-
-    /* Time chip */
-    .tbut-time-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #fb6340;
-        background: rgba(251, 99, 64, .1);
-        border-radius: 8px;
-        padding: .25rem .6rem;
-    }
-
-    .tbut-time-label {
-        display: block;
-        font-size: 11px;
-        color: #0057B8;
-        font-weight: 600;
-    }
-
-    /* Run chip */
-    .tbut-run-chip {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 700;
-        color: #8655fc;
-        background: rgba(134, 85, 252, .1);
-        border-radius: 8px;
-        padding: .25rem .6rem;
-    }
-
-    /* Code button */
-    .tbut-code-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #0057B8;
-        background: rgba(0, 87, 184, .08);
-        border: 1px solid rgba(0, 87, 184, .2);
-        border-radius: 8px;
-        padding: .3rem .75rem;
-        cursor: pointer;
-        transition: all .2s ease;
-    }
-
-    .tbut-code-btn:hover {
-        background: #0057B8;
-        color: #fff;
-    }
-</style>
