@@ -306,7 +306,8 @@ Route::middleware(['auth'])->group(function () {
 
 // TBUT Analysis Dashboard — Admin/Dosen only
 Route::middleware(['auth', 'role:1|2'])->prefix('admin/tbut')->name('admin.tbut.')->group(function () {
-    Route::get('/export',   [App\Http\Controllers\Admin\TbutAnalysisController::class, 'export'])->name('export');
-    Route::get('/',         [App\Http\Controllers\Admin\TbutAnalysisController::class, 'index'])->name('index');
-    Route::get('/{taskId}', [App\Http\Controllers\Admin\TbutAnalysisController::class, 'show'])->name('show');
+    Route::get('/',                [App\Http\Controllers\Admin\TbutAnalysisController::class, 'index'])->name('index');
+    Route::get('/export',          [App\Http\Controllers\Admin\TbutAnalysisController::class, 'export'])->name('export');
+    Route::get('/{taskId}/export', [App\Http\Controllers\Admin\TbutAnalysisController::class, 'exportTask'])->name('export.task');
+    Route::get('/{taskId}',        [App\Http\Controllers\Admin\TbutAnalysisController::class, 'show'])->name('show');
 });

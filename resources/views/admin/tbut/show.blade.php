@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            {{-- ===== STAT CARDS ===== --}}
+            {{-- ===== STAT CARDS (ISO 9241-11) ===== --}}
             <div class="row g-3 mb-4 animate-fade-in-up">
                 <div class="col-6 col-md-4 col-xl-2">
                     <div class="tbut-stat-card">
@@ -56,60 +56,66 @@
                 </div>
                 <div class="col-6 col-md-4 col-xl-2">
                     <div class="tbut-stat-card">
-                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#2dce89,#1a9e63)">
+                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#4f46e5,#6366f1)">
                             <i class="material-icons">check_circle</i>
                         </div>
-                        <p class="tbut-stat-label">Selesai</p>
-                        <h3 class="tbut-stat-value">{{ $stats['completed'] }}</h3>
+                        <p class="tbut-stat-label">Avg Success Score</p>
+                        <h3 class="tbut-stat-value" style="color:{{ $stats['success_class']['color'] ?? '#334155' }}">
+                            {{ $stats['avg_success_score'] ?? '—' }}<span style="font-size:12px;color:#94a3b8;"> / 2</span>
+                        </h3>
+                        @if($stats['success_class'])
+                        <p class="tbut-stat-sub" style="color:{{ $stats['success_class']['color'] }};font-weight:600;">{{ $stats['success_class']['label'] }}</p>
+                        @endif
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-xl-2">
                     <div class="tbut-stat-card">
-                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#11cdef,#0a9ab8)">
+                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#059669,#047857)">
                             <i class="material-icons">trending_up</i>
                         </div>
-                        <p class="tbut-stat-label">Completion Rate</p>
-                        <h3 class="tbut-stat-value" style="color:#11cdef">{{ $stats['completion_rate'] }}%</h3>
+                        <p class="tbut-stat-label">Task Success Rate</p>
+                        <h3 class="tbut-stat-value" style="color:#059669">{{ $stats['success_rate'] }}%</h3>
                         <div class="tbut-mini-bar">
-                            <div class="tbut-mini-fill"
-                                style="width:{{ $stats['completion_rate'] }}%;background:#11cdef"></div>
+                            <div class="tbut-mini-fill" style="width:{{ $stats['success_rate'] }}%;background:#059669"></div>
                         </div>
+                        <p class="tbut-stat-sub">
+                            {{ $stats['count_score_2'] }}✓ · {{ $stats['count_score_1'] }}△ · {{ $stats['count_score_0'] }}✗
+                        </p>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-xl-2">
                     <div class="tbut-stat-card">
-                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#f5365c,#b41a3a)">
-                            <i class="material-icons">verified</i>
-                        </div>
-                        <p class="tbut-stat-label">Success Rate</p>
-                        <h3 class="tbut-stat-value" style="color:#f5365c">{{ $stats['success_rate'] }}%</h3>
-                        <div class="tbut-mini-bar">
-                            <div class="tbut-mini-fill" style="width:{{ $stats['success_rate'] }}%;background:#f5365c">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-4 col-xl-2">
-                    <div class="tbut-stat-card">
-                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#fb6340,#d94a28)">
+                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">
                             <i class="material-icons">timer</i>
                         </div>
-                        <p class="tbut-stat-label">Avg Durasi</p>
+                        <p class="tbut-stat-label">Avg Time-on-Task</p>
                         <h3 class="tbut-stat-value" style="font-size:1.4rem">
                             {{ $stats['avg_duration'] ? gmdate('H:i:s', intval($stats['avg_duration'])) : '--:--:--' }}
                         </h3>
-                        <p class="tbut-stat-sub">jam : menit : detik</p>
+                        <p class="tbut-stat-sub">Efficiency (ISO 9241-11)</p>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-xl-2">
                     <div class="tbut-stat-card">
-                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#8655fc,#5e2fc7)">
+                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">
                             <i class="material-icons">play_circle</i>
                         </div>
                         <p class="tbut-stat-label">Avg Run Code</p>
                         <h3 class="tbut-stat-value">
-                            {{ $stats['avg_run_count'] ? round($stats['avg_run_count'], 1) : '—' }}x
+                            {{ $stats['avg_run_count'] ? $stats['avg_run_count'] : '—' }}x
                         </h3>
+                        <p class="tbut-stat-sub">Metrik tambahan</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="tbut-stat-card">
+                        <div class="tbut-stat-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+                            <i class="material-icons">download</i>
+                        </div>
+                        <p class="tbut-stat-label">Export Data</p>
+                        <a href="{{ route('admin.tbut.export.task', $task->id) }}" class="btn btn-sm btn-warning fw-semibold mt-1" style="border-radius:8px;font-size:11px;">
+                            <i class="material-icons" style="font-size:14px;">table_chart</i> Excel
+                        </a>
                     </div>
                 </div>
             </div>
@@ -148,10 +154,11 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Mahasiswa</th>
+                                                <th class="text-center">Success Score</th>
                                                 <th class="text-center">Status</th>
                                                 <th class="text-center">Waktu Mulai</th>
                                                 <th class="text-center">Waktu Submit</th>
-                                                <th class="text-center">Durasi</th>
+                                                <th class="text-center">Time-on-Task</th>
                                                 <th class="text-center">Output</th>
                                                 <th class="text-center">Run Code</th>
                                                 <th class="text-center">Kode Final</th>
@@ -175,6 +182,17 @@
                                                                 </p>
                                                             </div>
                                                         </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @php
+                                                            $score = !$sess->is_completed ? 0 : ($sess->is_success ? 2 : 1);
+                                                            $scoreColors = [0 => '#dc2626', 1 => '#b45309', 2 => '#16a34a'];
+                                                            $scoreBgs = [0 => '#fee2e2', 1 => '#fef9c3', 2 => '#dcfce7'];
+                                                            $scoreLabels = [0 => 'Gagal', 1 => 'Dgn Kesulitan', 2 => 'Tanpa Kesulitan'];
+                                                        @endphp
+                                                        <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:8px;color:{{ $scoreColors[$score] }};background:{{ $scoreBgs[$score] }};">
+                                                            {{ $score }} — {{ $scoreLabels[$score] }}
+                                                        </span>
                                                     </td>
                                                     <td class="text-center">
                                                         @if($sess->is_completed)
@@ -267,7 +285,7 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="9" class="text-center py-5 text-muted">
+                                                    <td colspan="10" class="text-center py-5 text-muted">
                                                         <i class="material-icons d-block mb-2" style="font-size:40px">inbox</i>
                                                         Belum ada mahasiswa yang mengerjakan tugas ini.
                                                     </td>
