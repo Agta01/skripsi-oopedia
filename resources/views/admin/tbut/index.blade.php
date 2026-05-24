@@ -212,6 +212,7 @@
                                     <th class="text-center">Avg Run</th>
                                     <th class="text-center">Waktu Ideal</th>
                                     <th class="text-center">Run Ideal</th> -->
+                                    <th class="text-center" style="min-width:130px;">Success Rate</th>
                                     <th class="text-center" style="min-width:80px;">Difficulty</th>
                                     <th class="text-center" style="min-width:110px;">Klasifikasi</th>
                                     <th class="text-center">Aksi</th>
@@ -262,6 +263,14 @@
                                             {{ $task->r_ideal !== null ? $task->r_ideal . 'x' : '—' }}
                                         </span>
                                     </td> -->
+                                    <td class="text-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="tbut-prog-bar">
+                                                <div class="tbut-prog-fill" style="width:{{ $task->success_rate }}%;background:#0ea5e9;"></div>
+                                            </div>
+                                            <span style="font-size:12px;font-weight:700;color:#0ea5e9;min-width:36px;">{{ $task->success_rate }}%</span>
+                                        </div>
+                                    </td>
                                     <td class="text-center">
                                         @if($task->difficulty_score !== null)
                                         <span class="tbut-d-val" style="color:{{ $task->d_class['color'] }};background:{{ $task->d_class['bg'] }};">
