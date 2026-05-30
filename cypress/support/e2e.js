@@ -4,6 +4,24 @@
 // Ignore uncaught exceptions from the application (not from test code).
 Cypress.on('uncaught:exception', () => false);
 
+// Custom command: tutup intro.js overlay jika ada
+// Dipanggil manual setelah cy.visit() di test yang membutuhkan
+Cypress.Commands.add('closeIntro', () => {
+  cy.get('body').then(($body) => {
+    if ($body.find('.introjs-overlay').length > 0) {
+      // Coba klik tombol skip/done dulu
+      if ($body.find('.introjs-skipbutton').length > 0) {
+        cy.get('.introjs-skipbutton').click({ force: true });
+      } else if ($body.find('.introjs-donebutton').length > 0) {
+        cy.get('.introjs-donebutton').click({ force: true });
+      } else {
+        // Fallback: klik overlay untuk dismiss
+        cy.get('.introjs-overlay').click({ force: true });
+      }
+    }
+  });
+});
+
 // Custom command: login via HTTP request (tidak perlu cy.visit ke halaman login)
 // Mengambil CSRF token dari GET /login, lalu POST form login.
 Cypress.Commands.add('login', (email, password) => {
