@@ -255,34 +255,34 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
     Route::get('/ueq-survey/thankyou', [MahasiswaUeqSurveyController::class, 'thankyou'])->name('ueq.thankyou');
 });
 
-// // Auto storage:link for shared hosting (run once, then remove or disable)
-// Route::get('/setup-storage-link', function () {
-//     if (!app()->environment('production') && !request()->has('force')) {
-//         return 'Add ?force=1 to run this on production.';
-//     }
-//     $target = storage_path('app/public');
-//     $link   = public_path('storage');
-//     if (file_exists($link)) {
-//         return '✅ Storage link already exists at: ' . $link;
-//     }
-//     try {
-//         symlink($target, $link);
-//         return '✅ Storage link created! <a href="/">Go home</a>';
-//     } catch (\Exception $e) {
-//         // On some hosts symlink is disabled, try creating a physical copy mechanism
-//         return '⚠️ Symlink failed: ' . $e->getMessage() . '. Please ask your hosting provider to run: php artisan storage:link';
-//     }
-// })->middleware('auth');
+// Auto storage:link for shared hosting (run once, then remove or disable)
+Route::get('/setup-storage-link', function () {
+    if (!app()->environment('production') && !request()->has('force')) {
+        return 'Add ?force=1 to run this on production.';
+    }
+    $target = storage_path('app/public');
+    $link   = public_path('storage');
+    if (file_exists($link)) {
+        return '✅ Storage link already exists at: ' . $link;
+    }
+    try {
+        symlink($target, $link);
+        return '✅ Storage link created! <a href="/">Go home</a>';
+    } catch (\Exception $e) {
+        // On some hosts symlink is disabled, try creating a physical copy mechanism
+        return '⚠️ Symlink failed: ' . $e->getMessage() . '. Please ask your hosting provider to run: php artisan storage:link';
+    }
+})->middleware('auth');
 
-// // Serve storage files directly via PHP (for shared hosting where symlink fails)
-// Route::get('/storage/{path}', function ($path) {
-//     $fullPath = storage_path('app/public/' . $path);
-//     if (!file_exists($fullPath)) {
-//         abort(404);
-//     }
-//     $mime = mime_content_type($fullPath) ?: 'application/octet-stream';
-//     return response()->file($fullPath, ['Content-Type' => $mime]);
-// })->where('path', '.*');
+// Serve storage files directly via PHP (for shared hosting where symlink fails)
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    $mime = mime_content_type($fullPath) ?: 'application/octet-stream';
+    return response()->file($fullPath, ['Content-Type' => $mime]);
+})->where('path', '.*');
 
 // Fallback route for images on shared hosting (legacy /images/ path support)
 Route::get('/images/{path}', function ($path) {
