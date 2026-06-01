@@ -109,7 +109,7 @@ class UeqSurveyController extends Controller
     private function benchmarkThresholds(): array
     {
         return [
-            'attractiveness' => ['excellent' => 1.75, 'good' => 1.52, 'above_avg' => 1.17, 'below_avg' => 0.70],
+            'attractiveness' => ['excellent' => 1.84, 'good' => 1.58, 'above_avg' => 1.17, 'below_avg' => 0.70],
             'perspicuity' => ['excellent' => 1.90, 'good' => 1.56, 'above_avg' => 1.08, 'below_avg' => 0.64],
             'efficiency' => ['excellent' => 1.78, 'good' => 1.47, 'above_avg' => 0.98, 'below_avg' => 0.54],
             'dependability' => ['excellent' => 1.65, 'good' => 1.48, 'above_avg' => 1.14, 'below_avg' => 0.78],
