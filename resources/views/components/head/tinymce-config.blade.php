@@ -2,7 +2,7 @@
     <!-- An unexamined life is not worth living. - Socrates -->
 </div>
 
-<script src="https://cdn.tiny.cloud/1/{{ config('services.tinymce.api_key') }}/tinymce/6/tinymce.min.js"
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"
     referrerpolicy="origin"></script>
 <script>
     tinymce.init({
