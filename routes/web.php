@@ -255,6 +255,15 @@ Route::prefix('mahasiswa')->name('mahasiswa.')->middleware(['auth'])->group(func
     Route::get('/ueq-survey/thankyou', [MahasiswaUeqSurveyController::class, 'thankyou'])->name('ueq.thankyou');
 });
 
+// Fallback route for images on shared hosting
+Route::get('/images/{path}', function ($path) {
+    $fullPath = public_path('images/' . $path);
+    if (file_exists($fullPath)) {
+        return response()->file($fullPath);
+    }
+    abort(404);
+})->where('path', '.*');
+
 // Fallback route for 404 errors
 Route::fallback(function () {
     if (auth()->check()) {

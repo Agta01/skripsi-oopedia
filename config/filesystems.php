@@ -58,7 +58,7 @@ return [
 
         'images' => [
             'driver' => 'local',
-            'root' => (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] !== '') ? $_SERVER['DOCUMENT_ROOT'].'/images' : public_path('images'),
+            'root' => public_path('images'),
             'url' => env('APP_URL').'/images',
             'visibility' => 'public',
         ],
