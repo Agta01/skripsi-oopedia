@@ -18,7 +18,7 @@
                             </h4>
                         </div>
                         <p class="text-white mb-0" style="font-size:13px;opacity:.85;padding-left:56px;">
-                            Evaluasi berdasarkan ISO 9241-11: Effectiveness, Efficiency, Satisfaction (Saputra, 2025)
+                            Evaluasi: Effectiveness, Efficiency, Satisfaction
                         </p>
                     </div>
                     <div class="d-flex align-items-center gap-3 flex-shrink-0 flex-wrap position-relative" style="z-index:2;">
@@ -53,7 +53,7 @@
                         <h3 class="tbut-stat-value">{{ $avgSuccessScore ?? '—' }}<span style="font-size:14px;color:#94a3b8;font-weight:500;"> / 2</span></h3>
                         @if($avgSuccessScore !== null)
                             @php $globalClass = app(\App\Http\Controllers\Admin\TbutAnalysisController::class); @endphp
-                            <p class="tbut-stat-sub" style="font-weight:600;">Effectiveness (ISO 9241-11)</p>
+                            <p class="tbut-stat-sub" style="font-weight:600;">Effectiveness </p>
                         @endif
                     </div>
                 </div>
@@ -78,7 +78,6 @@
                         </div>
                         <p class="tbut-stat-label">Avg Time-on-Task</p>
                         <h3 class="tbut-stat-value" style="font-size:1.5rem;">{{ $avgDuration ? gmdate('H:i:s', $avgDuration) : '—' }}</h3>
-                        <p class="tbut-stat-sub">Efficiency (ISO 9241-11)</p>
                     </div>
                 </div>
 
@@ -104,13 +103,13 @@
             <div class="tbut-classify-guide mb-4 animate-fade-in-up delay-1">
                 <div class="tbut-classify-guide-title mb-3">
                     <i class="material-icons" style="font-size:18px;color:#0057B8;">info</i>
-                    Skala Task Success Score (Saputra, 2025)
+                    Skala Task Success Score
                 </div>
                 <div class="row g-3">
                     @foreach([
                         ['skor'=>'2', 'label'=>'Berhasil Tanpa Kesulitan', 'color'=>'#16a34a','bg'=>'#dcfce7','desc'=>'Mahasiswa menyelesaikan tugas dengan output yang tepat'],
                         ['skor'=>'1', 'label'=>'Berhasil Dengan Kesulitan', 'color'=>'#b45309','bg'=>'#fef9c3','desc'=>'Mahasiswa menyelesaikan tugas tapi output belum tepat'],
-                        ['skor'=>'0', 'label'=>'Gagal', 'color'=>'#dc2626','bg'=>'#fee2e2','desc'=>'Mahasiswa tidak berhasil menyelesaikan tugas (belum submit)'],
+                        ['skor'=>'0', 'label'=>'Gagal', 'color'=>'#dc2626','bg'=>'#fee2e2','desc'=>'Mahasiswa tidak berhasil menyelesaikan tugas'],
                     ] as $cat)
                     <div class="col-12 col-lg-4">
                         <div class="tbut-cat-card" style="border-left:4px solid {{ $cat['color'] }};background:{{ $cat['bg'] }};">
@@ -133,7 +132,7 @@
                     <div class="modern-card">
                         <div class="tbut-chart-header">
                             <i class="material-icons" style="color:#4f46e5;font-size:20px;">bar_chart</i>
-                            Avg Task Success Score per Tugas (Effectiveness)
+                            Avg Task Success Score per Tugas
                         </div>
                         <div class="tbut-chart-body mt-2">
                             <canvas id="tbutSuccessChart" style="max-height:220px;"></canvas>
@@ -146,7 +145,7 @@
                     <div class="modern-card">
                         <div class="tbut-chart-header">
                             <i class="material-icons" style="color:#0ea5e9;font-size:20px;">schedule</i>
-                            Avg Time-on-Task per Tugas (Efficiency)
+                            Avg Time-on-Task per Tugas
                         </div>
                         <div class="tbut-chart-body mt-2">
                             <canvas id="tbutTimeChart" style="max-height:220px;"></canvas>
@@ -164,7 +163,7 @@
                             <div class="icon icon-shape bg-white shadow-sm d-flex align-items-center justify-content-center" style="width:38px;height:38px;border-radius:10px;margin-right:12px;">
                                 <i class="material-icons" style="font-size:20px;color:#0057B8;">assignment</i>
                             </div>
-                            Rekap Per Tugas — ISO 9241-11
+                            Rekap Per Tugas
                         </h6>
                         <span class="tbut-badge-count">{{ $tasks->count() }} Tugas</span>
                     </div>

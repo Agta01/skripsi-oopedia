@@ -93,7 +93,7 @@
                         <h3 class="tbut-stat-value" style="font-size:1.4rem">
                             {{ $stats['avg_duration'] ? gmdate('H:i:s', intval($stats['avg_duration'])) : '--:--:--' }}
                         </h3>
-                        <p class="tbut-stat-sub">Efficiency (ISO 9241-11)</p>
+                        <p class="tbut-stat-sub">Efficiency</p>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-xl-2">

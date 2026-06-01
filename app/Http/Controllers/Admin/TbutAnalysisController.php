@@ -8,41 +8,10 @@ use App\Models\VirtualLabTask;
 use App\Models\Material;
 use Illuminate\Http\Request;
 
-/**
- * TBUT Analysis Controller
- *
- * Implementasi sesuai metode Task-Based Usability Testing (TBUT) dari:
- * Saputra, A. D. (2025). "Usability Evaluation of the Alodokter Application
- * Using the Task-Based Usability Testing Method."
- * Jurnal Teknik Industri, Vol. 11, No. 2, pp. 294-302.
- *
- * Tiga dimensi ISO 9241-11 yang diukur:
- *   1. Effectiveness → Task Success Score (skala 0-2)
- *      - 0 = Gagal (tidak menyelesaikan tugas)
- *      - 1 = Berhasil dengan kesulitan (selesai tapi output belum tepat)
- *      - 2 = Berhasil tanpa kesulitan (selesai dengan output tepat)
- *
- *   2. Efficiency → Time-on-Task (durasi penyelesaian dalam detik)
- *      - Rata-rata waktu penyelesaian per tugas
- *      - Perbandingan antar tugas (tugas mana yang paling lama)
- *
- *   3. Satisfaction → Belum tersedia (memerlukan kuesioner post-task)
- *      - Catatan: Saputra menggunakan skala Likert 1-4 dari user + observer
- *      - Pada sistem ini, satisfaction belum diukur secara langsung
- *
- * Metrik tambahan (bukan dari Saputra, tapi relevan untuk virtual coding lab):
- *   - Run Count: jumlah eksekusi kode per sesi (indikator iterasi debugging)
- */
+
 class TbutAnalysisController extends Controller
 {
-    /**
-     * Hitung Task Success Score per sesi berdasarkan skala 3 poin (Saputra, 2025).
-     *
-     * Skala:
-     *   0 = Gagal (is_completed = false)
-     *   1 = Berhasil dengan kesulitan (is_completed = true, is_success = false)
-     *   2 = Berhasil tanpa kesulitan (is_completed = true, is_success = true)
-     */
+
     private function getSuccessScore(TbutSession $session): int
     {
         if (!$session->is_completed) {
@@ -54,56 +23,84 @@ class TbutAnalysisController extends Controller
         return 1; // Berhasil dengan kesulitan (selesai tapi output belum tepat)
     }
 
-    /**
-     * Klasifikasi rata-rata Success Score berdasarkan interpretasi Saputra.
-     *
-     * Interpretasi:
-     *   1.80 - 2.00 = Sangat Baik (hampir semua berhasil tanpa kesulitan)
-     *   1.50 - 1.79 = Baik (mayoritas berhasil, sebagian dengan kesulitan)
-     *   1.00 - 1.49 = Cukup (banyak yang mengalami kesulitan)
-     *   0.50 - 0.99 = Kurang (banyak yang gagal atau kesulitan berat)
-     *   0.00 - 0.49 = Sangat Kurang (mayoritas gagal)
-     */
+
     private function classifySuccessScore(float $score): array
     {
         if ($score >= 1.80)
-            return ['label' => 'Sangat Baik', 'color' => '#16a34a', 'bg' => '#dcfce7',
-                    'interpretation' => 'Hampir semua mahasiswa berhasil menyelesaikan tugas tanpa kesulitan'];
+            return [
+                'label' => 'Sangat Baik',
+                'color' => '#16a34a',
+                'bg' => '#dcfce7',
+                'interpretation' => 'Hampir semua mahasiswa berhasil menyelesaikan tugas tanpa kesulitan'
+            ];
         if ($score >= 1.50)
-            return ['label' => 'Baik', 'color' => '#0ea5e9', 'bg' => '#e0f2fe',
-                    'interpretation' => 'Mayoritas berhasil, sebagian mengalami kesulitan minor'];
+            return [
+                'label' => 'Baik',
+                'color' => '#0ea5e9',
+                'bg' => '#e0f2fe',
+                'interpretation' => 'Mayoritas berhasil, sebagian mengalami kesulitan minor'
+            ];
         if ($score >= 1.00)
-            return ['label' => 'Cukup', 'color' => '#b45309', 'bg' => '#fef9c3',
-                    'interpretation' => 'Banyak mahasiswa mengalami kesulitan saat mengerjakan tugas'];
+            return [
+                'label' => 'Cukup',
+                'color' => '#b45309',
+                'bg' => '#fef9c3',
+                'interpretation' => 'Banyak mahasiswa mengalami kesulitan saat mengerjakan tugas'
+            ];
         if ($score >= 0.50)
-            return ['label' => 'Kurang', 'color' => '#ea580c', 'bg' => '#ffedd5',
-                    'interpretation' => 'Banyak mahasiswa gagal atau mengalami kesulitan berat'];
-        return ['label' => 'Sangat Kurang', 'color' => '#dc2626', 'bg' => '#fee2e2',
-                'interpretation' => 'Mayoritas mahasiswa gagal menyelesaikan tugas'];
+            return [
+                'label' => 'Kurang',
+                'color' => '#ea580c',
+                'bg' => '#ffedd5',
+                'interpretation' => 'Banyak mahasiswa gagal atau mengalami kesulitan berat'
+            ];
+        return [
+            'label' => 'Sangat Kurang',
+            'color' => '#dc2626',
+            'bg' => '#fee2e2',
+            'interpretation' => 'Mayoritas mahasiswa gagal menyelesaikan tugas'
+        ];
     }
 
-    /**
-     * Klasifikasi efisiensi berdasarkan rata-rata waktu penyelesaian.
-     * Threshold ditentukan berdasarkan konteks virtual coding lab.
-     */
+
     private function classifyEfficiency(float $avgSeconds): array
     {
         $minutes = $avgSeconds / 60;
 
         if ($minutes <= 5)
-            return ['label' => 'Sangat Efisien', 'color' => '#16a34a', 'bg' => '#dcfce7',
-                    'interpretation' => 'Tugas diselesaikan dengan cepat (≤ 5 menit)'];
+            return [
+                'label' => 'Sangat Efisien',
+                'color' => '#16a34a',
+                'bg' => '#dcfce7',
+                'interpretation' => 'Tugas diselesaikan dengan cepat (≤ 5 menit)'
+            ];
         if ($minutes <= 10)
-            return ['label' => 'Efisien', 'color' => '#0ea5e9', 'bg' => '#e0f2fe',
-                    'interpretation' => 'Waktu penyelesaian wajar (5-10 menit)'];
+            return [
+                'label' => 'Efisien',
+                'color' => '#0ea5e9',
+                'bg' => '#e0f2fe',
+                'interpretation' => 'Waktu penyelesaian wajar (5-10 menit)'
+            ];
         if ($minutes <= 20)
-            return ['label' => 'Cukup Efisien', 'color' => '#b45309', 'bg' => '#fef9c3',
-                    'interpretation' => 'Waktu penyelesaian agak lama (10-20 menit)'];
+            return [
+                'label' => 'Cukup Efisien',
+                'color' => '#b45309',
+                'bg' => '#fef9c3',
+                'interpretation' => 'Waktu penyelesaian agak lama (10-20 menit)'
+            ];
         if ($minutes <= 30)
-            return ['label' => 'Kurang Efisien', 'color' => '#ea580c', 'bg' => '#ffedd5',
-                    'interpretation' => 'Waktu penyelesaian lama (20-30 menit)'];
-        return ['label' => 'Tidak Efisien', 'color' => '#dc2626', 'bg' => '#fee2e2',
-                'interpretation' => 'Waktu penyelesaian sangat lama (> 30 menit)'];
+            return [
+                'label' => 'Kurang Efisien',
+                'color' => '#ea580c',
+                'bg' => '#ffedd5',
+                'interpretation' => 'Waktu penyelesaian lama (20-30 menit)'
+            ];
+        return [
+            'label' => 'Tidak Efisien',
+            'color' => '#dc2626',
+            'bg' => '#fee2e2',
+            'interpretation' => 'Waktu penyelesaian sangat lama (> 30 menit)'
+        ];
     }
 
     /**
@@ -163,13 +160,13 @@ class TbutAnalysisController extends Controller
             return $q->whereIn('task_id', $taskIds);
         })->get();
 
-        $totalSessions   = $allSessions->count();
-        $allScores       = $allSessions->map(fn($s) => $this->getSuccessScore($s));
+        $totalSessions = $allSessions->count();
+        $allScores = $allSessions->map(fn($s) => $this->getSuccessScore($s));
         $avgSuccessScore = $allScores->isNotEmpty() ? round($allScores->avg(), 2) : null;
 
-        $completedAll    = $allSessions->where('is_completed', true);
-        $avgDuration     = $completedAll->isNotEmpty() ? round($completedAll->avg('duration_seconds')) : null;
-        $avgRunCount     = $allSessions->isNotEmpty() ? round($allSessions->avg('run_count'), 1) : null;
+        $completedAll = $allSessions->where('is_completed', true);
+        $avgDuration = $completedAll->isNotEmpty() ? round($completedAll->avg('duration_seconds')) : null;
+        $avgRunCount = $allSessions->isNotEmpty() ? round($allSessions->avg('run_count'), 1) : null;
 
         $countScore0 = $allScores->filter(fn($s) => $s === 0)->count();
         $countScore1 = $allScores->filter(fn($s) => $s === 1)->count();
@@ -255,11 +252,11 @@ class TbutAnalysisController extends Controller
         // ── Effectiveness ──
         $successScores = $sessions->map(fn($s) => $this->getSuccessScore($s));
         $stats = [
-            'total'             => $sessions->count(),
+            'total' => $sessions->count(),
             'avg_success_score' => $successScores->isNotEmpty() ? round($successScores->avg(), 2) : null,
-            'count_score_0'     => $successScores->filter(fn($s) => $s === 0)->count(),
-            'count_score_1'     => $successScores->filter(fn($s) => $s === 1)->count(),
-            'count_score_2'     => $successScores->filter(fn($s) => $s === 2)->count(),
+            'count_score_0' => $successScores->filter(fn($s) => $s === 0)->count(),
+            'count_score_1' => $successScores->filter(fn($s) => $s === 1)->count(),
+            'count_score_2' => $successScores->filter(fn($s) => $s === 2)->count(),
         ];
         $stats['success_rate'] = $stats['total'] > 0
             ? round((($stats['count_score_1'] + $stats['count_score_2']) / $stats['total']) * 100, 1) : 0;
@@ -268,10 +265,10 @@ class TbutAnalysisController extends Controller
 
         // ── Efficiency ──
         $completedSessions = $sessions->where('is_completed', true);
-        $stats['avg_duration']  = $completedSessions->isNotEmpty()
+        $stats['avg_duration'] = $completedSessions->isNotEmpty()
             ? round($completedSessions->avg('duration_seconds')) : null;
-        $stats['min_duration']  = $completedSessions->min('duration_seconds');
-        $stats['max_duration']  = $completedSessions->max('duration_seconds');
+        $stats['min_duration'] = $completedSessions->min('duration_seconds');
+        $stats['max_duration'] = $completedSessions->max('duration_seconds');
         $stats['efficiency_class'] = $stats['avg_duration'] !== null
             ? $this->classifyEfficiency($stats['avg_duration']) : null;
 
@@ -287,19 +284,27 @@ class TbutAnalysisController extends Controller
      */
     private function buildXlsx(string $filename, $tasks, $allSessions): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $esc = fn($v) => htmlspecialchars((string)($v ?? ''), ENT_XML1, 'UTF-8');
-        $dur = fn($s) => $s > 0 ? gmdate('H:i:s', (int)$s) : '—';
+        $esc = fn($v) => htmlspecialchars((string) ($v ?? ''), ENT_XML1, 'UTF-8');
+        $dur = fn($s) => $s > 0 ? gmdate('H:i:s', (int) $s) : '—';
 
         // ── Sheet 1: Rekap per Tugas (ISO 9241-11) ──
         $sheet1Rows = '';
         $headers1 = [
-            'No', 'Materi', 'Judul Tugas', 'Tingkat Kesulitan',
+            'No',
+            'Materi',
+            'Judul Tugas',
+            'Tingkat Kesulitan',
             'Total Peserta',
-            'Gagal (Skor 0)', 'Berhasil dgn Kesulitan (Skor 1)', 'Berhasil Tanpa Kesulitan (Skor 2)',
-            'Avg Success Score (0-2)', 'Klasifikasi Effectiveness',
+            'Gagal (Skor 0)',
+            'Berhasil dgn Kesulitan (Skor 1)',
+            'Berhasil Tanpa Kesulitan (Skor 2)',
+            'Avg Success Score (0-2)',
+            'Klasifikasi Effectiveness',
             'Task Success Rate (%)',
-            'Avg Time-on-Task (H:i:s)', 'Avg Time-on-Task (detik)',
-            'Min Durasi (detik)', 'Max Durasi (detik)',
+            'Avg Time-on-Task (H:i:s)',
+            'Avg Time-on-Task (detik)',
+            'Min Durasi (detik)',
+            'Max Durasi (detik)',
             'Klasifikasi Efficiency',
             'Avg Run Code (x)',
         ];
@@ -352,10 +357,17 @@ class TbutAnalysisController extends Controller
         // ── Sheet 2: Detail per Sesi ──
         $sheet2Rows = '';
         $headers2 = [
-            'No', 'Materi', 'Judul Tugas', 'Nama Mahasiswa', 'Email',
-            'Task Success Score (0-2)', 'Keterangan Skor',
-            'Waktu Mulai', 'Waktu Submit',
-            'Time-on-Task (H:i:s)', 'Time-on-Task (detik)',
+            'No',
+            'Materi',
+            'Judul Tugas',
+            'Nama Mahasiswa',
+            'Email',
+            'Task Success Score (0-2)',
+            'Keterangan Skor',
+            'Waktu Mulai',
+            'Waktu Submit',
+            'Time-on-Task (H:i:s)',
+            'Time-on-Task (detik)',
             'Run Code (x)',
         ];
         $sheet2Rows .= '<Row ss:StyleID="header">';
@@ -366,7 +378,7 @@ class TbutAnalysisController extends Controller
 
         foreach ($allSessions as $i => $sess) {
             $score = $this->getSuccessScore($sess);
-            $scoreLabel = match($score) {
+            $scoreLabel = match ($score) {
                 0 => 'Gagal',
                 1 => 'Berhasil dengan kesulitan',
                 2 => 'Berhasil tanpa kesulitan',
@@ -405,7 +417,7 @@ class TbutAnalysisController extends Controller
         $summaryData = [
             ['Tanggal Export', now()->timezone('Asia/Jakarta')->format('d/m/Y H:i:s')],
             ['Metode', 'Task-Based Usability Testing (Saputra, 2025)'],
-            ['Standar Acuan', 'ISO 9241-11 (Effectiveness, Efficiency, Satisfaction)'],
+            ['Standar Acuan', '(Effectiveness, Efficiency, Satisfaction)'],
             ['', ''],
             ['EFFECTIVENESS', ''],
             ['Total Peserta', $allSessions->count()],
@@ -413,8 +425,11 @@ class TbutAnalysisController extends Controller
             ['Berhasil dgn Kesulitan (Skor 1)', $allScores->filter(fn($s) => $s === 1)->count()],
             ['Berhasil Tanpa Kesulitan (Skor 2)', $allScores->filter(fn($s) => $s === 2)->count()],
             ['Avg Task Success Score', $avgScoreAll],
-            ['Task Success Rate (%)', $allSessions->count() > 0
-                ? round(($allScores->filter(fn($s) => $s >= 1)->count() / $allSessions->count()) * 100, 1) : 0],
+            [
+                'Task Success Rate (%)',
+                $allSessions->count() > 0
+                ? round(($allScores->filter(fn($s) => $s >= 1)->count() / $allSessions->count()) * 100, 1) : 0
+            ],
             ['', ''],
             ['EFFICIENCY', ''],
             ['Avg Time-on-Task', is_numeric($avgDurAll) ? $dur($avgDurAll) : '—'],
@@ -455,9 +470,9 @@ class TbutAnalysisController extends Controller
         return response()->streamDownload(function () use ($xml) {
             echo $xml;
         }, $filename, [
-            'Content-Type'        => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Cache-Control'       => 'max-age=0',
+            'Cache-Control' => 'max-age=0',
         ]);
     }
 }
