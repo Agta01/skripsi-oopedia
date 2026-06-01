@@ -28,40 +28,40 @@ class UeqSurveyController extends Controller
     {
         // Ambil semua data survey dengan relasi user
         $query = UeqSurvey::with('user');
-        
+
         // Filter berdasarkan kelas jika ada
         if ($request->has('class') && !empty($request->class)) {
             $query->where('class', $request->class);
         }
-        
+
         $surveys = $query->get();
-        
+
         // Daftar kelas unik untuk filter dropdown
         $classes = UeqSurvey::distinct()->pluck('class')->filter()->values();
-        
+
         // Hitung statistik UEQ (mean, variance, benchmark per item & skala)
-        $stats      = $this->calculateAverages($surveys);
-        $itemStats  = $stats['items']  ?? [];
+        $stats = $this->calculateAverages($surveys);
+        $itemStats = $stats['items'] ?? [];
         $scaleStats = $stats['scales'] ?? [];
         // Backward-compat: $averages['scale'] = mean
-        $averages   = collect($scaleStats)->map(fn($s) => $s['mean'])->toArray();
-        
+        $averages = collect($scaleStats)->map(fn($s) => $s['mean'])->toArray();
+
         // Untuk sidebar materials dropdown
         $materials = Material::all();
-        
+
         return view('admin.ueq.index', [
-            'surveys'    => $surveys,
-            'averages'   => $averages,
-            'itemStats'  => $itemStats,
+            'surveys' => $surveys,
+            'averages' => $averages,
+            'itemStats' => $itemStats,
             'scaleStats' => $scaleStats,
-            'materials'  => $materials,
-            'classes'    => $classes,
+            'materials' => $materials,
+            'classes' => $classes,
             'activePage' => 'ueq',
-            'userName'   => auth()->user()->name,
-            'userRole'   => auth()->user()->role->role_name
+            'userName' => auth()->user()->name,
+            'userRole' => auth()->user()->role->role_name
         ]);
     }
-    
+
     // -----------------------------------------------------------------------
     // Official UEQ item definitions:
     // Each entry: [db_column, left_label, right_label, scale, polarity]
@@ -71,62 +71,65 @@ class UeqSurveyController extends Controller
     {
         return [
             // Attractiveness (6 items)
-            ['col'=>'annoying_enjoyable',             'left'=>'annoying',         'right'=>'enjoyable',       'scale'=>'attractiveness', 'dir'=>'R'],
-            ['col'=>'good_bad',                       'left'=>'good',             'right'=>'bad',             'scale'=>'attractiveness', 'dir'=>'L'],
-            ['col'=>'unlikable_pleasing',             'left'=>'unlikable',        'right'=>'pleasing',        'scale'=>'attractiveness', 'dir'=>'R'],
-            ['col'=>'unpleasant_pleasant',            'left'=>'unpleasant',       'right'=>'pleasant',        'scale'=>'attractiveness', 'dir'=>'R'],
-            ['col'=>'attractive_unattractive',        'left'=>'attractive',       'right'=>'unattractive',    'scale'=>'attractiveness', 'dir'=>'L'],
-            ['col'=>'friendly_unfriendly',            'left'=>'friendly',         'right'=>'unfriendly',      'scale'=>'attractiveness', 'dir'=>'L'],
+            ['col' => 'annoying_enjoyable', 'left' => 'annoying', 'right' => 'enjoyable', 'scale' => 'attractiveness', 'dir' => 'R'],
+            ['col' => 'good_bad', 'left' => 'good', 'right' => 'bad', 'scale' => 'attractiveness', 'dir' => 'L'],
+            ['col' => 'unlikable_pleasing', 'left' => 'unlikable', 'right' => 'pleasing', 'scale' => 'attractiveness', 'dir' => 'R'],
+            ['col' => 'unpleasant_pleasant', 'left' => 'unpleasant', 'right' => 'pleasant', 'scale' => 'attractiveness', 'dir' => 'R'],
+            ['col' => 'attractive_unattractive', 'left' => 'attractive', 'right' => 'unattractive', 'scale' => 'attractiveness', 'dir' => 'L'],
+            ['col' => 'friendly_unfriendly', 'left' => 'friendly', 'right' => 'unfriendly', 'scale' => 'attractiveness', 'dir' => 'L'],
             // Perspicuity (4 items)
-            ['col'=>'not_understandable_understandable','left'=>'not understandable','right'=>'understandable','scale'=>'perspicuity',   'dir'=>'R'],
-            ['col'=>'easy_difficult',                 'left'=>'easy',             'right'=>'difficult',       'scale'=>'perspicuity',    'dir'=>'L'],
-            ['col'=>'complicated_easy',               'left'=>'complicated',      'right'=>'easy',            'scale'=>'perspicuity',    'dir'=>'R'],
-            ['col'=>'clear_confusing',                'left'=>'clear',            'right'=>'confusing',       'scale'=>'perspicuity',    'dir'=>'L'],
+            ['col' => 'not_understandable_understandable', 'left' => 'not understandable', 'right' => 'understandable', 'scale' => 'perspicuity', 'dir' => 'R'],
+            ['col' => 'easy_difficult', 'left' => 'easy', 'right' => 'difficult', 'scale' => 'perspicuity', 'dir' => 'L'],
+            ['col' => 'complicated_easy', 'left' => 'complicated', 'right' => 'easy', 'scale' => 'perspicuity', 'dir' => 'R'],
+            ['col' => 'clear_confusing', 'left' => 'clear', 'right' => 'confusing', 'scale' => 'perspicuity', 'dir' => 'L'],
             // Efficiency (4 items)
-            ['col'=>'fast_slow',                      'left'=>'fast',             'right'=>'slow',            'scale'=>'efficiency',     'dir'=>'L'],
-            ['col'=>'inefficient_efficient',          'left'=>'inefficient',      'right'=>'efficient',       'scale'=>'efficiency',     'dir'=>'R'],
-            ['col'=>'impractical_practical',          'left'=>'impractical',      'right'=>'practical',       'scale'=>'efficiency',     'dir'=>'R'],
-            ['col'=>'organized_cluttered',            'left'=>'organized',        'right'=>'cluttered',       'scale'=>'efficiency',     'dir'=>'L'],
+            ['col' => 'fast_slow', 'left' => 'fast', 'right' => 'slow', 'scale' => 'efficiency', 'dir' => 'L'],
+            ['col' => 'inefficient_efficient', 'left' => 'inefficient', 'right' => 'efficient', 'scale' => 'efficiency', 'dir' => 'R'],
+            ['col' => 'impractical_practical', 'left' => 'impractical', 'right' => 'practical', 'scale' => 'efficiency', 'dir' => 'R'],
+            ['col' => 'organized_cluttered', 'left' => 'organized', 'right' => 'cluttered', 'scale' => 'efficiency', 'dir' => 'L'],
             // Dependability (4 items)
-            ['col'=>'unpredictable_predictable',      'left'=>'unpredictable',    'right'=>'predictable',     'scale'=>'dependability',  'dir'=>'R'],
-            ['col'=>'obstructive_supportive',         'left'=>'obstructive',      'right'=>'supportive',      'scale'=>'dependability',  'dir'=>'R'],
-            ['col'=>'secure_not_secure',              'left'=>'secure',           'right'=>'not secure',      'scale'=>'dependability',  'dir'=>'L'],
-            ['col'=>'meets_expectations_does_not_meet','left'=>'meets expectations','right'=>'does not meet', 'scale'=>'dependability',  'dir'=>'L'],
+            ['col' => 'unpredictable_predictable', 'left' => 'unpredictable', 'right' => 'predictable', 'scale' => 'dependability', 'dir' => 'R'],
+            ['col' => 'obstructive_supportive', 'left' => 'obstructive', 'right' => 'supportive', 'scale' => 'dependability', 'dir' => 'R'],
+            ['col' => 'secure_not_secure', 'left' => 'secure', 'right' => 'not secure', 'scale' => 'dependability', 'dir' => 'L'],
+            ['col' => 'meets_expectations_does_not_meet', 'left' => 'meets expectations', 'right' => 'does not meet', 'scale' => 'dependability', 'dir' => 'L'],
             // Stimulation (4 items)
-            ['col'=>'valuable_inferior',              'left'=>'valuable',         'right'=>'inferior',        'scale'=>'stimulation',    'dir'=>'L'],
-            ['col'=>'boring_exciting',                'left'=>'boring',           'right'=>'exciting',        'scale'=>'stimulation',    'dir'=>'R'],
-            ['col'=>'not_interesting_interesting',    'left'=>'not interesting',  'right'=>'interesting',     'scale'=>'stimulation',    'dir'=>'R'],
-            ['col'=>'motivating_demotivating',        'left'=>'motivating',       'right'=>'demotivating',    'scale'=>'stimulation',    'dir'=>'L'],
+            ['col' => 'valuable_inferior', 'left' => 'valuable', 'right' => 'inferior', 'scale' => 'stimulation', 'dir' => 'L'],
+            ['col' => 'boring_exciting', 'left' => 'boring', 'right' => 'exciting', 'scale' => 'stimulation', 'dir' => 'R'],
+            ['col' => 'not_interesting_interesting', 'left' => 'not interesting', 'right' => 'interesting', 'scale' => 'stimulation', 'dir' => 'R'],
+            ['col' => 'motivating_demotivating', 'left' => 'motivating', 'right' => 'demotivating', 'scale' => 'stimulation', 'dir' => 'L'],
             // Novelty (4 items)
-            ['col'=>'creative_dull',                  'left'=>'creative',         'right'=>'dull',            'scale'=>'novelty',        'dir'=>'L'],
-            ['col'=>'inventive_conventional',         'left'=>'inventive',        'right'=>'conventional',    'scale'=>'novelty',        'dir'=>'L'],
-            ['col'=>'usual_leading_edge',             'left'=>'usual',            'right'=>'leading edge',    'scale'=>'novelty',        'dir'=>'R'],
-            ['col'=>'conservative_innovative',        'left'=>'conservative',     'right'=>'innovative',      'scale'=>'novelty',        'dir'=>'R'],
+            ['col' => 'creative_dull', 'left' => 'creative', 'right' => 'dull', 'scale' => 'novelty', 'dir' => 'L'],
+            ['col' => 'inventive_conventional', 'left' => 'inventive', 'right' => 'conventional', 'scale' => 'novelty', 'dir' => 'L'],
+            ['col' => 'usual_leading_edge', 'left' => 'usual', 'right' => 'leading edge', 'scale' => 'novelty', 'dir' => 'R'],
+            ['col' => 'conservative_innovative', 'left' => 'conservative', 'right' => 'innovative', 'scale' => 'novelty', 'dir' => 'R'],
         ];
     }
 
-    // UEQ Benchmark thresholds (from official UEQ benchmark dataset, 246 products)
+    // UEQ Benchmark thresholds (from handbook)
     private function benchmarkThresholds(): array
     {
         return [
-            'attractiveness' => ['excellent'=>1.36,  'good'=>0.97,  'above_avg'=>0.48,  'below_avg'=>-0.29, 'bad'=>-0.87],
-            'perspicuity'    => ['excellent'=>1.50,  'good'=>1.17,  'above_avg'=>0.64,  'below_avg'=>0.02,  'bad'=>-0.56],
-            'efficiency'     => ['excellent'=>1.41,  'good'=>1.08,  'above_avg'=>0.61,  'below_avg'=>0.19,  'bad'=>-0.31],
-            'dependability'  => ['excellent'=>1.26,  'good'=>0.98,  'above_avg'=>0.53,  'below_avg'=>0.09,  'bad'=>-0.44],
-            'stimulation'    => ['excellent'=>1.38,  'good'=>1.03,  'above_avg'=>0.57,  'below_avg'=>0.14,  'bad'=>-0.44],
-            'novelty'        => ['excellent'=>1.32,  'good'=>0.93,  'above_avg'=>0.33,  'below_avg'=>-0.27, 'bad'=>-0.64],
+            'attractiveness' => ['excellent' => 1.75, 'good' => 1.52, 'above_avg' => 1.17, 'below_avg' => 0.70],
+            'perspicuity' => ['excellent' => 1.90, 'good' => 1.56, 'above_avg' => 1.08, 'below_avg' => 0.64],
+            'efficiency' => ['excellent' => 1.78, 'good' => 1.47, 'above_avg' => 0.98, 'below_avg' => 0.54],
+            'dependability' => ['excellent' => 1.65, 'good' => 1.48, 'above_avg' => 1.14, 'below_avg' => 0.78],
+            'stimulation' => ['excellent' => 1.55, 'good' => 1.31, 'above_avg' => 0.99, 'below_avg' => 0.50],
+            'novelty' => ['excellent' => 1.40, 'good' => 1.05, 'above_avg' => 0.71, 'below_avg' => 0.30],
         ];
     }
 
     private function classifyBenchmark(float $mean, string $scale): array
     {
         $t = $this->benchmarkThresholds()[$scale];
-        if ($mean >= $t['excellent'])  return ['label'=>'Excellent',     'color'=>'#16a34a', 'bg'=>'#dcfce7'];
-        if ($mean >= $t['good'])       return ['label'=>'Good',          'color'=>'#2563eb', 'bg'=>'#dbeafe'];
-        if ($mean >= $t['above_avg'])  return ['label'=>'Above Average', 'color'=>'#d97706', 'bg'=>'#fef9c3'];
-        if ($mean >= $t['below_avg'])  return ['label'=>'Below Average', 'color'=>'#f97316', 'bg'=>'#ffedd5'];
-        if ($mean >= $t['bad'])        return ['label'=>'Bad',           'color'=>'#dc2626', 'bg'=>'#fee2e2'];
-        return                                ['label'=>'Awful',         'color'=>'#7c3aed', 'bg'=>'#ede9fe'];
+        if ($mean > $t['excellent'])
+            return ['label' => 'Excellent', 'color' => '#16a34a', 'bg' => '#dcfce7'];
+        if ($mean > $t['good'])
+            return ['label' => 'Good', 'color' => '#2563eb', 'bg' => '#dbeafe'];
+        if ($mean > $t['above_avg'])
+            return ['label' => 'Above Average', 'color' => '#d97706', 'bg' => '#fef9c3'];
+        if ($mean > $t['below_avg'])
+            return ['label' => 'Below Average', 'color' => '#f97316', 'bg' => '#ffedd5'];
+        return ['label' => 'Bad', 'color' => '#dc2626', 'bg' => '#fee2e2'];
     }
 
     private function calculateAverages($surveys)
@@ -135,8 +138,8 @@ class UeqSurveyController extends Controller
             return [];
         }
 
-        $items   = $this->ueqItems();
-        $n       = $surveys->count();
+        $items = $this->ueqItems();
+        $n = $surveys->count();
 
         // ---- Per-item converted values (all surveys) ----
         $itemCollected = array_fill(0, count($items), []);
@@ -157,20 +160,20 @@ class UeqSurveyController extends Controller
                 ? array_sum(array_map(fn($v) => ($v - $mean) ** 2, $vals)) / ($n - 1)
                 : 0;
             $itemStats[] = [
-                'no'       => $i + 1,
-                'col'      => $item['col'],
-                'left'     => $item['left'],
-                'right'    => $item['right'],
-                'scale'    => $item['scale'],
-                'mean'     => round($mean, 2),
+                'no' => $i + 1,
+                'col' => $item['col'],
+                'left' => $item['left'],
+                'right' => $item['right'],
+                'scale' => $item['scale'],
+                'mean' => round($mean, 2),
                 'variance' => round($variance, 2),
-                'std_dev'  => round(sqrt($variance), 2),
-                'n'        => $n,
+                'std_dev' => round(sqrt($variance), 2),
+                'n' => $n,
             ];
         }
 
         // ---- Scale-level stats ----
-        $scales = ['attractiveness','perspicuity','efficiency','dependability','stimulation','novelty'];
+        $scales = ['attractiveness', 'perspicuity', 'efficiency', 'dependability', 'stimulation', 'novelty'];
         $scaleStats = [];
         foreach ($scales as $scale) {
             // Collect all converted values for this scale across all respondents
@@ -190,21 +193,21 @@ class UeqSurveyController extends Controller
                 $perRespondent[] = array_sum($rowVals) / count($rowVals);
             }
             $meanScale = array_sum($perRespondent) / $n;
-            $varScale  = $n > 1
+            $varScale = $n > 1
                 ? array_sum(array_map(fn($v) => ($v - $meanScale) ** 2, $perRespondent)) / ($n - 1)
                 : 0;
             $bench = $this->classifyBenchmark($meanScale, $scale);
             $scaleStats[$scale] = [
-                'mean'      => round($meanScale, 3),
-                'variance'  => round($varScale, 3),
-                'std_dev'   => round(sqrt($varScale), 3),
-                'n'         => $n,
+                'mean' => round($meanScale, 3),
+                'variance' => round($varScale, 3),
+                'std_dev' => round(sqrt($varScale), 3),
+                'n' => $n,
                 'benchmark' => $bench,
             ];
         }
 
         return [
-            'items'  => $itemStats,
+            'items' => $itemStats,
             'scales' => $scaleStats,
         ];
     }
@@ -215,14 +218,14 @@ class UeqSurveyController extends Controller
     public function export(Request $request)
     {
         $class = $request->input('class');
-        
+
         // Query data
         $query = UeqSurvey::with('user');
         if ($class) {
             $query->where('class', $class);
         }
         $surveys = $query->get();
-        
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="ueq-survey-results.csv"',
@@ -230,13 +233,18 @@ class UeqSurveyController extends Controller
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0'
         ];
-        
-        $callback = function() use ($surveys, $headers) {
+
+        $callback = function () use ($surveys, $headers) {
             $file = fopen('php://output', 'w');
-            
+
             // Add CSV headers
             fputcsv($file, [
-                'ID', 'NIM', 'Nama Pengguna', 'Email', 'Kelas', 'Tanggal Pengisian',
+                'ID',
+                'NIM',
+                'Nama Pengguna',
+                'Email',
+                'Kelas',
+                'Tanggal Pengisian',
                 // 26 aspek UEQ
                 'Annoying - Enjoyable',
                 'Not Understandable - Understandable',
@@ -264,9 +272,10 @@ class UeqSurveyController extends Controller
                 'Attractive - Unattractive',
                 'Friendly - Unfriendly',
                 'Conservative - Innovative',
-                'Komentar', 'Saran'
+                'Komentar',
+                'Saran'
             ]);
-            
+
             // Add data rows
             foreach ($surveys as $survey) {
                 fputcsv($file, [
@@ -307,10 +316,10 @@ class UeqSurveyController extends Controller
                     $survey->suggestions ?? ''
                 ]);
             }
-            
+
             fclose($file);
         };
-        
+
         return response()->stream($callback, 200, $headers);
     }
 
@@ -321,4 +330,4 @@ class UeqSurveyController extends Controller
 
         return view('admin.ueq.detail', compact('survey', 'user'));
     }
-} 
+}

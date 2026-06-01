@@ -326,11 +326,11 @@
                                 </div>
                                 <div class="d-flex flex-wrap gap-2 px-1 mt-1">
                                     <span class="text-xs fw-semibold text-muted me-1">Legend:</span>
-                                    @foreach([['Excellent', '#dcfce7', '#16a34a'], ['Good', '#dbeafe', '#2563eb'], ['Above Average', '#fef9c3', '#d97706'], ['Below Average', '#ffedd5', '#f97316'], ['Bad', '#fee2e2', '#dc2626'], ['Awful', '#ede9fe', '#7c3aed']] as $bl)
+                                    @foreach([['Excellent', '#dcfce7', '#16a34a'], ['Good', '#dbeafe', '#2563eb'], ['Above Average', '#fef9c3', '#d97706'], ['Below Average', '#ffedd5', '#f97316'], ['Bad', '#fee2e2', '#dc2626']] as $bl)
                                         <span class="badge px-2 py-1"
                                             style="background:{{ $bl[1] }};color:{{ $bl[2] }};border-radius:6px;font-size:10px;font-weight:600">{{ $bl[0] }}</span>
                                     @endforeach
-                                    <span class="text-xs text-muted ms-2">(Sumber: UEQ Benchmark Dataset, 246 produk)</span>
+                                    <span class="text-xs text-muted ms-2">(Sumber: Handbook Data Benchmark UEQ)</span>
                                 </div>
                             </div>
                         </div>
