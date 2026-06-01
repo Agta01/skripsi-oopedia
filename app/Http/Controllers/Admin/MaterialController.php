@@ -62,13 +62,13 @@ class MaterialController extends Controller
 
             // Handle cover image upload
             if ($request->hasFile('cover_image')) {
-                // Simpan file ke direktori images
-                $path = $request->file('cover_image')->store('materials', 'images');
+                // Simpan file ke disk public (storage/app/public) — bekerja di semua hosting
+                $path = $request->file('cover_image')->store('materials', 'public');
                 
                 Media::create([
                     'material_id' => $material->id,
                     'media_type' => 'image',
-                    'media_url' => '/images/' . $path,
+                    'media_url' => 'storage/' . $path,
                     'media_description' => $request->title . ' - Cover Image'
                 ]);
             }
@@ -115,16 +115,16 @@ class MaterialController extends Controller
                     // Delete file from storage
                     $path = $existingMedia->media_url;
                     
-                    if (str_starts_with($path, '/images/')) {
-                        $path = str_replace('/images/', '', $path);
-                        if (Storage::disk('images')->exists($path)) {
-                            Storage::disk('images')->delete($path);
+                    if (str_starts_with($path, 'storage/')) {
+                        $relativePath = str_replace('storage/', '', $path);
+                        if (Storage::disk('public')->exists($relativePath)) {
+                            Storage::disk('public')->delete($relativePath);
                         }
-                    } 
-                    elseif (str_starts_with($path, '/storage/')) {
-                        $path = str_replace('/storage/', '', $path);
-                        if (Storage::disk('public')->exists($path)) {
-                            Storage::disk('public')->delete($path);
+                    } elseif (str_starts_with($path, '/images/')) {
+                        // Legacy: hapus file lama dari disk images jika ada
+                        $relativePath = str_replace('/images/', '', $path);
+                        if (Storage::disk('images')->exists($relativePath)) {
+                            Storage::disk('images')->delete($relativePath);
                         }
                     }
                     
@@ -132,13 +132,13 @@ class MaterialController extends Controller
                     $existingMedia->delete();
                 }
                 
-                // Upload new cover image
-                $path = $request->file('cover_image')->store('materials', 'images');
+                // Upload new cover image ke disk public
+                $path = $request->file('cover_image')->store('materials', 'public');
                 
                 Media::create([
                     'material_id' => $material->id,
                     'media_type' => 'image',
-                    'media_url' => '/images/' . $path,
+                    'media_url' => 'storage/' . $path,
                     'media_description' => $request->title . ' - Cover Image'
                 ]);
             }
@@ -166,10 +166,18 @@ class MaterialController extends Controller
             
             // Delete associated media files
             foreach($material->media as $media) {
-                // Remove 'storage/' from the beginning of the path
-                $path = str_replace('storage/', '', $media->media_url);
-                if (Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
+                $path = $media->media_url;
+                if (str_starts_with($path, 'storage/')) {
+                    $relativePath = str_replace('storage/', '', $path);
+                    if (Storage::disk('public')->exists($relativePath)) {
+                        Storage::disk('public')->delete($relativePath);
+                    }
+                } elseif (str_starts_with($path, '/images/')) {
+                    // Legacy support
+                    $relativePath = str_replace('/images/', '', $path);
+                    if (Storage::disk('images')->exists($relativePath)) {
+                        Storage::disk('images')->delete($relativePath);
+                    }
                 }
                 $media->delete(); // Delete the media record explicitly
             }
@@ -194,18 +202,16 @@ class MaterialController extends Controller
             // Hapus file dari disk yang sesuai
             $path = $media->media_url;
             
-            // Jika URL dimulai dengan '/images/'
-            if (str_starts_with($path, '/images/')) {
-                $path = str_replace('/images/', '', $path);
-                if (Storage::disk('images')->exists($path)) {
-                    Storage::disk('images')->delete($path);
+            if (str_starts_with($path, 'storage/')) {
+                $relativePath = str_replace('storage/', '', $path);
+                if (Storage::disk('public')->exists($relativePath)) {
+                    Storage::disk('public')->delete($relativePath);
                 }
-            } 
-            // Jika URL dimulai dengan '/storage/'
-            else if (str_starts_with($path, '/storage/')) {
-                $path = str_replace('/storage/', '', $path);
-                if (Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
+            } elseif (str_starts_with($path, '/images/')) {
+                // Legacy support
+                $relativePath = str_replace('/images/', '', $path);
+                if (Storage::disk('images')->exists($relativePath)) {
+                    Storage::disk('images')->delete($relativePath);
                 }
             }
             

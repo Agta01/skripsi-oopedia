@@ -67,7 +67,12 @@
                                             <td class="ps-4">
                                                 @if($material->media && $material->media->isNotEmpty())
                                                     <div class="material-thumbnail-container modern-thumbnail shadow-sm">
-                                                        <img src="{{ asset($material->media->first()->media_url) }}" 
+                                                        @php
+                                                            $mediaUrl = $material->media->first()->media_url;
+                                                            // Support both new 'storage/...' and legacy '/images/...' paths
+                                                            $imgSrc = str_starts_with($mediaUrl, 'storage/') ? asset($mediaUrl) : asset(ltrim($mediaUrl, '/'));
+                                                        @endphp
+                                                        <img src="{{ $imgSrc }}" 
                                                              alt="{{ $material->title }}" 
                                                              class="material-cover-thumbnail">
                                                     </div>

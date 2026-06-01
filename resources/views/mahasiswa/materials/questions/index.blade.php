@@ -52,7 +52,11 @@
                     <div class="material-left-section">
                         @if($material->media && $material->media->isNotEmpty())
                             <div class="material-question-image">
-                                <img src="{{ $material->media->first()->media_url }}" alt="{{ $material->title }}">
+                                @php
+                                    $mediaUrl = $material->media->first()->media_url;
+                                    $imgSrc = str_starts_with($mediaUrl, 'storage/') ? asset($mediaUrl) : asset(ltrim($mediaUrl, '/'));
+                                @endphp
+                                <img src="{{ $imgSrc }}" alt="{{ $material->title }}">
                             </div>
                         @else
                             <div class="material-question-image default-image">

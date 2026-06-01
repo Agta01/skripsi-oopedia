@@ -65,7 +65,11 @@
                                                 <div class="mb-3">
                                                     <p class="text-muted">Gambar Cover Saat Ini:</p>
                                                     <div class="text-center">
-                                                        <img src="{{ asset($material->media->first()->media_url) }}" 
+                                                        @php
+                                                            $mediaUrl = $material->media->first()->media_url;
+                                                            $imgSrc = str_starts_with($mediaUrl, 'storage/') ? asset($mediaUrl) : asset(ltrim($mediaUrl, '/'));
+                                                        @endphp
+                                                        <img src="{{ $imgSrc }}" 
                                                              alt="Cover Image" 
                                                              class="img-thumbnail" 
                                                              style="max-height: 200px; border: 2px solid #e0e6ed;">

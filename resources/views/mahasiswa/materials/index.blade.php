@@ -44,7 +44,11 @@
             <!-- Menampilkan gambar jika ada -->
             @if($material->media && $material->media->isNotEmpty())
                 <div class="material-image">
-                    <img src="{{ $material->media->first()->media_url }}" alt="{{ $material->title }}" class="img-fluid">
+                    @php
+                        $mediaUrl = $material->media->first()->media_url;
+                        $imgSrc = str_starts_with($mediaUrl, 'storage/') ? asset($mediaUrl) : asset(ltrim($mediaUrl, '/'));
+                    @endphp
+                    <img src="{{ $imgSrc }}" alt="{{ $material->title }}" class="img-fluid">
                 </div>
             @else
                 <div class="material-image default-image">
