@@ -31,8 +31,7 @@
         <p class="oopedia-hero__desc">
             <strong>OOPedia</strong> adalah platform e-learning khusus untuk mempelajari 
             <strong>OOP (Object-Oriented Programming)</strong> — paradigma pemrograman yang mengorganisasi 
-            kode menjadi <em>objek</em> berisi data dan fungsi. OOP adalah fondasi dari hampir semua 
-            bahasa pemrograman modern seperti Java, Python, C++, dan PHP.
+            kode menjadi <em>objek</em> berisi data dan fungsi.
         </p>
         <div class="oopedia-hero__cta-wrap">
             <a href="#materi-list" class="oopedia-hero__cta oopedia-hero__cta--primary">
