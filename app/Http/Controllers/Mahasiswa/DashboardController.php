@@ -445,32 +445,33 @@ class DashboardController extends Controller
                 ->first();
             $hardCorrect = $hardStats ? $hardStats->correct_answers : 0;
 
-            // For completed materials we show 100% for all stats
+            // For completed materials: only show 100% if there are actually questions configured
+            $configuredTotal = $configuredBeginnerTotal + $configuredMediumTotal + $configuredHardTotal;
             return [
                 'material' => $material,
                 'stats' => [
                     'overall' => [
-                        'correct' => $configuredBeginnerTotal + $configuredMediumTotal + $configuredHardTotal,
-                        'total' => $configuredBeginnerTotal + $configuredMediumTotal + $configuredHardTotal,
-                        'percentage' => 100
+                        'correct' => $configuredTotal,
+                        'total' => $configuredTotal,
+                        'percentage' => $configuredTotal > 0 ? 100 : 0
                     ],
                     'beginner' => [
                         'correct' => $configuredBeginnerTotal,
                         'total' => $beginnerQuestions->count(),
                         'configured_total' => $configuredBeginnerTotal,
-                        'percentage' => 100
+                        'percentage' => $configuredBeginnerTotal > 0 ? 100 : 0
                     ],
                     'medium' => [
                         'correct' => $configuredMediumTotal,
                         'total' => $mediumQuestions->count(),
                         'configured_total' => $configuredMediumTotal,
-                        'percentage' => 100
+                        'percentage' => $configuredMediumTotal > 0 ? 100 : 0
                     ],
                     'hard' => [
                         'correct' => $configuredHardTotal,
                         'total' => $hardQuestions->count(),
                         'configured_total' => $configuredHardTotal,
-                        'percentage' => 100
+                        'percentage' => $configuredHardTotal > 0 ? 100 : 0
                     ]
                 ]
             ];

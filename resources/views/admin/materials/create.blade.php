@@ -94,7 +94,7 @@
                     </div>{{-- /main col --}}
 
                     {{-- ═══ SIDE COLUMN ═══ --}}
-                    <div class="mat-col-side">
+                    <div class="mat-col-side mat-col-side--sticky">
 
                         {{-- Cover Image --}}
                         <div class="mat-card">
@@ -125,15 +125,6 @@
                             </div>
                         </div>
 
-                        {{-- Submit --}}
-                        <div class="mat-submit-bar">
-                            <a href="{{ route('admin.materials.index') }}" class="mat-btn-cancel">
-                                <i class="fas fa-times"></i> Batal
-                            </a>
-                            <button type="submit" class="mat-btn-save">
-                                <i class="fas fa-save"></i> Simpan Materi
-                            </button>
-                        </div>
 
                         {{-- Tips --}}
                         <div class="mat-card" style="border-color:#fef3c7;">
@@ -154,6 +145,16 @@
                     </div>{{-- /side col --}}
                 </div>
             </form>
+
+            {{-- ═══ FLOATING SAVE BUTTON ═══ --}}
+            <div class="mat-floating-save">
+                <a href="{{ route('admin.materials.index') }}" class="mat-floating-save__cancel">
+                    <i class="fas fa-times"></i> Batal
+                </a>
+                <button type="button" class="mat-floating-save__btn" onclick="document.getElementById('materialForm').dispatchEvent(new Event('submit', {cancelable:true,bubbles:true}))">
+                    <i class="fas fa-save"></i> Simpan Materi
+                </button>
+            </div>
         </div>
     </main>
     <x-admin.tutorial />
@@ -214,6 +215,16 @@ function updateVideoPreview(url) {
 .mat-grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
 .mat-col-main, .mat-col-side { display: flex; flex-direction: column; gap: 16px; }
 
+/* Sticky side column */
+.mat-col-side--sticky {
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
 .mat-card { background: #fff; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; }
 .mat-card-hdr { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #f8fafc; background: #fafbfc; }
 .mat-card-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
@@ -248,23 +259,71 @@ function updateVideoPreview(url) {
 .mat-img-guide { display: flex; flex-direction: column; gap: 5px; }
 .mat-img-guide-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #64748b; }
 
-.mat-submit-bar { display: flex; gap: 10px; }
-.mat-btn-cancel {
-    flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
-    padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700;
-    background: #f1f5f9; color: #64748b; text-decoration: none; border: none; cursor: pointer;
-    transition: background .18s;
+/* Floating Save Button */
+.mat-floating-save {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    padding: 12px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    z-index: 999;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.mat-btn-cancel:hover { background: #e2e8f0; color: #475569; text-decoration: none; }
-.mat-btn-save {
-    flex: 2; display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700;
-    background: linear-gradient(135deg, #059669, #047857); color: #fff;
-    border: none; cursor: pointer;
-    box-shadow: 0 4px 14px rgba(5,150,105,.3); transition: all .18s;
-}
-.mat-btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(5,150,105,.4); }
 
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mat-floating-save__cancel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #64748b;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.mat-floating-save__cancel:hover {
+    background: rgba(100, 116, 139, 0.1);
+    color: #475569;
+}
+
+.mat-floating-save__btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.35);
+    transition: all 0.2s;
+}
+
+.mat-floating-save__btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.45);
+}
+
+.mat-floating-save__btn:active {
+    transform: translateY(1px);
+}
 .mat-tips { padding-left: 18px; margin: 0; }
 .mat-tips li { font-size: 12px; color: #64748b; margin-bottom: 8px; line-height: 1.5; }
 

@@ -756,14 +756,63 @@
 @if(isset($tbutSession) && $tbutSession && $activeTask)
 
 @if($tbutSession->is_completed)
-{{-- Read-only banner --}}
-<div class="readonly-banner">
-    <i class="fas fa-lock" style="color:#16a34a;"></i>
-    <span>Mode Review — Kode tidak dapat diubah</span>
-    <a href="{{ route('virtual-lab.index') }}" class="btn-back-lab">
-        <i class="fas fa-arrow-left"></i> Kembali
-    </a>
+{{-- Read-only banner (collapsible) --}}
+<div class="readonly-banner" id="review-banner">
+    <i class="fas fa-lock" style="color:#16a34a;flex-shrink:0;"></i>
+    <div class="review-banner-text" id="review-banner-text">
+        <span>Mode Review — Kode tidak dapat diubah</span>
+        <a href="{{ route('virtual-lab.index') }}" class="btn-back-lab">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+    </div>
+    <button type="button" class="review-banner-toggle" id="review-banner-toggle" onclick="toggleReviewBanner()" title="Sembunyikan banner">
+        <i class="fas fa-chevron-down" id="review-toggle-icon"></i>
+    </button>
 </div>
+<style>
+.review-banner-text {
+    display: flex; align-items: center; gap: 10px; flex: 1;
+    transition: all .25s;
+    overflow: hidden;
+}
+.review-banner-text.collapsed {
+    display: none;
+}
+.review-banner-toggle {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(21,128,61,.08);
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: all .2s;
+    font-size: 11px;
+}
+.review-banner-toggle:hover { background: rgba(21,128,61,.15); }
+.review-banner.minimized {
+    padding: 8px 12px;
+    gap: 8px;
+}
+</style>
+<script>
+function toggleReviewBanner() {
+    const text = document.getElementById('review-banner-text');
+    const icon = document.getElementById('review-toggle-icon');
+    const banner = document.getElementById('review-banner');
+    const isCollapsed = text.classList.toggle('collapsed');
+    banner.classList.toggle('minimized', isCollapsed);
+    icon.className = isCollapsed ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+    // Persist preference
+    localStorage.setItem('review_banner_collapsed', isCollapsed ? '1' : '0');
+}
+// Restore preference on load
+document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('review_banner_collapsed') === '1') {
+        toggleReviewBanner();
+    }
+});
+</script>
 
 @else
 {{-- Active mode forms --}}
