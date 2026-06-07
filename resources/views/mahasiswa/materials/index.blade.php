@@ -25,8 +25,7 @@
             Platform Pembelajaran Interaktif
         </div>
         <h1 class="oopedia-hero__title">
-            Kuasai <span class="oopedia-hero__title--accent">Pemrograman<br>Berorientasi Objek</span>
-            <br>dengan Cara yang Tepat
+            Kuasai Mata Kuliah<span class="oopedia-hero__title--accent">Pemrograman<br>Berorientasi Objek</span>
         </h1>
         <p class="oopedia-hero__desc">
             <strong>OOPedia</strong> adalah platform e-learning khusus untuk mempelajari 
